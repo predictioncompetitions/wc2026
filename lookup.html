@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Scores — Mick's World Cup Predictor 2026</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .lookup-form {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .lookup-form .field { flex: 1; min-width: 200px; }
+
+    .lookup-form .btn { flex-shrink: 0; min-height: 44px; }
+
+    .score-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .score-header-name {
+      font-family: var(--font-head);
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .score-header-meta {
+      font-size: 13px;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+
+    .total-score-box {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .total-score-value {
+      font-family: var(--font-head);
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--pitch);
+      line-height: 1;
+    }
+
+    .total-score-label {
+      font-size: 12px;
+      color: var(--ink-3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+
+    .round-section { margin-bottom: 16px; }
+
+    .round-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+
+    .round-head-title {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      flex: 1;
+    }
+
+    .round-head-pts {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .rh-group  { background: #eff4ff; color: #1a56db; border-color: #d1dcf8; }
+    .rh-r32    { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+    .rh-r16    { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .rh-qf     { background: #f5f3ff; color: #6d28d9; border-color: #c4b5fd; }
+    .rh-sf     { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
+    .rh-final  { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+
+    .match-score-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto 1fr auto;
+      gap: 0;
+      align-items: center;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-top: none;
+      font-size: 13px;
+      background: var(--surface);
+    }
+
+    .match-score-row:last-child { border-radius: 0 0 var(--radius) var(--radius); }
+
+    .match-score-row.correct-winner { background: #fafffe; }
+    .match-score-row.exact-score    { background: #f0fdf4; }
+
+    .mscore-home { text-align: right; font-weight: 600; padding-right: 10px; }
+    .mscore-away { text-align: left; font-weight: 600; padding-left: 10px; }
+
+    .mscore-score {
+      text-align: center;
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink-2);
+      min-width: 44px;
+      padding: 0 4px;
+    }
+
+    .mscore-pts {
+      min-width: 52px;
+      text-align: right;
+      font-family: var(--font-head);
+      font-size: 13px;
+      font-weight: 700;
+      padding-left: 12px;
+    }
+
+    .mscore-pts.pts-10 { color: #15803d; }
+    .mscore-pts.pts-5  { color: #1d4ed8; }
+    .mscore-pts.pts-3  { color: #7c3aed; }
+    .mscore-pts.pts-0  { color: var(--ink-3); }
+
+    .pts-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .not-played-yet {
+      text-align: center;
+      padding: 20px;
+      color: var(--ink-3);
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      background: var(--surface-2);
+    }
+
+    .group-table-wrap {
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      overflow: hidden;
+    }
+
+    .group-pick-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--surface-3);
+      font-size: 13px;
+    }
+
+    .group-pick-row:last-child { border-bottom: none; }
+
+    .gp-pos {
+      font-family: var(--font-head);
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gp-1st { background: #fef3c7; color: #78350f; }
+    .gp-2nd { background: #e0f2fe; color: #0c4a6e; }
+    .gp-3rd { background: #f3e8ff; color: #4c1d95; }
+
+    .gp-team { font-weight: 600; color: var(--ink-2); }
+
+    .gp-result { font-size: 12px; color: var(--ink-3); }
+    .gp-pts    { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--pitch); }
+
+    @media (max-width: 600px) {
+      .match-score-row { grid-template-columns: 1fr auto auto 1fr auto; font-size: 12px; }
+      .mscore-home, .mscore-away { padding: 0 6px; }
+      .score-header { flex-direction: column; align-items: flex-start; }
+      .total-score-box { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <span class="nav-brand-icon">⚽</span>
+    <span class="nav-brand-text">Mick's <span>WC26</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="enter.html"><span class="nav-icon">✏️</span> Enter</a></li>
+    <li><a href="rules.html"><span class="nav-icon">📋</span> Rules</a></li>
+    <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
+    <li><a href="lookup.html" class="active"><span class="nav-icon">🔍</span> My Scores</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</nav>
+
+<nav class="nav-mobile" id="navMobile">
+  <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+  <a href="enter.html"><span class="nav-icon">✏️</span> Enter the Competition</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules & Scoring</a>
+  <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
+  <a href="lookup.html" class="active"><span class="nav-icon">🔍</span> My Scores</a>
+  <a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-hero-eyebrow">Score lookup</div>
+    <h1>My <span>Scores</span></h1>
+    <p class="page-hero-sub">Select your name from the dropdown to see your picks and how you've scored on each match.</p>
+  </div>
+  <div class="page-hero-rainbow"></div>
+</div>
+
+<div class="main">
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-head-icon">🔍</span>
+      <div><h2>Look up an entry</h2><p>Select a name to view their full entry and scores</p></div>
+    </div>
+    <div class="card-body">
+      <div class="lookup-form">
+        <div class="field">
+          <label for="entrantSelect">Select entrant</label>
+          <select id="entrantSelect">
+            <option value="">— Loading names…</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="lookupBtn" disabled>View scores</button>
+      </div>
+      <div id="lookupStatus"></div>
+    </div>
+  </div>
+
+  <div id="scoreOutput"></div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-logo">Mick's <span>World Cup Predictor</span> 2026</div>
+    <p>A friendly competition between friends. 100% of entry fees go to the prize pool.</p>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+<script>
+const select = document.getElementById('entrantSelect');
+const lookupBtn = document.getElementById('lookupBtn');
+const statusEl = document.getElementById('lookupStatus');
+const output = document.getElementById('scoreOutput');
+
+// Load entrant names into dropdown
+async function loadNames() {
+  try {
+    const data = await apiFetch('getEntrantNames');
+    select.innerHTML = '<option value="">— Select a name —</option>';
+    if (data && data.names && data.names.length) {
+      data.names.sort().forEach(name => {
+        const o = document.createElement('option');
+        o.value = name;
+        o.textContent = name;
+        select.appendChild(o);
+      });
+      lookupBtn.disabled = false;
+    } else {
+      select.innerHTML = '<option value="">No entries found yet</option>';
+    }
+  } catch(e) {
+    select.innerHTML = '<option value="">Could not load names</option>';
+  }
+}
+
+select.addEventListener('change', () => {
+  lookupBtn.disabled = !select.value;
+  output.innerHTML = '';
+  statusEl.innerHTML = '';
+});
+
+lookupBtn.addEventListener('click', async () => {
+  const name = select.value;
+  if (!name) return;
+
+  output.innerHTML = '';
+  statusEl.innerHTML = '<div class="status-msg status-info">Loading…</div>';
+  lookupBtn.disabled = true;
+
+  try {
+    const data = await apiFetch('lookupEntry', { name });
+    statusEl.innerHTML = '';
+    lookupBtn.disabled = false;
+
+    if (!data || !data.ok) {
+      statusEl.innerHTML = `<div class="status-msg status-warn">${esc(data && data.message || 'Entry not found.')}</div>`;
+      return;
+    }
+
+    renderEntry(data.entry);
+  } catch(e) {
+    statusEl.innerHTML = '<div class="status-msg status-error">Could not load entry. Please try again.</div>';
+    lookupBtn.disabled = false;
+  }
+});
+
+function renderEntry(entry) {
+  // If scoring engine not built yet, show predictions only
+  const hasScores = entry.totalScore !== undefined && entry.totalScore !== null;
+
+  let html = `
+    <div class="card" style="margin-top:16px;">
+      <div class="card-body">
+        <div class="score-header">
+          <div>
+            <div class="score-header-name">${esc(entry.displayName || entry.fullName)}</div>
+            <div class="score-header-meta">Entry ID: ${esc(entry.entryId)} · 🏆 Predicted champion: <strong>${esc(entry.predictedChampion)}</strong></div>
+          </div>
+          ${hasScores ? `
+          <div class="total-score-box">
+            <div class="total-score-value">${entry.totalScore}</div>
+            <div class="total-score-label">Total points</div>
+          </div>` : `
+          <div class="pill pill-blue">Scoring starts 11 June</div>
+          `}
+        </div>
+  `;
+
+  // Group stage picks
+  if (entry.groups && entry.groups.length) {
+    html += renderGroupSection(entry.groups, hasScores);
+  }
+
+  // Knockout rounds
+  const rounds = [
+    { key: 'roundOf32',     label: 'Round of 32',    cls: 'rh-r32'   },
+    { key: 'roundOf16',     label: 'Round of 16',    cls: 'rh-r16'   },
+    { key: 'quarterFinals', label: 'Quarter-finals', cls: 'rh-qf'    },
+    { key: 'semiFinals',    label: 'Semi-finals',    cls: 'rh-sf'    },
+    { key: 'final',         label: 'Final',          cls: 'rh-final' }
+  ];
+
+  rounds.forEach(({ key, label, cls }) => {
+    const matches = entry[key];
+    if (!matches || !matches.length) return;
+    html += renderRoundSection(label, cls, matches, hasScores);
+  });
+
+  html += '</div></div>';
+  output.innerHTML = html;
+}
+
+function renderGroupSection(groups, hasScores) {
+  let html = `
+    <div class="round-section">
+      <div class="round-head rh-group">
+        <span class="round-head-title">Group stage picks</span>
+        ${hasScores ? '<span class="round-head-pts">Pts</span>' : ''}
+      </div>
+      <div class="group-table-wrap">
+  `;
+
+  groups.forEach(group => {
+    const picks = [
+      { pos: '1ST', posLabel: '1ST', cls: 'gp-1st', team: group.first,  result: group.firstResult,  pts: group.firstPts  },
+      { pos: '2ND', posLabel: '2ND', cls: 'gp-2nd', team: group.second, result: group.secondResult, pts: group.secondPts },
+      { pos: '3RD', posLabel: '3RD', cls: 'gp-3rd', team: group.third,  result: group.thirdResult,  pts: group.thirdPts  }
+    ];
+
+    picks.forEach(p => {
+      html += `
+        <div class="group-pick-row">
+          <div class="gp-pos ${p.cls}">${p.posLabel}</div>
+          <div class="gp-team">Group ${esc(group.group)} — ${esc(p.team)}</div>
+          <div class="gp-result">${hasScores && p.result ? esc(p.result) : ''}</div>
+          <div class="gp-pts">${hasScores && p.pts !== undefined ? p.pts + ' pts' : ''}</div>
+        </div>`;
+    });
+  });
+
+  html += '</div></div>';
+  return html;
+}
+
+function renderRoundSection(label, cls, matches, hasScores) {
+  const roundPts = hasScores ? matches.reduce((sum, m) => sum + (m.pts || 0), 0) : null;
+
+  let html = `
+    <div class="round-section">
+      <div class="round-head ${cls}">
+        <span class="round-head-title">${esc(label)}</span>
+        ${hasScores ? `<span class="round-head-pts">${roundPts} pts</span>` : ''}
+      </div>
+  `;
+
+  matches.forEach(match => {
+    if (!match.home && !match.away) return;
+
+    const scoreStr = (match.homeScore !== '' && match.awayScore !== '')
+      ? `${match.homeScore} – ${match.awayScore}`
+      : '– vs –';
+
+    const ptsClass = !hasScores ? '' : match.pts >= 10 ? 'pts-10' : match.pts >= 5 ? 'pts-5' : match.pts >= 3 ? 'pts-3' : 'pts-0';
+    const rowClass = !hasScores ? '' : match.exactScore ? 'exact-score' : match.correctWinner ? 'correct-winner' : '';
+
+    html += `
+      <div class="match-score-row ${rowClass}">
+        <div class="mscore-home">${esc(match.home)}</div>
+        <div class="mscore-score">${esc(scoreStr)}</div>
+        <div class="mscore-home" style="text-align:left;font-weight:400;color:var(--ink-3);font-size:11px;">→ ${esc(match.winner || '?')}</div>
+        <div class="mscore-away">${esc(match.away)}</div>
+        <div class="mscore-pts ${ptsClass}">${hasScores ? (match.pts || 0) + ' pts' : ''}</div>
+      </div>`;
+  });
+
+  html += '</div>';
+  return html;
+}
+
+// Init
+loadNames();
+</script>
+</body>
+</html>

@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:        #0a0e1a;
+      --ink-soft:   #1c2236;
+      --white:      #ffffff;
+      --off-white:  #f7f8fc;
+      --border:     #dde3ef;
+      --muted:      #7a849a;
+
+      --c-hero:     #0a1233;
+      --c-group:    #1a56db;
+      --c-third:    #7c3aed;
+      --c-ko:       #0f766e;
+      --c-sf:       #b45309;
+      --c-final:    #be123c;
+      --c-champ:    #14532d;
+
+      --c-group-bg:   #eff4ff;
+      --c-third-bg:   #f5f0ff;
+      --c-ko-bg:      #effcfb;
+      --c-sf-bg:      #fffbeb;
+      --c-final-bg:   #fff1f4;
+
+      --c-qual:       #166534;
+      --c-qual-bg:    #f0fdf4;
+      --c-qual-bd:    #bbf7d0;
+
+      --c-out:        #475569;
+      --c-out-bg:     #f8fafc;
+      --c-out-bd:     #cbd5e1;
+
+      --radius:     6px;
+      --radius-lg:  10px;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 7mm 7mm 7mm 7mm;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', Arial, sans-serif;
+      font-size: 7.4px;
+      line-height: 1.28;
+      color: var(--ink);
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .hero {
+      background: var(--c-hero);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -30px;
+      top: -20px;
+      width: 140px;
+      height: 140px;
+      background: rgba(255,255,255,0.04);
+      transform: rotate(25deg);
+      border-radius: 4px;
+    }
+
+    .hero-rainbow {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg,
+        #1a56db 0%,
+        #0ea5e9 20%,
+        #7c3aed 40%,
+        #be123c 60%,
+        #f59e0b 80%,
+        #14532d 100%
+      );
+    }
+
+    .hero-left { flex: 1; }
+
+    .hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 3px;
+    }
+
+    .hero-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+      letter-spacing: -0.3px;
+    }
+
+    .hero-sub {
+      font-size: 7px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 3px;
+      letter-spacing: 0.2px;
+    }
+
+    .hero-logo {
+      max-width: 52px;
+      max-height: 36px;
+      opacity: 0.9;
+    }
+
+    .meta-strip {
+      background: var(--ink-soft);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-bottom: 2px solid var(--c-group);
+    }
+
+    .meta-cell {
+      padding: 5px 8px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .meta-cell:last-child { border-right: none; }
+
+    .meta-label {
+      font-size: 5.8px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 2px;
+    }
+
+    .meta-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .body {
+      padding: 7px 8px 7px 8px;
+      background: var(--off-white);
+    }
+
+    .sec-header {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 0 0 4px 0;
+    }
+
+    .sec-pip {
+      width: 3px;
+      height: 16px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .sec-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .sec-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .groups-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 6px;
+    }
+
+    .groups-panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--c-group);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      background: var(--c-group-bg);
+      padding: 3px 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7.5px;
+      font-weight: 700;
+      color: var(--c-group);
+      letter-spacing: 0.3px;
+    }
+
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table.data th {
+      background: #f0f4ff;
+      font-size: 6.4px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 2.5px 4px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    table.data td {
+      font-size: 7px;
+      padding: 2.5px 4px;
+      border-bottom: 1px solid #eef0f6;
+      vertical-align: middle;
+    }
+
+    table.data tr:last-child td { border-bottom: none; }
+
+    .g-badge {
+      display: inline-block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7px;
+      font-weight: 800;
+      width: 14px;
+      height: 14px;
+      line-height: 14px;
+      text-align: center;
+      border-radius: 3px;
+      background: var(--c-group);
+      color: #fff;
+    }
+
+    .group-team {
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .third-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 6px;
+    }
+
+    .third-panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--c-third);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .third-panel .panel-head {
+      background: var(--c-third-bg);
+      color: var(--c-third);
+    }
+
+    table.third-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table.third-table th {
+      background: #faf7ff;
+      font-size: 6.1px;
+      font-weight: 700;
+      letter-spacing: 0.25px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 2.2px 4px;
+      border-bottom: 1px solid #e8ddfb;
+      text-align: left;
+    }
+
+    table.third-table td {
+      font-size: 6.6px;
+      padding: 2.2px 4px;
+      border-bottom: 1px solid #f1ebfb;
+      vertical-align: middle;
+    }
+
+    table.third-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rank-cell {
+      width: 22px;
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 6.8px;
+      font-weight: 800;
+      color: var(--c-third);
+    }
+
+    .team-cell {
+      font-weight: 600;
+    }
+
+    .status-cell {
+      width: 58px;
+      text-align: right;
+    }
+
+    .status-pill {
+      display: inline-block;
+      min-width: 44px;
+      text-align: center;
+      padding: 1.5px 5px;
+      border-radius: 999px;
+      font-size: 5.7px;
+      font-weight: 800;
+      letter-spacing: 0.35px;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+      line-height: 1.1;
+    }
+
+    .status-pill.qualified {
+      background: var(--c-qual-bg);
+      color: var(--c-qual);
+      border-color: var(--c-qual-bd);
+    }
+
+    .status-pill.out {
+      background: var(--c-out-bg);
+      color: var(--c-out);
+      border-color: var(--c-out-bd);
+    }
+
+    .ko-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 6px;
+    }
+
+    .ko-panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .ko-panel-head {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .ko-panel-head .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .kh-r32 { background: #eff4ff; color: var(--c-group); border-bottom: 1px solid #d1dcf8; }
+    .kh-r32 .dot { background: var(--c-group); }
+    .ko-panel.r32 { border-top: 2px solid var(--c-group); }
+
+    .kh-r16 { background: var(--c-third-bg); color: var(--c-third); border-bottom: 1px solid #ddd5f8; }
+    .kh-r16 .dot { background: var(--c-third); }
+    .ko-panel.r16 { border-top: 2px solid var(--c-third); }
+
+    .kh-qf { background: var(--c-ko-bg); color: var(--c-ko); border-bottom: 1px solid #b0e8e4; }
+    .kh-qf .dot { background: var(--c-ko); }
+    .ko-panel.qf { border-top: 2px solid var(--c-ko); }
+
+    .kh-sf { background: var(--c-sf-bg); color: var(--c-sf); border-bottom: 1px solid #f3d899; }
+    .kh-sf .dot { background: var(--c-sf); }
+    .ko-panel.sf { border-top: 2px solid var(--c-sf); }
+
+    .kh-fin { background: var(--c-final-bg); color: var(--c-final); border-bottom: 1px solid #f9c0cc; }
+    .kh-fin .dot { background: var(--c-final); }
+    .ko-panel.fin { border-top: 2px solid var(--c-final); }
+
+    table.ko {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    table.ko th {
+      font-size: 6.4px;
+      font-weight: 700;
+      letter-spacing: 0.25px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 2.3px 3px;
+      border-bottom: 1px solid var(--border);
+      background: #fafbff;
+      text-align: left;
+    }
+
+    table.ko td {
+      font-size: 7px;
+      padding: 2.5px 3px;
+      border-bottom: 1px solid #f0f2f8;
+      vertical-align: middle;
+    }
+
+    table.ko tr:last-child td { border-bottom: none; }
+
+    .ko-match {
+      width: 20px;
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .ko-home {
+      width: 38%;
+    }
+
+    .ko-score {
+      width: 20px;
+      text-align: center !important;
+      font-weight: 700;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1, "lnum" 1;
+    }
+
+    .ko-away {
+      width: 34%;
+    }
+
+    .ko-winner {
+      width: 28%;
+      font-weight: 700;
+      font-size: 6.8px;
+    }
+
+    .champion-row {
+      background: var(--c-champ);
+      border-radius: var(--radius-lg);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .champion-row::before {
+      content: '🏆';
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 28px;
+      opacity: 0.12;
+    }
+
+    .champ-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 2px;
+    }
+
+    .champ-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+      letter-spacing: -0.3px;
+    }
+
+    .champ-right {
+      text-align: right;
+    }
+
+    .champ-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      font-size: 6.5px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border-radius: 999px;
+    }
+
+    .footer {
+      background: var(--ink-soft);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left {
+      font-size: 6.2px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.3px;
+    }
+
+    .footer-right {
+      font-size: 6.2px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ══════════════════════════════════════════════
+       PAGE 2 — SCORING
+    ══════════════════════════════════════════════ */
+
+    .scoring-page {
+      page-break-before: always;
+      background: #fff;
+    }
+
+    .scoring-hero {
+      background: var(--c-hero);
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scoring-hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 2px;
+    }
+
+    .scoring-hero-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -0.2px;
+    }
+
+    .scoring-hero-right {
+      text-align: right;
+      font-size: 6.5px;
+      line-height: 1.35;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .scoring-hero-right strong {
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .scoring-hero-rainbow {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg,
+        #1a56db 0%, #0ea5e9 20%, #7c3aed 40%,
+        #be123c 60%, #f59e0b 80%, #14532d 100%
+      );
+    }
+
+    .scoring-body {
+      padding: 8px;
+      background: var(--off-white);
+    }
+
+    .scoring-intro {
+      font-size: 7.8px;
+      line-height: 1.4;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 7px;
+      padding: 0 10px;
+    }
+
+    .scoring-grid-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .scoring-grid-row.full {
+      grid-template-columns: 1fr;
+    }
+
+    .score-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .score-card-head {
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #fff;
+    }
+
+    .score-card-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      width: 16px;
+      height: 16px;
+      line-height: 15px;
+      text-align: center;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .score-card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .score-card-body {
+      padding: 8px 10px 10px 10px;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding: 3px 0;
+    }
+
+    .score-row + .score-row {
+      border-top: 1px dashed #eef0f6;
+    }
+
+    .score-row-pill {
+      flex-shrink: 0;
+      min-width: 34px;
+      text-align: center;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      line-height: 1.1;
+    }
+
+    .score-row-text {
+      font-size: 8px;
+      line-height: 1.4;
+      color: var(--ink-soft);
+      padding-top: 1px;
+    }
+
+    .score-row-note {
+      font-size: 7.6px;
+      line-height: 1.4;
+      color: var(--muted);
+      padding: 3px 0;
+      font-style: italic;
+    }
+
+    .score-row-spacer {
+      height: 4px;
+    }
+
+    .score-row-plain {
+      font-size: 8px;
+      line-height: 1.4;
+      color: var(--ink-soft);
+      padding: 3px 0;
+    }
+
+    .score-row-plain + .score-row { border-top: 1px dashed #eef0f6; }
+
+    /* Per-card pill colours — pill matches card colour */
+    .card-group .score-row-pill { background: var(--c-group-bg); color: var(--c-group); }
+    .card-prog  .score-row-pill { background: var(--c-third-bg); color: var(--c-third); }
+    .card-ko    .score-row-pill { background: var(--c-ko-bg); color: var(--c-ko); }
+    .card-rules .score-row-pill { background: var(--c-sf-bg); color: var(--c-sf); }
+    .card-tie   .score-row-pill { background: var(--c-final-bg); color: var(--c-final); }
+
+    .score-card.card-group { border-top: 2px solid var(--c-group); }
+    .score-card.card-prog  { border-top: 2px solid var(--c-third); }
+    .score-card.card-ko    { border-top: 2px solid var(--c-ko); }
+    .score-card.card-rules { border-top: 2px solid var(--c-sf); }
+    .score-card.card-tie   { border-top: 2px solid var(--c-final); }
+
+    .score-card.card-group .score-card-head { background: var(--c-group); }
+    .score-card.card-prog  .score-card-head { background: var(--c-third); }
+    .score-card.card-ko    .score-card-head { background: var(--c-ko); }
+    .score-card.card-rules .score-card-head { background: var(--c-sf); }
+    .score-card.card-tie   .score-card-head { background: var(--c-final); }
+
+    .scoring-footer {
+      background: var(--ink-soft);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .scoring-footer-left {
+      font-size: 6.2px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.3px;
+    }
+
+    .scoring-footer-right {
+      font-size: 6.2px;
+      color: rgba(255,255,255,0.35);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 1 — ENTRY SUMMARY
+══════════════════════════════════════════════════ -->
+
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Official Entry Confirmation</div>
+    <div class="hero-title"><?= data.competitionName ?></div>
+    <div class="hero-sub">Group picks · Third-place ranking outcome · Knockout predictions · Champion</div>
+  </div>
+  <? if (data.logoImageUrl) { ?>
+    <img class="hero-logo" src="<?= data.logoImageUrl ?>" />
+  <? } ?>
+  <div class="hero-rainbow"></div>
+</div>
+
+<div class="meta-strip">
+  <div class="meta-cell">
+    <div class="meta-label">Entrant</div>
+    <div class="meta-value"><?= data.fullName ?></div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-label">Entry ID</div>
+    <div class="meta-value"><?= data.entryId ?></div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-label">Email</div>
+    <div class="meta-value" style="font-size:8px"><?= data.email ?></div>
+  </div>
+  <div class="meta-cell">
+    <div class="meta-label">Submitted</div>
+    <div class="meta-value"><?= data.timestamp ?></div>
+  </div>
+</div>
+
+<div class="body">
+
+  <div class="sec-header">
+    <div class="sec-pip" style="background:var(--c-group)"></div>
+    <div class="sec-title" style="color:var(--c-group)">Group Stage Picks</div>
+    <div class="sec-rule"></div>
+  </div>
+
+  <div class="groups-grid">
+    <div class="groups-panel">
+      <div class="panel-head">Groups A — F</div>
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:20px">Grp</th>
+            <th>1st Place</th>
+            <th>2nd Place</th>
+            <th>3rd Place</th>
+          </tr>
+        </thead>
+        <tbody>
+          <? data.groups.slice(0, 6).forEach(function(group) { ?>
+          <tr>
+            <td><span class="g-badge"><?= group.group ?></span></td>
+            <td class="group-team"><?= group.first ?></td>
+            <td class="group-team"><?= group.second ?></td>
+            <td class="group-team"><?= group.third ?></td>
+          </tr>
+          <? }); ?>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="groups-panel">
+      <div class="panel-head">Groups G — L</div>
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:20px">Grp</th>
+            <th>1st Place</th>
+            <th>2nd Place</th>
+            <th>3rd Place</th>
+          </tr>
+        </thead>
+        <tbody>
+          <? data.groups.slice(6, 12).forEach(function(group) { ?>
+          <tr>
+            <td><span class="g-badge"><?= group.group ?></span></td>
+            <td class="group-team"><?= group.first ?></td>
+            <td class="group-team"><?= group.second ?></td>
+            <td class="group-team"><?= group.third ?></td>
+          </tr>
+          <? }); ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-header">
+    <div class="sec-pip" style="background:var(--c-third)"></div>
+    <div class="sec-title" style="color:var(--c-third)">Third-Place Ranking Outcome</div>
+    <div class="sec-rule"></div>
+  </div>
+
+  <?
+    var qualifiedLookup = {};
+    data.thirdQualifiers.forEach(function(team) {
+      qualifiedLookup[team] = true;
+    });
+
+    var thirdChunks = [
+      data.thirdRank.slice(0, 4),
+      data.thirdRank.slice(4, 8),
+      data.thirdRank.slice(8, 12)
+    ];
+  ?>
+
+  <div class="third-grid">
+    <? thirdChunks.forEach(function(chunk, chunkIndex) { ?>
+      <div class="third-panel">
+        <div class="panel-head">Ranks <?= (chunkIndex * 4) + 1 ?> — <?= (chunkIndex * 4) + chunk.length ?></div>
+        <table class="third-table">
+          <thead>
+            <tr>
+              <th style="width:24px;">Rk</th>
+              <th>Team</th>
+              <th style="width:60px; text-align:right;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <? chunk.forEach(function(team, idx) { ?>
+              <? var rank = (chunkIndex * 4) + idx + 1; ?>
+              <? var isQualified = !!qualifiedLookup[team]; ?>
+              <tr>
+                <td class="rank-cell"><?= rank ?></td>
+                <td class="team-cell"><?= team ?></td>
+                <td class="status-cell">
+                  <? if (isQualified) { ?>
+                    <span class="status-pill qualified">Qualified</span>
+                  <? } else { ?>
+                    <span class="status-pill out">Out</span>
+                  <? } ?>
+                </td>
+              </tr>
+            <? }); ?>
+          </tbody>
+        </table>
+      </div>
+    <? }); ?>
+  </div>
+
+  <div class="sec-header">
+    <div class="sec-pip" style="background:var(--c-ko)"></div>
+    <div class="sec-title" style="color:var(--c-ko)">Knockout Stage</div>
+    <div class="sec-rule"></div>
+  </div>
+
+  <div class="ko-wrap">
+    <div>
+      <div class="ko-panel r32" style="margin-bottom:5px">
+        <div class="ko-panel-head kh-r32">
+          <div class="dot"></div>Round of 32
+        </div>
+        <table class="ko">
+          <thead>
+            <tr>
+              <th class="ko-match">M</th>
+              <th class="ko-home">Home</th>
+              <th class="ko-score">TM1</th>
+              <th class="ko-score">TM2</th>
+              <th class="ko-away">Away</th>
+              <th class="ko-winner">Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <? data.roundOf32.forEach(function(match) { ?>
+            <tr>
+              <td class="ko-match"><?= match.matchNo ?></td>
+              <td class="ko-home"><?= match.home ?></td>
+              <td class="ko-score"><?= match.homeScore ?></td>
+              <td class="ko-score"><?= match.awayScore ?></td>
+              <td class="ko-away"><?= match.away ?></td>
+              <td class="ko-winner"><?= match.winner ?></td>
+            </tr>
+            <? }); ?>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ko-panel r16">
+        <div class="ko-panel-head kh-r16">
+          <div class="dot"></div>Round of 16
+        </div>
+        <table class="ko">
+          <thead>
+            <tr>
+              <th class="ko-match">M</th>
+              <th class="ko-home">Home</th>
+              <th class="ko-score">TM1</th>
+              <th class="ko-score">TM2</th>
+              <th class="ko-away">Away</th>
+              <th class="ko-winner">Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <? data.roundOf16.forEach(function(match) { ?>
+            <tr>
+              <td class="ko-match"><?= match.matchNo ?></td>
+              <td class="ko-home"><?= match.home ?></td>
+              <td class="ko-score"><?= match.homeScore ?></td>
+              <td class="ko-score"><?= match.awayScore ?></td>
+              <td class="ko-away"><?= match.away ?></td>
+              <td class="ko-winner"><?= match.winner ?></td>
+            </tr>
+            <? }); ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="ko-panel qf" style="margin-bottom:5px">
+        <div class="ko-panel-head kh-qf">
+          <div class="dot"></div>Quarter-finals
+        </div>
+        <table class="ko">
+          <thead>
+            <tr>
+              <th class="ko-match">M</th>
+              <th class="ko-home">Home</th>
+              <th class="ko-score">TM1</th>
+              <th class="ko-score">TM2</th>
+              <th class="ko-away">Away</th>
+              <th class="ko-winner">Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <? data.quarterFinals.forEach(function(match) { ?>
+            <tr>
+              <td class="ko-match"><?= match.matchNo ?></td>
+              <td class="ko-home"><?= match.home ?></td>
+              <td class="ko-score"><?= match.homeScore ?></td>
+              <td class="ko-score"><?= match.awayScore ?></td>
+              <td class="ko-away"><?= match.away ?></td>
+              <td class="ko-winner"><?= match.winner ?></td>
+            </tr>
+            <? }); ?>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ko-panel sf" style="margin-bottom:5px">
+        <div class="ko-panel-head kh-sf">
+          <div class="dot"></div>Semi-finals
+        </div>
+        <table class="ko">
+          <thead>
+            <tr>
+              <th class="ko-match">M</th>
+              <th class="ko-home">Home</th>
+              <th class="ko-score">TM1</th>
+              <th class="ko-score">TM2</th>
+              <th class="ko-away">Away</th>
+              <th class="ko-winner">Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <? data.semiFinals.forEach(function(match) { ?>
+            <tr>
+              <td class="ko-match"><?= match.matchNo ?></td>
+              <td class="ko-home"><?= match.home ?></td>
+              <td class="ko-score"><?= match.homeScore ?></td>
+              <td class="ko-score"><?= match.awayScore ?></td>
+              <td class="ko-away"><?= match.away ?></td>
+              <td class="ko-winner"><?= match.winner ?></td>
+            </tr>
+            <? }); ?>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ko-panel fin" style="margin-bottom:5px">
+        <div class="ko-panel-head kh-fin">
+          <div class="dot"></div>The Final
+        </div>
+        <table class="ko">
+          <thead>
+            <tr>
+              <th class="ko-match">M</th>
+              <th class="ko-home">Home</th>
+              <th class="ko-score">TM1</th>
+              <th class="ko-score">TM2</th>
+              <th class="ko-away">Away</th>
+              <th class="ko-winner">Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <? data.final.forEach(function(match) { ?>
+            <tr>
+              <td class="ko-match"><?= match.matchNo ?></td>
+              <td class="ko-home"><?= match.home ?></td>
+              <td class="ko-score"><?= match.homeScore ?></td>
+              <td class="ko-score"><?= match.awayScore ?></td>
+              <td class="ko-away"><?= match.away ?></td>
+              <td class="ko-winner"><?= match.winner ?></td>
+            </tr>
+            <? }); ?>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="champion-row">
+        <div>
+          <div class="champ-label">🏆 Predicted World Champion</div>
+          <div class="champ-value"><?= data.predictedChampion ?></div>
+        </div>
+        <div class="champ-right">
+          <span class="champ-tag">Winner Pick</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-left"><?= data.competitionName ?> · Official Entry Record · Keep this for your reference</div>
+  <div class="footer-right">Entry ID: <?= data.entryId ?> · <?= data.timestamp ?></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 2 — SCORING SUMMARY
+══════════════════════════════════════════════════ -->
+
+<? if (data.scoringSystem) { ?>
+
+  <?
+    // Parse each scoring line into either:
+    //   { type: 'row', pill: '4 pts', text: 'Correct team in correct position' }
+    //   { type: 'plain', text: 'Points are cumulative...' }
+    //   { type: 'spacer' }
+    // Pattern matched: "- 4 pts – <text>" or "- 1 pt – <text>"
+    // Also matches "1. <text>" (numbered list) → pill = "1", text = "<text>"
+    function parseScoringLine(line) {
+      if (line === null || line === undefined) return { type: 'spacer' };
+      var s = String(line).trim();
+      if (s === '') return { type: 'spacer' };
+
+      // Dash-prefixed: "- 4 pts – text" or "- 4 pts - text"
+      var dashMatch = s.match(/^-\s*(\d+\s*pts?)\s*[\u2013\u2014\-]\s*(.+)$/i);
+      if (dashMatch) {
+        return { type: 'row', pill: dashMatch[1].replace(/\s+/g, ' '), text: dashMatch[2] };
+      }
+
+      // Plain "<n> pts – text" (no leading dash)
+      var ptsMatch = s.match(/^(\d+\s*pts?)\s*[\u2013\u2014\-]\s*(.+)$/i);
+      if (ptsMatch) {
+        return { type: 'row', pill: ptsMatch[1].replace(/\s+/g, ' '), text: ptsMatch[2] };
+      }
+
+      // Numbered list: "1. Total points"
+      var numMatch = s.match(/^(\d+)\.\s*(.+)$/);
+      if (numMatch) {
+        return { type: 'row', pill: '#' + numMatch[1], text: numMatch[2] };
+      }
+
+      // Bullet with dash but no pts: "- Correct winner" or "- Max per match – 10 pts"
+      var bulletMatch = s.match(/^-\s*(.+)$/);
+      if (bulletMatch) {
+        var inner = bulletMatch[1];
+        // Special case: "Max per match – 10 pts" → pull pts to the right
+        var trailingPts = inner.match(/^(.+?)\s*[\u2013\u2014\-]\s*(\d+\s*pts?)$/i);
+        if (trailingPts) {
+          return { type: 'row', pill: trailingPts[2].replace(/\s+/g, ' '), text: trailingPts[1] };
+        }
+        return { type: 'plain', text: inner };
+      }
+
+      // Heading-style line like "Points are cumulative (stack as teams progress):" or "Per match:"
+      return { type: 'plain', text: s };
+    }
+
+    function renderScoringLines(lines) {
+      return (lines || []).map(parseScoringLine);
+    }
+
+    var groupStageParsed     = renderScoringLines(data.scoringSystem.groupStage);
+    var teamProgParsed       = renderScoringLines(data.scoringSystem.teamProgression);
+    var knockoutScoresParsed = renderScoringLines(data.scoringSystem.knockoutScores);
+    var importantRulesParsed = renderScoringLines(data.scoringSystem.importantRules);
+    var tiebreakersParsed    = renderScoringLines(data.scoringSystem.tiebreakers);
+  ?>
+
+  <div class="scoring-page">
+
+    <div class="scoring-hero">
+      <div>
+        <div class="scoring-hero-eyebrow">How scoring works</div>
+        <div class="scoring-hero-title">Scoring Summary</div>
+      </div>
+      <div class="scoring-hero-right">
+        Entry: <strong><?= data.entryId ?></strong><br>
+        <?= data.fullName ?>
+      </div>
+      <div class="scoring-hero-rainbow"></div>
+    </div>
+
+    <div class="scoring-body">
+
+      <div class="scoring-intro">
+        Points are awarded across group-stage picks, team progression, and individual knockout match predictions. Use this reference to see how your entry will be scored.
+      </div>
+
+      <!-- Row 1: Group Stage + Team Progression -->
+      <div class="scoring-grid-row">
+
+        <div class="score-card card-group">
+          <div class="score-card-head">
+            <div class="score-card-num">1</div>
+            <div class="score-card-title">Group Stage</div>
+          </div>
+          <div class="score-card-body">
+            <? groupStageParsed.forEach(function(item) { ?>
+              <? if (item.type === 'row') { ?>
+                <div class="score-row">
+                  <span class="score-row-pill"><?= item.pill ?></span>
+                  <span class="score-row-text"><?= item.text ?></span>
+                </div>
+              <? } else if (item.type === 'plain') { ?>
+                <div class="score-row-plain"><?= item.text ?></div>
+              <? } else { ?>
+                <div class="score-row-spacer"></div>
+              <? } ?>
+            <? }); ?>
+          </div>
+        </div>
+
+        <div class="score-card card-prog">
+          <div class="score-card-head">
+            <div class="score-card-num">2</div>
+            <div class="score-card-title">Team Progression</div>
+          </div>
+          <div class="score-card-body">
+            <? teamProgParsed.forEach(function(item) { ?>
+              <? if (item.type === 'row') { ?>
+                <div class="score-row">
+                  <span class="score-row-pill"><?= item.pill ?></span>
+                  <span class="score-row-text"><?= item.text ?></span>
+                </div>
+              <? } else if (item.type === 'plain') { ?>
+                <div class="score-row-plain"><?= item.text ?></div>
+              <? } else { ?>
+                <div class="score-row-spacer"></div>
+              <? } ?>
+            <? }); ?>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Row 2: Knockout Scores + Important Rules -->
+      <div class="scoring-grid-row">
+
+        <div class="score-card card-ko">
+          <div class="score-card-head">
+            <div class="score-card-num">3</div>
+            <div class="score-card-title">Knockout Match Scores</div>
+          </div>
+          <div class="score-card-body">
+            <? knockoutScoresParsed.forEach(function(item) { ?>
+              <? if (item.type === 'row') { ?>
+                <div class="score-row">
+                  <span class="score-row-pill"><?= item.pill ?></span>
+                  <span class="score-row-text"><?= item.text ?></span>
+                </div>
+              <? } else if (item.type === 'plain') { ?>
+                <div class="score-row-plain"><?= item.text ?></div>
+              <? } else { ?>
+                <div class="score-row-spacer"></div>
+              <? } ?>
+            <? }); ?>
+          </div>
+        </div>
+
+        <div class="score-card card-rules">
+          <div class="score-card-head">
+            <div class="score-card-num">!</div>
+            <div class="score-card-title">Important Rules</div>
+          </div>
+          <div class="score-card-body">
+            <? importantRulesParsed.forEach(function(item) { ?>
+              <? if (item.type === 'row') { ?>
+                <div class="score-row">
+                  <span class="score-row-pill"><?= item.pill ?></span>
+                  <span class="score-row-text"><?= item.text ?></span>
+                </div>
+              <? } else if (item.type === 'plain') { ?>
+                <div class="score-row-plain">• <?= item.text ?></div>
+              <? } else { ?>
+                <div class="score-row-spacer"></div>
+              <? } ?>
+            <? }); ?>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Row 3: Tiebreakers full-width -->
+      <div class="scoring-grid-row full">
+        <div class="score-card card-tie">
+          <div class="score-card-head">
+            <div class="score-card-num">★</div>
+            <div class="score-card-title">Tiebreakers (applied in order)</div>
+          </div>
+          <div class="score-card-body">
+            <? tiebreakersParsed.forEach(function(item) { ?>
+              <? if (item.type === 'row') { ?>
+                <div class="score-row">
+                  <span class="score-row-pill"><?= item.pill ?></span>
+                  <span class="score-row-text"><?= item.text ?></span>
+                </div>
+              <? } else if (item.type === 'plain') { ?>
+                <div class="score-row-plain"><?= item.text ?></div>
+              <? } else { ?>
+                <div class="score-row-spacer"></div>
+              <? } ?>
+            <? }); ?>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="scoring-footer">
+      <div class="scoring-footer-left"><?= data.competitionName ?> · Scoring reference · Page 2 of 2</div>
+      <div class="scoring-footer-right">Entry ID: <?= data.entryId ?> · <?= data.timestamp ?></div>
+    </div>
+
+  </div>
+
+<? } ?>
+
+</body>
+</html>

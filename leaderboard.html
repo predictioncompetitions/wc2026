@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard — Mick's World Cup Predictor 2026</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .lb-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .lb-meta-left {
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+
+    .lb-meta strong { color: var(--ink-2); }
+
+    .lb-table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    table.lb-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    table.lb-table th {
+      background: var(--ink);
+      color: rgba(255,255,255,.7);
+      padding: 11px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      text-align: left;
+      white-space: nowrap;
+      border-bottom: 2px solid var(--pitch);
+    }
+
+    table.lb-table th.num { text-align: right; }
+
+    table.lb-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--surface-3);
+      vertical-align: middle;
+    }
+
+    table.lb-table tr:last-child td { border-bottom: none; }
+
+    table.lb-table tr:hover td { background: var(--surface-2); }
+
+    /* Top 3 row highlights */
+    table.lb-table tr.rank-1 td { background: #fffbeb; }
+    table.lb-table tr.rank-2 td { background: #f8fafc; }
+    table.lb-table tr.rank-3 td { background: #fff8f0; }
+    table.lb-table tr.rank-1:hover td { background: #fef3c7; }
+    table.lb-table tr.rank-2:hover td { background: #f1f5f9; }
+    table.lb-table tr.rank-3:hover td { background: #ffedd5; }
+
+    .rank-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .rb-1 { background: #fef3c7; color: #92400e; }
+    .rb-2 { background: #f1f5f9; color: #475569; }
+    .rb-3 { background: #ffedd5; color: #9a3412; }
+    .rb-n { background: var(--surface-2); color: var(--ink-3); font-size: 12px; }
+
+    .lb-name {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .lb-champion {
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-top: 1px;
+    }
+
+    .lb-score {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--pitch);
+      text-align: right;
+    }
+
+    .lb-sub-score {
+      text-align: right;
+      font-size: 12px;
+      color: var(--ink-3);
+    }
+
+    .lb-view-btn {
+      font-size: 12px;
+      color: var(--pitch);
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .lb-view-btn:hover { text-decoration: underline; }
+
+    .podium {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .podium-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .podium-card.p-1 { border-top: 3px solid var(--gold); }
+    .podium-card.p-2 { border-top: 3px solid #94a3b8; }
+    .podium-card.p-3 { border-top: 3px solid #cd7c4a; }
+
+    .podium-rank {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .podium-name {
+      font-family: var(--font-head);
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .podium-score {
+      font-family: var(--font-head);
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--pitch);
+    }
+
+    .podium-label {
+      font-size: 11px;
+      color: var(--ink-3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+
+    @media (max-width: 600px) {
+      .podium { grid-template-columns: 1fr; }
+      table.lb-table td, table.lb-table th { padding: 9px 10px; }
+      .lb-sub-score, .lb-champion { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <span class="nav-brand-icon">⚽</span>
+    <span class="nav-brand-text">Mick's <span>WC26</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="enter.html"><span class="nav-icon">✏️</span> Enter</a></li>
+    <li><a href="rules.html"><span class="nav-icon">📋</span> Rules</a></li>
+    <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
+    <li><a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a></li>
+    <li><a href="leaderboard.html" class="active"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</nav>
+
+<nav class="nav-mobile" id="navMobile">
+  <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+  <a href="enter.html"><span class="nav-icon">✏️</span> Enter the Competition</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules & Scoring</a>
+  <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
+  <a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a>
+  <a href="leaderboard.html" class="active"><span class="nav-icon">🏆</span> Leaderboard</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-hero-eyebrow">Live standings</div>
+    <h1>Leader<span>board</span></h1>
+    <p class="page-hero-sub">Updated after every matchday. Click any name to view their full entry and scores.</p>
+  </div>
+  <div class="page-hero-rainbow"></div>
+</div>
+
+<div class="main" id="lbMain">
+  <div class="loading-state" style="text-align:center;padding:40px;">
+    <span style="font-size:24px;display:block;margin-bottom:10px;">⚽</span>
+    Loading leaderboard…
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-logo">Mick's <span>World Cup Predictor</span> 2026</div>
+    <p>A friendly competition between friends. 100% of entry fees go to the prize pool.</p>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+<script>
+async function loadLeaderboard() {
+  const main = document.getElementById('lbMain');
+  try {
+    const data = await apiFetch('getLeaderboard');
+
+    // Pre-tournament — scoring not started yet
+    if (!data || !data.ok || !data.hasScores) {
+      main.innerHTML = `
+        <div class="card">
+          <div class="card-body">
+            <div class="coming-soon">
+              <div class="coming-soon-icon">🏆</div>
+              <h2>Leaderboard not available yet</h2>
+              <p>Scoring starts when the tournament kicks off. Check back after the first matches are played.</p>
+              <div class="coming-soon-date">⚽ Tournament starts 11 June 2026</div>
+            </div>
+          </div>
+        </div>
+        ${data && data.entryCount ? `
+        <div class="card">
+          <div class="card-head"><span class="card-head-icon">📋</span><div><h2>${data.entryCount} entries received</h2><p>All entries are locked in and ready to go.</p></div></div>
+        </div>` : ''}
+      `;
+      return;
+    }
+
+    const entries = data.entries || [];
+    if (!entries.length) {
+      main.innerHTML = '<div class="status-msg status-warn">No entries found.</div>';
+      return;
+    }
+
+    const top3 = entries.slice(0, 3);
+    const medals = ['🥇','🥈','🥉'];
+    const podiumCards = ['p-1','p-2','p-3'];
+
+    let html = '';
+
+    // Podium for top 3
+    if (top3.length >= 2) {
+      html += '<div class="podium">';
+      top3.forEach((e, i) => {
+        html += `
+          <div class="podium-card ${podiumCards[i]}">
+            <div class="podium-rank">${medals[i]}</div>
+            <div class="podium-name">${esc(e.displayName || e.fullName)}</div>
+            <div class="podium-label">Total points</div>
+            <div class="podium-score">${e.totalScore}</div>
+          </div>`;
+      });
+      html += '</div>';
+    }
+
+    // Full table
+    html += `
+      <div class="lb-meta">
+        <div class="lb-meta-left">
+          <strong>${entries.length}</strong> entries · Last updated: ${esc(data.lastUpdated || 'recently')}
+        </div>
+        <a href="lookup.html" class="btn btn-outline" style="min-height:36px;font-size:13px;">🔍 Look up my scores</a>
+      </div>
+      <div class="lb-table-wrap">
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th style="width:48px;">Rank</th>
+              <th>Entrant</th>
+              <th class="num">Total</th>
+              <th class="num">Group</th>
+              <th class="num">Prog.</th>
+              <th class="num">KO scores</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    entries.forEach((e, i) => {
+      const rank = i + 1;
+      const rankClass = rank <= 3 ? `rank-${rank}` : '';
+      const rbClass = rank === 1 ? 'rb-1' : rank === 2 ? 'rb-2' : rank === 3 ? 'rb-3' : 'rb-n';
+
+      html += `
+        <tr class="${rankClass}">
+          <td><div class="rank-badge ${rbClass}">${rank}</div></td>
+          <td>
+            <div class="lb-name">${esc(e.displayName || e.fullName)}</div>
+            <div class="lb-champion">🏆 ${esc(e.predictedChampion || '—')}</div>
+          </td>
+          <td class="lb-score">${e.totalScore}</td>
+          <td class="lb-sub-score">${e.groupScore ?? '—'}</td>
+          <td class="lb-sub-score">${e.progressionScore ?? '—'}</td>
+          <td class="lb-sub-score">${e.knockoutScore ?? '—'}</td>
+          <td><a class="lb-view-btn" href="lookup.html?name=${encodeURIComponent(e.displayName || e.fullName)}">View →</a></td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    main.innerHTML = html;
+
+  } catch(e) {
+    document.getElementById('lbMain').innerHTML =
+      '<div class="status-msg status-error">Could not load leaderboard. Please try again shortly.</div>';
+  }
+}
+
+loadLeaderboard();
+
+// If name is pre-filled in URL (coming from leaderboard view link), auto-trigger lookup
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get('name');
+  if (name) {
+    // Redirect to lookup page with name pre-selected
+    window.location.href = `lookup.html?name=${encodeURIComponent(name)}`;
+  }
+});
+</script>
+</body>
+</html>
