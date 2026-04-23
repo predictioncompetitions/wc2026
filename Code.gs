@@ -1511,3 +1511,231 @@ function testEntriesRawHeaders() {
   Logger.log('Headers: ' + JSON.stringify(headers));
   Logger.log('Normalised: ' + JSON.stringify(headers.map(h => normalizeHeader_(h))));
 }
+/* =========================================================
+   PUBLIC WEBSITE API
+========================================================= */
+
+function doGet(e) {
+  const action = e && e.parameter && e.parameter.action
+    ? e.parameter.action : '';
+
+  if (action === 'getStats')        return jsonResponse(getPublicStats_());
+  if (action === 'getLeaderboard')  return jsonResponse(getPublicLeaderboard_());
+  if (action === 'getEntrantNames') return jsonResponse(getEntrantNames_());
+  if (action === 'lookupEntry') {
+    const name = e.parameter.name || e.parameter.q || '';
+    return jsonResponse(lookupPublicEntry_(String(name).trim()));
+  }
+
+  // Default — serve the entry form
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle('World Cup 2026 Prediction')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function jsonResponse(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getEntrantNames_() {
+  try {
+    const sheet = getSheet_(ENTRIES_RAW_SHEET);
+    const values = sheet.getDataRange().getValues();
+    if (values.length < 2) return { ok: true, names: [] };
+
+    const headers = values[0].map(h => String(h || '').trim());
+    const dispCol   = headers.indexOf('DISPLAY_NAME');
+    const nameCol   = headers.indexOf('FULL_NAME');
+    const statusCol = headers.indexOf('ENTRY_STATUS');
+
+    const names = [];
+    for (let i = 1; i < values.length; i++) {
+      const row = values[i];
+      if (statusCol > -1 &&
+          String(row[statusCol] || '').trim().toUpperCase() !== 'LOCKED') continue;
+      const name = String(row[dispCol > -1 ? dispCol : nameCol] || '').trim();
+      if (name) names.push(name);
+    }
+    return { ok: true, names };
+  } catch(err) {
+    return { ok: false, message: err.message };
+  }
+}
+
+function getPublicStats_() {
+  try {
+    const sheet = getSheet_(ENTRIES_RAW_SHEET);
+    const values = sheet.getDataRange().getValues();
+    if (values.length < 2) {
+      return { ok: true, entryCount: 0, uniqueChampions: 0,
+               championPicks: [], groupWinnerPicks: [],
+               thirdQualifierPicks: [], finalistPicks: [] };
+    }
+
+    const headers = values[0].map(h => String(h || '').trim());
+    const col = name => headers.indexOf(name);
+    const groups = getGroupTeams_();
+    const groupLetters = Object.keys(groups).sort();
+
+    const champCounts = {}, groupWinnerCounts = {},
+          thirdQCounts = {}, finalistCounts = {};
+    let entryCount = 0;
+
+    for (let i = 1; i < values.length; i++) {
+      const row = values[i];
+      if (String(row[col('ENTRY_STATUS')] || '').trim().toUpperCase() !== 'LOCKED') continue;
+      entryCount++;
+
+      const champ = String(row[col('PREDICTED_CHAMPION')] || '').trim();
+      if (champ) champCounts[champ] = (champCounts[champ] || 0) + 1;
+
+      groupLetters.forEach(g => {
+        const c = col(`${g}_1ST`);
+        if (c > -1) {
+          const team = String(row[c] || '').trim();
+          if (team) groupWinnerCounts[team] = (groupWinnerCounts[team] || 0) + 1;
+        }
+      });
+
+      for (let q = 1; q <= 8; q++) {
+        const c = col(`THIRD_Q${q}`);
+        if (c > -1) {
+          const team = String(row[c] || '').trim();
+          if (team) thirdQCounts[team] = (thirdQCounts[team] || 0) + 1;
+        }
+      }
+
+      ['SF_1_WINNER','SF_2_WINNER'].forEach(f => {
+        const c = col(f);
+        if (c > -1) {
+          const team = String(row[c] || '').trim();
+          if (team) finalistCounts[team] = (finalistCounts[team] || 0) + 1;
+        }
+      });
+    }
+
+    const sorted = obj => Object.entries(obj)
+      .sort((a, b) => b[1] - a[1])
+      .map(([team, count]) => [team, count]);
+
+    return {
+      ok: true,
+      entryCount,
+      uniqueChampions:     Object.keys(champCounts).length,
+      championPicks:       sorted(champCounts),
+      groupWinnerPicks:    sorted(groupWinnerCounts),
+      thirdQualifierPicks: sorted(thirdQCounts),
+      finalistPicks:       sorted(finalistCounts)
+    };
+  } catch(err) {
+    return { ok: false, message: err.message };
+  }
+}
+
+function getPublicLeaderboard_() {
+  try {
+    const sheet = getSheet_(ENTRIES_RAW_SHEET);
+    const values = sheet.getDataRange().getValues();
+    if (values.length < 2) {
+      return { ok: true, hasScores: false, entryCount: 0, entries: [] };
+    }
+
+    const headers = values[0].map(h => String(h || '').trim());
+    const col = name => headers.indexOf(name);
+
+    const entries = [];
+    for (let i = 1; i < values.length; i++) {
+      const row = values[i];
+      if (String(row[col('ENTRY_STATUS')] || '').trim().toUpperCase() !== 'LOCKED') continue;
+      const totalPoints = Number(row[col('TOTAL_POINTS')] || 0);
+      entries.push({
+        displayName:      String(row[col('DISPLAY_NAME')] || row[col('FULL_NAME')] || '').trim(),
+        entryId:          String(row[col('ENTRY_ID')] || '').trim(),
+        predictedChampion:String(row[col('PREDICTED_CHAMPION')] || '').trim(),
+        totalScore:       totalPoints,
+        groupScore:       Number(row[col('GROUP_POINTS')] || 0) || null,
+        progressionScore: Number(row[col('PROGRESSION_POINTS')] || 0) || null,
+        knockoutScore:    Number(row[col('KNOCKOUT_POINTS')] || 0) || null
+      });
+    }
+
+    const hasScores = entries.some(e => e.totalScore > 0);
+    entries.sort((a, b) => b.totalScore - a.totalScore);
+
+    const updatedAt = Utilities.formatDate(
+      new Date(), Session.getScriptTimeZone(), 'dd MMM yyyy, HH:mm');
+
+    return { ok: true, hasScores, entryCount: entries.length,
+             entries, lastUpdated: updatedAt };
+  } catch(err) {
+    return { ok: false, message: err.message };
+  }
+}
+
+function lookupPublicEntry_(name) {
+  try {
+    if (!name) return { ok: false, message: 'No name provided.' };
+
+    const sheet = getSheet_(ENTRIES_RAW_SHEET);
+    const values = sheet.getDataRange().getValues();
+    if (values.length < 2) return { ok: false, message: 'No entries found.' };
+
+    const headers = values[0].map(h => String(h || '').trim());
+    const col = n => headers.indexOf(n);
+
+    const rowIndex = values.findIndex((row, i) => {
+      if (i === 0) return false;
+      const dispName = String(row[col('DISPLAY_NAME')] || row[col('FULL_NAME')] || '').trim();
+      return dispName.toLowerCase() === name.toLowerCase();
+    });
+
+    if (rowIndex === -1) return { ok: false, message: 'Entry not found.' };
+
+    const row = values[rowIndex];
+    const groups = getGroupTeams_();
+    const groupLetters = Object.keys(groups).sort();
+
+    const groupData = groupLetters.map(g => ({
+      group:  g,
+      first:  String(row[col(`${g}_1ST`)] || ''),
+      second: String(row[col(`${g}_2ND`)] || ''),
+      third:  String(row[col(`${g}_3RD`)] || '')
+    }));
+
+    const buildRound = (prefix, matchNos) => matchNos.map((matchNo, idx) => {
+      const s = idx + 1;
+      return {
+        matchNo,
+        home:      String(row[col(`${prefix}_${s}_HOME`)]       || ''),
+        away:      String(row[col(`${prefix}_${s}_AWAY`)]       || ''),
+        homeScore: row[col(`${prefix}_${s}_HOME_SCORE`)] !== undefined
+                   ? row[col(`${prefix}_${s}_HOME_SCORE`)] : '',
+        awayScore: row[col(`${prefix}_${s}_AWAY_SCORE`)] !== undefined
+                   ? row[col(`${prefix}_${s}_AWAY_SCORE`)] : '',
+        winner:    String(row[col(`${prefix}_${s}_WINNER`)]     || ''),
+        pts:       Number(row[col(`${prefix}_${s}_PTS`)]        || 0) || null
+      };
+    });
+
+    return {
+      ok: true,
+      entry: {
+        fullName:         String(row[col('FULL_NAME')]          || ''),
+        displayName:      String(row[col('DISPLAY_NAME')]       || ''),
+        entryId:          String(row[col('ENTRY_ID')]           || ''),
+        predictedChampion:String(row[col('PREDICTED_CHAMPION')] || ''),
+        totalScore:       Number(row[col('TOTAL_POINTS')]       || 0) || null,
+        groups:           groupData,
+        roundOf32:        buildRound('R32', ROUND_OF32_MATCH_ORDER),
+        roundOf16:        buildRound('R16', ROUND_OF16_MATCH_ORDER),
+        quarterFinals:    buildRound('QF',  QUARTER_FINAL_MATCH_ORDER),
+        semiFinals:       buildRound('SF',  SEMI_FINAL_MATCH_ORDER),
+        final:            buildRound('FINAL', [FINAL_MATCH_NO])
+      }
+    };
+  } catch(err) {
+    return { ok: false, message: err.message };
+  }
+}
