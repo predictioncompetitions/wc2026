@@ -1,8 +1,7 @@
-// ── CONFIG ────────────────────────────────────────────
-// Replace this with your Apps Script Web App URL after deploying
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzThbgrqjQytw8ak4PY3GcnxhFJdnF1CcossbeB4NaXbKKIPfryU1oOm5Y6r9HSw/exec';
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzThbgrqjQytw8ak4PY3GcnxhF-JdnF1CcossbeB4_NaXbKKIPfryU1oOm5Y6r9HSw/exec';
 
-// ── NAV ───────────────────────────────────────────────
+// ── NAV ───────────────────────────────────────────────────────────────────────
 function initNav() {
   const toggle = document.getElementById('navToggle');
   const mobile = document.getElementById('navMobile');
@@ -13,7 +12,6 @@ function initNav() {
     toggle.textContent = mobile.classList.contains('open') ? '✕' : '☰';
   });
 
-  // Close mobile nav when a link is clicked
   mobile.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
       mobile.classList.remove('open');
@@ -21,7 +19,7 @@ function initNav() {
     });
   });
 
-  // Mark current page as active
+  // Mark current page as active in nav
   const path = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a, .nav-mobile a').forEach(a => {
     const href = a.getAttribute('href');
@@ -31,7 +29,7 @@ function initNav() {
   });
 }
 
-// ── API ───────────────────────────────────────────────
+// ── API ───────────────────────────────────────────────────────────────────────
 async function apiFetch(action, params = {}) {
   const url = new URL(SCRIPT_URL);
   url.searchParams.set('action', action);
@@ -42,7 +40,7 @@ async function apiFetch(action, params = {}) {
   return res.json();
 }
 
-// ── FORMAT HELPERS ────────────────────────────────────
+// ── FORMAT HELPERS ────────────────────────────────────────────────────────────
 function esc(str) {
   return String(str || '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -54,5 +52,5 @@ function pct(n, total) {
   return Math.round((n / total) * 100) + '%';
 }
 
-// ── INIT ──────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', initNav);
