@@ -1122,7 +1122,7 @@
     if(!validateDetails()||!validateGroups()||!validateThirdRank()){showBracketStatus('Please fix the errors above first.','error');return;}
     $('generateBracketBtn').disabled=true; showBracketStatus('Generating your knockout fixtures…','info');
     try {
-      const res = await apiPost('generateKnockoutBracket', buildPayload());
+      const res = await apiGet('generateKnockoutBracket', { payload: JSON.stringify(buildPayload()) });
       $('generateBracketBtn').disabled=false;
       if(!res||!res.ok){showBracketStatus(res&&res.message?res.message:'Failed to generate fixtures.','error');return;}
       renderGeneratedBracket(res.bracket); showBracketStatus('Knockout fixtures generated successfully.','success'); scheduleDraftSave();
