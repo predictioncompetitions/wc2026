@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mick's World Cup Predictor 2026</title>
+  <title>Enter — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1193,11 +1193,11 @@
         </div>
         <div class="match-row-mobile">
           <div class="mobile-team-score-row">
-            <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S1" value="${match.score1}" aria-label="${esc(match.team1)} score">
+            <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S1M" value="${match.score1}" aria-label="${esc(match.team1)} score">
             <span class="mobile-team-name" id="${rk}_${i}_TEAM1">${esc(match.team1)}</span>
           </div>
           <div class="mobile-team-score-row" style="margin-top:4px;">
-            <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S2" value="${match.score2}" aria-label="${esc(match.team2)} score">
+            <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S2M" value="${match.score2}" aria-label="${esc(match.team2)} score">
             <span class="mobile-team-name" id="${rk}_${i}_TEAM2">${esc(match.team2)}</span>
           </div>
         </div>
@@ -1207,15 +1207,72 @@
       const infoEl=card.querySelector('.match-info-btn');
       if(infoEl){infoEl.addEventListener('click',e=>{e.stopPropagation();const isOpen=infoEl.classList.contains('tip-open');document.querySelectorAll('.match-info-btn.tip-open').forEach(el=>el.classList.remove('tip-open'));if(!isOpen){infoEl.classList.add('tip-open');const rect=infoEl.getBoundingClientRect();infoEl.classList.toggle('tip-down',rect.top<80);}});}
 
-      // Wire both desktop and mobile inputs
-      const s1el=$(`${rk}_${i}_S1`), s2el=$(`${rk}_${i}_S2`);
-      [s1el,s2el].forEach(el=>{
-        if(!el)return;
-        el.addEventListener('keydown',restrictScoreInput);
-        el.addEventListener('input',e=>{normaliseScoreInput(e.target);handleScoreInput(matches,i,rk);autoAdvanceScoreInput(e.target,rk,i);});
-        el.addEventListener('blur',()=>handleScoreBlur(matches,i,rk));
-        el.addEventListener('paste',e=>e.preventDefault());
-      });
+      // Wire desktop and mobile inputs — keep them in sync
+      const s1el  = $(`${rk}_${i}_S1`);
+      const s2el  = $(`${rk}_${i}_S2`);
+      const s1mel = $(`${rk}_${i}_S1M`);
+      const s2mel = $(`${rk}_${i}_S2M`);
+
+      function getVisible(a, b) {
+        if (a && a.offsetParent !== null) return a;
+        if (b && b.offsetParent !== null) return b;
+        return a || b;
+      }
+
+      function syncInputs(source, target) {
+        if (target && target !== source) target.value = source.value;
+      }
+
+      function wireInput(el, mirror, isS1) {
+        if (!el) return;
+        el.addEventListener('keydown', restrictScoreInput);
+        el.addEventListener('input', e => {
+          normaliseScoreInput(e.target);
+          syncInputs(e.target, mirror);
+          // Always update the canonical score from whichever input is the source
+          const s1val = (s1el && s1el.value !== '' ? s1el : s1mel) ;
+          const s2val = (s2el && s2el.value !== '' ? s2el : s2mel);
+          matches[i].score1 = s1el ? s1el.value : (s1mel ? s1mel.value : '');
+          matches[i].score2 = s2el ? s2el.value : (s2mel ? s2mel.value : '');
+          matches[i].winner = '';
+          const n1 = Number(matches[i].score1), n2 = Number(matches[i].score2);
+          if (matches[i].score1 !== '' && matches[i].score2 !== '' &&
+              Number.isInteger(n1) && Number.isInteger(n2) && n1 >= 0 && n2 >= 0 && n1 !== n2) {
+            matches[i].winner = n1 > n2 ? matches[i].team1 : matches[i].team2;
+          }
+          updateTeamColours(matches, i, rk);
+          const errEl = $(`${rk}_${i}_ERROR`); if (errEl) errEl.textContent = '';
+          updateProgression(); scheduleDraftSave();
+
+          if (!/^[0-9]$/.test(e.target.value)) return;
+          if (isS1) {
+            const next = getVisible(s2mel, s2el);
+            if (next) requestAnimationFrame(() => { next.focus(); next.select(); });
+          } else {
+            const nextS1 = getVisible($(`${rk}_${i+1}_S1M`), $(`${rk}_${i+1}_S1`));
+            if (nextS1) {
+              requestAnimationFrame(() => { nextS1.focus(); nextS1.select(); });
+            } else {
+              updateProgression();
+              setTimeout(() => {
+                const order = ['R32','R16','QF','SF','FINAL'];
+                const ci = order.indexOf(rk);
+                for (let j = ci+1; j < order.length; j++) {
+                  const nxt = getVisible($(`${order[j]}_0_S1M`), $(`${order[j]}_0_S1`));
+                  if (nxt && nxt.offsetParent !== null) { nxt.focus(); nxt.select(); return; }
+                }
+              }, 30);
+            }
+          }
+        });
+        el.addEventListener('blur', () => handleScoreBlur(matches, i, rk));
+        el.addEventListener('paste', e => e.preventDefault());
+      }
+
+      wireInput(s1el,  s1mel, true);
+      wireInput(s1mel, s1el,  true);
+      wireInput(s2el,  s2mel, false);
+      wireInput(s2mel, s2el,  false);
       updateTeamColours(matches,i,rk);
     });
   }
@@ -1251,15 +1308,18 @@
   }
 
   function updateTeamColours(matches,i,rk){
-    const t1=$(`${rk}_${i}_TEAM1`),t2=$(`${rk}_${i}_TEAM2`);
-    if(!t1||!t2)return;
-    [t1,t2].forEach(el=>el.classList.remove('winner','loser'));
-    const m=matches[i];if(!m.winner)return;
-    if(m.winner===m.team1){t1.classList.add('winner');t2.classList.add('loser');}
-    else{t2.classList.add('winner');t1.classList.add('loser');}
-    const s1=$(`${rk}_${i}_S1`),s2=$(`${rk}_${i}_S2`);
-    if(s1&&s2){s1.classList.toggle('has-winner',!!m.winner);s2.classList.toggle('has-winner',!!m.winner);}
-    const card=t1.closest('.match-card');if(card)card.classList.toggle('has-winner',!!m.winner);
+    const t1=$(`${rk}_${i}_TEAM1`), t2=$(`${rk}_${i}_TEAM2`);
+    const t1d=$(`${rk}_${i}_TEAM1d`), t2d=$(`${rk}_${i}_TEAM2d`);
+    [t1,t2,t1d,t2d].forEach(el=>{ if(el) el.classList.remove('winner','loser'); });
+    const m=matches[i]; if(!m.winner) return;
+    const win1 = m.winner===m.team1;
+    [t1,t1d].forEach(el=>{ if(el) el.classList.add(win1?'winner':'loser'); });
+    [t2,t2d].forEach(el=>{ if(el) el.classList.add(win1?'loser':'winner'); });
+    const s1=$(`${rk}_${i}_S1`), s2=$(`${rk}_${i}_S2`);
+    const s1m=$(`${rk}_${i}_S1M`), s2m=$(`${rk}_${i}_S2M`);
+    [s1,s2,s1m,s2m].forEach(el=>{ if(el) el.classList.toggle('has-winner',!!m.winner); });
+    const card=t1?t1.closest('.match-card'):(t1d?t1d.closest('.match-card'):null);
+    if(card) card.classList.toggle('has-winner',!!m.winner);
   }
 
   function updateRoundChip(id,matches){const el=$(id);if(!el)return;const done=matches.filter(m=>m.winner).length,total=matches.length;el.textContent=`${done} / ${total}`;el.classList.toggle('complete',done===total&&total>0);}
