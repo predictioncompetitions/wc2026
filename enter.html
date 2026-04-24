@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mickey's World Cup Predictor 2026</title>
+  <title>Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -725,12 +725,35 @@
 <script>
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzThbgrqjQytw8ak4PY3GcnxhF-JdnF1CcossbeB4_NaXbKKIPfryU1oOm5Y6r9HSw/exec';
 
-  async function apiGet(action, params) {
-    const url = new URL(SCRIPT_URL);
-    url.searchParams.set('action', action);
-    if (params) Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
-    const res = await fetch(url.toString());
-    return res.json();
+  function apiGet(action, params) {
+    return new Promise((resolve, reject) => {
+      const callbackName = 'cb_' + Math.random().toString(36).slice(2);
+      const url = new URL(SCRIPT_URL);
+      url.searchParams.set('action', action);
+      url.searchParams.set('callback', callbackName);
+      if (params) Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+
+      const script = document.createElement('script');
+      const timer = setTimeout(() => {
+        cleanup();
+        reject(new Error('Request timed out'));
+      }, 30000);
+
+      window[callbackName] = (data) => {
+        cleanup();
+        resolve(data);
+      };
+
+      function cleanup() {
+        clearTimeout(timer);
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      script.onerror = () => { cleanup(); reject(new Error('Failed to fetch')); };
+      script.src = url.toString();
+      document.head.appendChild(script);
+    });
   }
 
   async function apiPost(action, payload) {
