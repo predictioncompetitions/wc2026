@@ -1423,6 +1423,7 @@
       if(!res||!res.ok){showMsg($('submitStatus'),res&&res.message?res.message:'Submission failed.','error');return;}
       clearDraft(false); resetFormState(); setDraftBanner('Draft cleared after submission');
       showMsg($('submitStatus'),res.message||'Entry submitted successfully. Good luck!','success');
+$('submitStatus').innerHTML += ' <button onclick="startNewEntry()" style="margin-top:10px;width:100%;min-height:44px;background:var(--pitch);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;font-family:var(--font-body);cursor:pointer;">Submit another entry</button>';
     } catch(err) {
       $('submitBtn').disabled=false; showMsg($('submitStatus'),'Submission error: '+(err&&err.message?err.message:String(err)),'error');
     }
