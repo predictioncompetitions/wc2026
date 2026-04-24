@@ -1416,7 +1416,13 @@
   $('predictorForm').addEventListener('submit', async e => {
     e.preventDefault(); hideStatus('submitStatus');
     if(!validateDetails()||!validateGroups()||!validateThirdRank()||!validateKnockout()) return;
-    $('submitBtn').disabled=true; showMsg($('submitStatus'),'Submitting your entry…','info');
+    $('submitBtn').disabled=true;
+$('submitStatus').className = 'status-msg visible info';
+$('submitStatus').innerHTML = `
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span style="font-size:24px;animation:spin 1s linear infinite;display:inline-block;">⚽</span>
+    <span>Submitting your entry — this can take up to 30 seconds while we create your PDF…</span>
+  </div>`;
     try {
 const firstName = $('fullName').value.trim().split(' ')[0];
       const res = await apiPost('submitEntry', buildPayload());
