@@ -3,211 +3,287 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Scores — Mick's World Cup Predictor 2026</title>
+  <title>Score Lookup — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .lookup-form {
+    /* ── Search bar ── */
+    .lookup-search {
       display: flex;
       gap: 10px;
-      align-items: flex-end;
+      margin-bottom: 24px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
     }
+    .lookup-search input {
+      flex: 1;
+      min-width: 200px;
+      padding: 11px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-family: var(--font-body);
+      background: var(--surface);
+      color: var(--ink);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .lookup-search input:focus { border-color: var(--pitch); }
 
-    .lookup-form .field { flex: 1; min-width: 200px; }
-
-    .lookup-form .btn { flex-shrink: 0; min-height: 44px; }
-
-    .score-header {
+    /* ── Entry selector dropdown ── */
+    .entry-list {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .entry-list-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--surface-3);
+      cursor: pointer;
+      transition: background .1s;
+      gap: 12px;
     }
+    .entry-list-item:last-child { border-bottom: none; }
+    .entry-list-item:hover { background: var(--surface-2); }
+    .entry-list-name { font-weight: 600; color: var(--ink); font-size: 15px; }
+    .entry-list-rank { font-family: var(--font-head); font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+    .entry-list-score { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--pitch); white-space: nowrap; }
+    .badge-paid { background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .badge-due  { background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
 
-    .score-header-name {
-      font-family: var(--font-head);
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--ink);
-    }
-
-    .score-header-meta {
-      font-size: 13px;
-      color: var(--ink-3);
-      margin-top: 2px;
-    }
-
-    .total-score-box {
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .total-score-value {
-      font-family: var(--font-head);
-      font-size: 40px;
-      font-weight: 900;
-      color: var(--pitch);
-      line-height: 1;
-    }
-
-    .total-score-label {
-      font-size: 12px;
-      color: var(--ink-3);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .3px;
-    }
-
-    .round-section { margin-bottom: 16px; }
-
-    .round-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border-radius: var(--radius) var(--radius) 0 0;
-      border: 1px solid var(--border);
-      border-bottom: none;
-    }
-
-    .round-head-title {
-      font-family: var(--font-head);
-      font-size: 15px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .3px;
-      flex: 1;
-    }
-
-    .round-head-pts {
-      font-family: var(--font-head);
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .rh-group  { background: #eff4ff; color: #1a56db; border-color: #d1dcf8; }
-    .rh-r32    { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
-    .rh-r16    { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-    .rh-qf     { background: #f5f3ff; color: #6d28d9; border-color: #c4b5fd; }
-    .rh-sf     { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
-    .rh-final  { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
-
-    .match-score-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto 1fr auto;
-      gap: 0;
-      align-items: center;
-      padding: 9px 14px;
-      border: 1px solid var(--border);
-      border-top: none;
-      font-size: 13px;
+    /* ── Entry detail header ── */
+    .detail-header {
       background: var(--surface);
-    }
-
-    .match-score-row:last-child { border-radius: 0 0 var(--radius) var(--radius); }
-
-    .match-score-row.correct-winner { background: #fafffe; }
-    .match-score-row.exact-score    { background: #f0fdf4; }
-
-    .mscore-home { text-align: right; font-weight: 600; padding-right: 10px; }
-    .mscore-away { text-align: left; font-weight: 600; padding-left: 10px; }
-
-    .mscore-score {
-      text-align: center;
-      font-family: var(--font-head);
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--ink-2);
-      min-width: 44px;
-      padding: 0 4px;
-    }
-
-    .mscore-pts {
-      min-width: 52px;
-      text-align: right;
-      font-family: var(--font-head);
-      font-size: 13px;
-      font-weight: 700;
-      padding-left: 12px;
-    }
-
-    .mscore-pts.pts-10 { color: #15803d; }
-    .mscore-pts.pts-5  { color: #1d4ed8; }
-    .mscore-pts.pts-3  { color: #7c3aed; }
-    .mscore-pts.pts-0  { color: var(--ink-3); }
-
-    .pts-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2px 7px;
-      border-radius: 5px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .not-played-yet {
-      text-align: center;
-      padding: 20px;
-      color: var(--ink-3);
-      font-size: 13px;
       border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 var(--radius) var(--radius);
-      background: var(--surface-2);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
     }
-
-    .group-table-wrap {
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 var(--radius) var(--radius);
-      overflow: hidden;
+    .detail-header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
     }
-
-    .group-pick-row {
+    .detail-name { font-family: var(--font-head); font-size: 22px; font-weight: 900; color: var(--ink); }
+    .detail-meta { font-size: 13px; color: var(--ink-3); margin-top: 4px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .detail-total { text-align: right; }
+    .detail-total-num { font-family: var(--font-head); font-size: 36px; font-weight: 900; color: var(--pitch); line-height: 1; }
+    .detail-total-label { font-size: 11px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+    .detail-breakdown {
       display: grid;
-      grid-template-columns: 28px 1fr auto auto;
-      gap: 8px;
-      align-items: center;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--surface-3);
+    }
+    .detail-breakdown-item { text-align: center; }
+    .detail-breakdown-val { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: var(--ink); }
+    .detail-breakdown-label { font-size: 11px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid var(--surface-3); }
+    .tab-btn {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-3);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+      font-family: var(--font-body);
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--ink); }
+    .tab-btn.active { color: var(--pitch); border-bottom-color: var(--pitch); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Group table ── */
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .group-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .group-card-head {
+      background: var(--ink);
+      color: #fff;
       padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .group-card-head-label { font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; opacity: .7; }
+    .group-card-head-name { font-family: var(--font-head); font-size: 15px; font-weight: 800; }
+    .group-card-pts { font-family: var(--font-head); font-size: 16px; font-weight: 800; color: var(--gold); }
+    .group-card-body { padding: 10px 14px; }
+    .group-row {
+      display: grid;
+      grid-template-columns: 20px 1fr 1fr;
+      gap: 4px 10px;
+      align-items: center;
+      padding: 5px 0;
       border-bottom: 1px solid var(--surface-3);
       font-size: 13px;
     }
+    .group-row:last-child { border-bottom: none; }
+    .group-pos { color: var(--ink-3); font-weight: 700; font-size: 11px; }
+    .group-pred { color: var(--ink); font-weight: 500; }
+    .group-actual { color: var(--ink-3); font-size: 12px; }
+    .group-row.correct .group-pred { color: #16a34a; font-weight: 700; }
+    .group-row.correct-pos .group-pred { color: #2563eb; font-weight: 700; }
+    .group-col-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--ink-3); }
 
-    .group-pick-row:last-child { border-bottom: none; }
-
-    .gp-pos {
-      font-family: var(--font-head);
-      font-size: 11px;
-      font-weight: 800;
-      text-align: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* ── Progression ── */
+    .prog-round {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
+    .prog-round-head {
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .prog-round-label { font-family: var(--font-head); font-size: 14px; font-weight: 800; }
+    .prog-round-pts { font-family: var(--font-head); font-size: 15px; font-weight: 800; color: var(--gold); }
+    .prog-body { padding: 12px 16px; }
+    .prog-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .prog-col-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--ink-3); margin-bottom: 6px; }
+    .prog-team {
+      font-size: 13px;
+      padding: 3px 0;
+      color: var(--ink);
+    }
+    .prog-team.hit { color: #16a34a; font-weight: 700; }
+    .prog-team.miss { color: var(--ink-3); }
 
-    .gp-1st { background: #fef3c7; color: #78350f; }
-    .gp-2nd { background: #e0f2fe; color: #0c4a6e; }
-    .gp-3rd { background: #f3e8ff; color: #4c1d95; }
+    /* ── Match table ── */
+    .match-section { margin-bottom: 20px; }
+    .match-section-head {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--ink-3);
+      padding: 6px 0;
+      border-bottom: 2px solid var(--surface-3);
+      margin-bottom: 8px;
+    }
+    .match-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .match-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 12px;
+      background: var(--surface-2);
+      font-size: 11px;
+      color: var(--ink-3);
+      font-weight: 600;
+    }
+    .match-card-pts { font-family: var(--font-head); font-size: 13px; font-weight: 800; color: var(--pitch); }
+    .match-card-body { padding: 10px 12px; }
+    .match-score-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .match-score-row:last-child { margin-bottom: 0; }
+    .match-team-home { text-align: right; font-weight: 600; color: var(--ink); }
+    .match-team-away { text-align: left; font-weight: 600; color: var(--ink); }
+    .match-scoreline {
+      background: var(--ink);
+      color: #fff;
+      font-family: var(--font-head);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      text-align: center;
+      min-width: 42px;
+    }
+    .match-scoreline.pending { background: var(--surface-3); color: var(--ink-3); }
+    .match-row-label { font-size: 10px; text-align: center; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+    .match-card.exact { border-left: 3px solid #16a34a; }
+    .match-card.partial { border-left: 3px solid #2563eb; }
+    .match-card.zero { border-left: 3px solid var(--surface-3); }
+    .match-card.pending { border-left: 3px solid var(--surface-3); opacity: .65; }
 
-    .gp-team { font-weight: 600; color: var(--ink-2); }
+    /* ── Back button ── */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--pitch);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-bottom: 20px;
+      font-family: var(--font-body);
+    }
+    .back-btn:hover { text-decoration: underline; }
 
-    .gp-result { font-size: 12px; color: var(--ink-3); }
-    .gp-pts    { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--pitch); }
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-bottom: 14px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+    .ld-exact   { background: #16a34a; }
+    .ld-partial { background: #2563eb; }
+    .ld-zero    { background: var(--surface-3); }
 
     @media (max-width: 600px) {
-      .match-score-row { grid-template-columns: 1fr auto auto 1fr auto; font-size: 12px; }
-      .mscore-home, .mscore-away { padding: 0 6px; }
-      .score-header { flex-direction: column; align-items: flex-start; }
-      .total-score-box { text-align: left; }
+      .detail-breakdown { grid-template-columns: repeat(3,1fr); }
+      .prog-cols { grid-template-columns: 1fr; }
+      .group-grid { grid-template-columns: 1fr; }
+      .tabs { overflow-x: auto; }
     }
   </style>
 </head>
@@ -219,57 +295,39 @@
     <span class="nav-brand-text">Mick's <span>WC26</span></span>
   </a>
   <ul class="nav-links">
-    <li><a href="https://predictioncompetitions.github.io/wc2026/index.html"><span class="nav-icon">🏠</span> Home</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/enter.html"><span class="nav-icon">✏️</span> Enter</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/rules.html"><span class="nav-icon">📋</span> Rules</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/stats.html"><span class="nav-icon">📊</span> Stats</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/lookup.html" class="active"><span class="nav-icon">🔍</span> My Scores</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="enter.html"><span class="nav-icon">✏️</span> Enter</a></li>
+    <li><a href="rules.html"><span class="nav-icon">📋</span> Rules</a></li>
+    <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
+    <li><a href="lookup.html" class="active"><span class="nav-icon">🔍</span> My Scores</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
   </ul>
   <button class="nav-toggle" id="navToggle">☰</button>
 </nav>
 
 <nav class="nav-mobile" id="navMobile">
-  <a href="https://predictioncompetitions.github.io/wc2026/index.html"><span class="nav-icon">🏠</span> Home</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/enter.html"><span class="nav-icon">✏️</span> Enter the Competition</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/rules.html"><span class="nav-icon">📋</span> Rules & Scoring</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/lookup.html" class="active"><span class="nav-icon">🔍</span> My Scores</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a>
+  <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+  <a href="enter.html"><span class="nav-icon">✏️</span> Enter the Competition</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules & Scoring</a>
+  <a href="stats.html"><span class="nav-icon">📊</span> Stats</a>
+  <a href="lookup.html" class="active"><span class="nav-icon">🔍</span> My Scores</a>
+  <a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a>
 </nav>
 
 <div class="page-hero">
   <div class="page-hero-inner">
-    <div class="page-hero-eyebrow">Score lookup</div>
-    <h1>My <span>Scores</span></h1>
-    <p class="page-hero-sub">Select your name from the dropdown to see your picks and how you've scored on each match.</p>
+    <div class="page-hero-eyebrow">Full transparency</div>
+    <h1>Score <span>Lookup</span></h1>
+    <p class="page-hero-sub">Search for any entrant to see their predictions, results and points breakdown.</p>
   </div>
   <div class="page-hero-rainbow"></div>
 </div>
 
-<div class="main">
-
-  <div class="card">
-    <div class="card-head">
-      <span class="card-head-icon">🔍</span>
-      <div><h2>Look up an entry</h2><p>Select a name to view their full entry and scores</p></div>
-    </div>
-    <div class="card-body">
-      <div class="lookup-form">
-        <div class="field">
-          <label for="entrantSelect">Select entrant</label>
-          <select id="entrantSelect">
-            <option value="">— Loading names…</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" id="lookupBtn" disabled>View scores</button>
-      </div>
-      <div id="lookupStatus"></div>
-    </div>
+<div class="main" id="lookupMain">
+  <div class="loading-state" style="text-align:center;padding:40px;">
+    <span style="font-size:24px;display:block;margin-bottom:10px;">⚽</span>
+    Loading entries…
   </div>
-
-  <div id="scoreOutput"></div>
-
 </div>
 
 <footer class="site-footer">
@@ -281,178 +339,336 @@
 
 <script src="site.js"></script>
 <script>
-const select = document.getElementById('entrantSelect');
-const lookupBtn = document.getElementById('lookupBtn');
-const statusEl = document.getElementById('lookupStatus');
-const output = document.getElementById('scoreOutput');
-
-// Load entrant names into dropdown
-async function loadNames() {
-  try {
-    const data = await apiFetch('getEntrantNames');
-    select.innerHTML = '<option value="">— Select a name —</option>';
-    if (data && data.names && data.names.length) {
-      data.names.sort().forEach(name => {
-        const o = document.createElement('option');
-        o.value = name;
-        o.textContent = name;
-        select.appendChild(o);
-      });
-      lookupBtn.disabled = false;
-    } else {
-      select.innerHTML = '<option value="">No entries found yet</option>';
-    }
-  } catch(e) {
-    select.innerHTML = '<option value="">Could not load names</option>';
-  }
+/* ── helpers ── */
+function payBadge(status) {
+  const s = String(status || '').toUpperCase();
+  if (s === 'PAID') return '<span class="badge-paid">PAID</span>';
+  if (s === 'DUE')  return '<span class="badge-due">DUE</span>';
+  return '';
 }
 
-select.addEventListener('change', () => {
-  lookupBtn.disabled = !select.value;
-  output.innerHTML = '';
-  statusEl.innerHTML = '';
-});
+let allEntries = [];
+let currentScrollY = 0;
 
-lookupBtn.addEventListener('click', async () => {
-  const name = select.value;
-  if (!name) return;
-
-  output.innerHTML = '';
-  statusEl.innerHTML = '<div class="status-msg status-info">Loading…</div>';
-  lookupBtn.disabled = true;
-
-  try {
-    const data = await apiFetch('lookupEntry', { name });
-    statusEl.innerHTML = '';
-    lookupBtn.disabled = false;
-
-    if (!data || !data.ok) {
-      statusEl.innerHTML = `<div class="status-msg status-warn">${esc(data && data.message || 'Entry not found.')}</div>`;
-      return;
-    }
-
-    renderEntry(data.entry);
-  } catch(e) {
-    statusEl.innerHTML = '<div class="status-msg status-error">Could not load entry. Please try again.</div>';
-    lookupBtn.disabled = false;
-  }
-});
-
-function renderEntry(entry) {
-  // If scoring engine not built yet, show predictions only
-  const hasScores = entry.totalScore !== undefined && entry.totalScore !== null;
+/* ── leaderboard list view ── */
+function renderList(entries, filter) {
+  const main = document.getElementById('lookupMain');
+  const f = (filter || '').toLowerCase();
+  const filtered = f ? entries.filter(e => (e.displayName || '').toLowerCase().includes(f)) : entries;
 
   let html = `
-    <div class="card" style="margin-top:16px;">
-      <div class="card-body">
-        <div class="score-header">
-          <div>
-            <div class="score-header-name">${esc(entry.displayName || entry.fullName)}</div>
-            <div class="score-header-meta">Entry ID: ${esc(entry.entryId)} · 🏆 Predicted champion: <strong>${esc(entry.predictedChampion)}</strong></div>
-          </div>
-          ${hasScores ? `
-          <div class="total-score-box">
-            <div class="total-score-value">${entry.totalScore}</div>
-            <div class="total-score-label">Total points</div>
-          </div>` : `
-          <div class="pill pill-blue">Scoring starts 11 June</div>
-          `}
-        </div>
-  `;
+    <div class="lookup-search">
+      <input type="text" id="searchInput" placeholder="Search by name…" value="${esc(filter || '')}" autocomplete="off" />
+    </div>`;
 
-  // Group stage picks
-  if (entry.groups && entry.groups.length) {
-    html += renderGroupSection(entry.groups, hasScores);
+  if (!filtered.length) {
+    html += '<div class="status-msg status-warn">No entries match that name.</div>';
+  } else {
+    html += '<div class="entry-list">';
+    filtered.forEach(e => {
+      html += `
+        <div class="entry-list-item" data-id="${esc(e.entryId)}">
+          <div>
+            <div class="entry-list-name">${esc(e.displayName)} ${payBadge(e.paymentStatus)}</div>
+            <div class="entry-list-rank" style="margin-top:2px;">Rank #${e.rank} · ${e.exactScoreCount} exact score${e.exactScoreCount !== 1 ? 's' : ''}</div>
+          </div>
+          <div class="entry-list-score">${e.totalPoints} pts</div>
+        </div>`;
+    });
+    html += '</div>';
   }
 
-  // Knockout rounds
-  const rounds = [
-    { key: 'roundOf32',     label: 'Round of 32',    cls: 'rh-r32'   },
-    { key: 'roundOf16',     label: 'Round of 16',    cls: 'rh-r16'   },
-    { key: 'quarterFinals', label: 'Quarter-finals', cls: 'rh-qf'    },
-    { key: 'semiFinals',    label: 'Semi-finals',    cls: 'rh-sf'    },
-    { key: 'final',         label: 'Final',          cls: 'rh-final' }
-  ];
+  main.innerHTML = html;
 
-  rounds.forEach(({ key, label, cls }) => {
-    const matches = entry[key];
-    if (!matches || !matches.length) return;
-    html += renderRoundSection(label, cls, matches, hasScores);
+  document.getElementById('searchInput').addEventListener('input', function() {
+    renderList(allEntries, this.value);
   });
 
-  html += '</div></div>';
-  output.innerHTML = html;
-}
-
-function renderGroupSection(groups, hasScores) {
-  let html = `
-    <div class="round-section">
-      <div class="round-head rh-group">
-        <span class="round-head-title">Group stage picks</span>
-        ${hasScores ? '<span class="round-head-pts">Pts</span>' : ''}
-      </div>
-      <div class="group-table-wrap">
-  `;
-
-  groups.forEach(group => {
-    const picks = [
-      { pos: '1ST', posLabel: '1ST', cls: 'gp-1st', team: group.first,  result: group.firstResult,  pts: group.firstPts  },
-      { pos: '2ND', posLabel: '2ND', cls: 'gp-2nd', team: group.second, result: group.secondResult, pts: group.secondPts },
-      { pos: '3RD', posLabel: '3RD', cls: 'gp-3rd', team: group.third,  result: group.thirdResult,  pts: group.thirdPts  }
-    ];
-
-    picks.forEach(p => {
-      html += `
-        <div class="group-pick-row">
-          <div class="gp-pos ${p.cls}">${p.posLabel}</div>
-          <div class="gp-team">Group ${esc(group.group)} — ${esc(p.team)}</div>
-          <div class="gp-result">${hasScores && p.result ? esc(p.result) : ''}</div>
-          <div class="gp-pts">${hasScores && p.pts !== undefined ? p.pts + ' pts' : ''}</div>
-        </div>`;
+  document.querySelectorAll('.entry-list-item').forEach(el => {
+    el.addEventListener('click', () => {
+      currentScrollY = window.scrollY;
+      loadDetail(el.dataset.id);
     });
   });
 
-  html += '</div></div>';
-  return html;
+  // Auto-focus search if no URL param
+  const params = new URLSearchParams(window.location.search);
+  if (!params.get('id') && !params.get('name')) {
+    document.getElementById('searchInput').focus();
+  }
 }
 
-function renderRoundSection(label, cls, matches, hasScores) {
-  const roundPts = hasScores ? matches.reduce((sum, m) => sum + (m.pts || 0), 0) : null;
+/* ── load leaderboard then render list ── */
+async function init() {
+  const main = document.getElementById('lookupMain');
+  try {
+    const data = await apiFetch('getLeaderboard');
+    if (!data || !data.ok) throw new Error(data?.error || 'Failed to load');
+
+    allEntries = data.entries || [];
+
+    const params = new URLSearchParams(window.location.search);
+    const idParam   = params.get('id');
+    const nameParam = params.get('name');
+
+    if (idParam) {
+      await loadDetail(idParam);
+    } else if (nameParam) {
+      // Find matching entry ID
+      const match = allEntries.find(e =>
+        (e.displayName || '').toLowerCase() === nameParam.toLowerCase()
+      );
+      if (match) {
+        await loadDetail(match.entryId);
+      } else {
+        renderList(allEntries, nameParam);
+      }
+    } else {
+      renderList(allEntries, '');
+    }
+  } catch(err) {
+    main.innerHTML = '<div class="status-msg status-error">Could not load entries. Please try again shortly.</div>';
+  }
+}
+
+/* ── load entry detail ── */
+async function loadDetail(entryId) {
+  const main = document.getElementById('lookupMain');
+  main.innerHTML = '<div class="loading-state" style="text-align:center;padding:40px;"><span style="font-size:24px;display:block;margin-bottom:10px;">⚽</span>Loading entry…</div>';
+  window.scrollTo(0, 0);
+
+  try {
+    const data = await apiFetch('getEntryDetail', { entryId });
+    if (!data || !data.ok) throw new Error(data?.error || 'Entry not found');
+    renderDetail(data);
+
+    // Update URL without reload
+    const url = new URL(window.location);
+    url.searchParams.set('id', entryId);
+    url.searchParams.delete('name');
+    window.history.pushState({}, '', url);
+  } catch(err) {
+    main.innerHTML = `<div class="status-msg status-error">${esc(err.message)}</div>`;
+  }
+}
+
+/* ── render entry detail ── */
+function renderDetail(d) {
+  const main = document.getElementById('lookupMain');
 
   let html = `
-    <div class="round-section">
-      <div class="round-head ${cls}">
-        <span class="round-head-title">${esc(label)}</span>
-        ${hasScores ? `<span class="round-head-pts">${roundPts} pts</span>` : ''}
+    <button class="back-btn" id="backBtn">← Back to all entries</button>
+    <div class="detail-header">
+      <div class="detail-header-top">
+        <div>
+          <div class="detail-name">${esc(d.displayName)}</div>
+          <div class="detail-meta">
+            ${payBadge(d.paymentStatus)}
+            <span>Rank #${d.rank}</span>
+            <span>🏆 ${esc(d.predictedChampion || '—')}</span>
+            <span>${d.exactScoreCount} exact score${d.exactScoreCount !== 1 ? 's' : ''}</span>
+          </div>
+        </div>
+        <div class="detail-total">
+          <div class="detail-total-num">${d.totalPoints}</div>
+          <div class="detail-total-label">Total points</div>
+        </div>
       </div>
+      <div class="detail-breakdown">
+        <div class="detail-breakdown-item">
+          <div class="detail-breakdown-val">${d.groupTotal}</div>
+          <div class="detail-breakdown-label">Groups</div>
+        </div>
+        <div class="detail-breakdown-item">
+          <div class="detail-breakdown-val">${d.progressionTotal}</div>
+          <div class="detail-breakdown-label">Progression</div>
+        </div>
+        <div class="detail-breakdown-item">
+          <div class="detail-breakdown-val">${d.matchTotal}</div>
+          <div class="detail-breakdown-label">KO Scores</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="groups">Groups</button>
+      <button class="tab-btn" data-tab="progression">Progression</button>
+      <button class="tab-btn" data-tab="matches">Match Scores</button>
+    </div>
   `;
 
-  matches.forEach(match => {
-    if (!match.home && !match.away) return;
-
-    const scoreStr = (match.homeScore !== '' && match.awayScore !== '')
-      ? `${match.homeScore} – ${match.awayScore}`
-      : '– vs –';
-
-    const ptsClass = !hasScores ? '' : match.pts >= 10 ? 'pts-10' : match.pts >= 5 ? 'pts-5' : match.pts >= 3 ? 'pts-3' : 'pts-0';
-    const rowClass = !hasScores ? '' : match.exactScore ? 'exact-score' : match.correctWinner ? 'correct-winner' : '';
-
+  /* ── Groups tab ── */
+  html += '<div class="tab-panel active" id="tab-groups"><div class="group-grid">';
+  (d.groupDetail || []).forEach(g => {
+    const hasActual = g.actual.some(t => t);
     html += `
-      <div class="match-score-row ${rowClass}">
-        <div class="mscore-home">${esc(match.home)}</div>
-        <div class="mscore-score">${esc(scoreStr)}</div>
-        <div class="mscore-home" style="text-align:left;font-weight:400;color:var(--ink-3);font-size:11px;">→ ${esc(match.winner || '?')}</div>
-        <div class="mscore-away">${esc(match.away)}</div>
-        <div class="mscore-pts ${ptsClass}">${hasScores ? (match.pts || 0) + ' pts' : ''}</div>
-      </div>`;
+      <div class="group-card">
+        <div class="group-card-head">
+          <div><div class="group-card-head-label">Group</div><div class="group-card-head-name">${esc(g.group)}</div></div>
+          <div class="group-card-pts">${g.pts} pts</div>
+        </div>
+        <div class="group-card-body">
+          <div class="group-row" style="padding-bottom:4px;">
+            <div class="group-pos"></div>
+            <div class="group-col-head">Your pick</div>
+            <div class="group-col-head">Actual</div>
+          </div>`;
+
+    [0,1,2].forEach(pos => {
+      const pred = g.predicted[pos] || '—';
+      const act  = g.actual[pos]    || '—';
+      const norm = s => s.toUpperCase().trim();
+      let rowClass = '';
+      if (hasActual && pred !== '—') {
+        if (norm(pred) === norm(act)) rowClass = 'correct-pos';
+        else if (g.actual.some(a => norm(a) === norm(pred))) rowClass = 'correct';
+      }
+      html += `
+        <div class="group-row ${rowClass}">
+          <div class="group-pos">${pos+1}</div>
+          <div class="group-pred">${esc(pred)}</div>
+          <div class="group-actual">${esc(act)}</div>
+        </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+  html += '</div></div>';
+
+  /* ── Progression tab ── */
+  html += '<div class="tab-panel" id="tab-progression">';
+  (d.progressionDetail || []).forEach(r => {
+    const actualSet = new Set(r.actual.map(t => t.toUpperCase().trim()));
+    html += `
+      <div class="prog-round">
+        <div class="prog-round-head">
+          <div class="prog-round-label">${esc(r.label)}</div>
+          <div class="prog-round-pts">${r.pts} pts</div>
+        </div>
+        <div class="prog-body">
+          <div class="prog-cols">
+            <div>
+              <div class="prog-col-head">Your picks</div>`;
+    if (r.predicted.length) {
+      r.predicted.forEach(t => {
+        const hit = actualSet.has(t.toUpperCase().trim()) && r.actual.length > 0;
+        html += `<div class="prog-team ${hit ? 'hit' : r.actual.length ? 'miss' : ''}">${esc(t)}</div>`;
+      });
+    } else {
+      html += '<div class="prog-team miss">No prediction</div>';
+    }
+    html += `</div><div><div class="prog-col-head">Actual</div>`;
+    if (r.actual.length) {
+      r.actual.forEach(t => { html += `<div class="prog-team">${esc(t)}</div>`; });
+    } else {
+      html += '<div class="prog-team miss">Not yet known</div>';
+    }
+    html += `</div></div></div></div>`;
   });
 
+  // Winner row
+  const w = d.winnerDetail || {};
+  const wHit = w.actualWinner && w.predictedWinner === w.actualWinner;
+  html += `
+    <div class="prog-round">
+      <div class="prog-round-head">
+        <div class="prog-round-label">Winner</div>
+        <div class="prog-round-pts">${w.pts} pts</div>
+      </div>
+      <div class="prog-body">
+        <div class="prog-cols">
+          <div>
+            <div class="prog-col-head">Your pick</div>
+            <div class="prog-team ${wHit ? 'hit' : w.actualWinner ? 'miss' : ''}">${esc(w.predictedWinner || '—')}</div>
+          </div>
+          <div>
+            <div class="prog-col-head">Actual winner</div>
+            <div class="prog-team">${esc(w.actualWinner || 'Not yet known')}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
   html += '</div>';
-  return html;
+
+  /* ── Match scores tab ── */
+  html += `
+    <div class="tab-panel" id="tab-matches">
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot ld-exact"></div> Exact score</div>
+        <div class="legend-item"><div class="legend-dot ld-partial"></div> Partial points</div>
+        <div class="legend-item"><div class="legend-dot ld-zero"></div> No points / pending</div>
+      </div>`;
+
+  const matchSections = [
+    { label: 'Round of 32', keys: d.matchDetail?.filter(m => m.label.startsWith('R32')) || [] },
+    { label: 'Round of 16', keys: d.matchDetail?.filter(m => m.label.startsWith('R16')) || [] },
+    { label: 'Quarter-finals', keys: d.matchDetail?.filter(m => m.label.startsWith('QF')) || [] },
+    { label: 'Semi-finals', keys: d.matchDetail?.filter(m => m.label.startsWith('SF')) || [] },
+    { label: 'Final', keys: d.matchDetail?.filter(m => m.label === 'Final') || [] }
+  ];
+
+  matchSections.forEach(section => {
+    if (!section.keys.length) return;
+    html += `<div class="match-section"><div class="match-section-head">${esc(section.label)}</div>`;
+
+    section.keys.forEach(m => {
+      const hasPred = m.predHome && m.predAway && m.predScore1 !== null && m.predScore2 !== null;
+      const cardClass = !m.played ? 'pending' : m.pts >= 5 ? 'exact' : m.pts > 0 ? 'partial' : 'zero';
+      const predLine  = hasPred ? `${m.predScore1} – ${m.predScore2}` : '? – ?';
+      const actLine   = m.played ? `${m.actualScore1} – ${m.actualScore2}` : 'TBD';
+
+      html += `
+        <div class="match-card ${cardClass}">
+          <div class="match-card-head">
+            <span>Match ${esc(m.matchNo)}</span>
+            <span class="match-card-pts">${m.played ? m.pts + ' pts' : 'Pending'}</span>
+          </div>
+          <div class="match-card-body">
+            <div class="match-score-row">
+              <div class="match-team-home">${esc(m.predHome || '—')}</div>
+              <div class="match-scoreline ${!hasPred ? 'pending' : ''}">${esc(predLine)}</div>
+              <div class="match-team-away">${esc(m.predAway || '—')}</div>
+            </div>
+            <div class="match-row-label">Your prediction</div>
+            <div class="match-score-row" style="margin-top:8px;">
+              <div class="match-team-home">${esc(m.actualHome || '—')}</div>
+              <div class="match-scoreline ${!m.played ? 'pending' : ''}">${esc(actLine)}</div>
+              <div class="match-team-away">${esc(m.actualAway || '—')}</div>
+            </div>
+            <div class="match-row-label">Actual result</div>
+          </div>
+        </div>`;
+    });
+
+    html += '</div>';
+  });
+  html += '</div>';
+
+  main.innerHTML = html;
+
+  /* Tab switching */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById(`tab-${this.dataset.tab}`).classList.add('active');
+    });
+  });
+
+  /* Back button */
+  document.getElementById('backBtn').addEventListener('click', () => {
+    const url = new URL(window.location);
+    url.searchParams.delete('id');
+    url.searchParams.delete('name');
+    window.history.pushState({}, '', url);
+    renderList(allEntries, '');
+    window.scrollTo(0, currentScrollY);
+  });
 }
 
-// Init
-loadNames();
+init();
 </script>
 </body>
 </html>
