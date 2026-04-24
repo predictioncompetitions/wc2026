@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mick's World Cup Predictor 2026</title>
+  <title>Enter — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -394,12 +394,37 @@
     .round-wrap.round-final .round-title { color: var(--final-text); }
     .round-body { padding: 10px 12px; }
     .round-wrap.collapsed .round-body { display: none; }
-    .round-title { font-size: 20px; font-weight: 800; }
-    .round-progress-chip { font-size: 13px; padding: 4px 12px; }
     .matches-list { display: flex; flex-direction: column; gap: 6px; }
 
     .match-card { border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--surface); }
     .match-card.has-winner { border-color: #bbf7d0; background: #fafffe; }
+
+    /* Round-coloured match cards */
+    .match-card.round-r32 { background: var(--r32-bg); border-color: var(--r32-border); }
+    .match-card.round-r32.has-winner { background: #d1fae5; border-color: #6ee7b7; }
+    .match-card.round-r16 { background: var(--r16-bg); border-color: var(--r16-border); }
+    .match-card.round-r16.has-winner { background: #dbeafe; border-color: #93c5fd; }
+    .match-card.round-qf { background: var(--qf-bg); border-color: var(--qf-border); }
+    .match-card.round-qf.has-winner { background: #ede9fe; border-color: #c4b5fd; }
+    .match-card.round-sf { background: var(--sf-bg); border-color: var(--sf-border); }
+    .match-card.round-sf.has-winner { background: #ffedd5; border-color: #fdba74; }
+    .match-card.round-final { background: var(--final-bg); border-color: var(--final-border); }
+    .match-card.round-final.has-winner { background: #fef9c3; border-color: #fcd34d; }
+
+    .match-round-label {
+      font-family: var(--font-head);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      opacity: .7;
+    }
+    .match-card.round-r32 .match-round-label { color: var(--r32-text); }
+    .match-card.round-r16 .match-round-label { color: var(--r16-text); }
+    .match-card.round-qf .match-round-label { color: var(--qf-text); }
+    .match-card.round-sf .match-round-label { color: var(--sf-text); }
+    .match-card.round-final .match-round-label { color: var(--final-text); }
     .match-meta { font-size: 11px; color: var(--pitch); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
     .match-meta-num { font-family: var(--font-head); font-size: 12px; font-weight: 800; color: var(--pitch); }
     .match-meta-rest { flex: 1; color: var(--ink-3); font-weight: 500; font-size: 10px; }
@@ -1124,7 +1149,7 @@
     if(!validateDetails()||!validateGroups()||!validateThirdRank()){showBracketStatus('Please fix the errors above first.','error');return;}
     $('generateBracketBtn').disabled=true; showBracketStatus('Generating your knockout fixtures…','info');
     try {
-      const res = await apiGet('generateKnockoutBracket', { payload: JSON.stringify(buildPayload()) });
+      const res = await apiPost('generateKnockoutBracket', buildPayload());
       $('generateBracketBtn').disabled=false;
       if(!res||!res.ok){showBracketStatus(res&&res.message?res.message:'Failed to generate fixtures.','error');return;}
       renderGeneratedBracket(res.bracket); showBracketStatus('Knockout fixtures generated successfully.','success'); scheduleDraftSave();
@@ -1153,8 +1178,11 @@
     matches.forEach((match,i)=>{
       const {num,rest}=splitMatchMeta(match), desc=FIXTURE_DESC[match.matchNo]||'';
       const infoBtn=desc?`<button type="button" class="match-info-btn" data-desc="${esc(desc)}">ⓘ<span class="match-tooltip">${esc(desc)}</span></button>`:'';
-      const card=document.createElement('div'); card.className='match-card'+(match.winner?' has-winner':'');
+      const roundClass = rk==='R32'?'round-r32':rk==='R16'?'round-r16':rk==='QF'?'round-qf':rk==='SF'?'round-sf':rk==='FINAL'?'round-final':'';
+      const roundLabel = rk==='R32'?'Round of 32':rk==='R16'?'Round of 16':rk==='QF'?'Quarter-final':rk==='SF'?'Semi-final':rk==='FINAL'?'Final':'';
+      const card=document.createElement('div'); card.className=`match-card ${roundClass}`+(match.winner?' has-winner':'');
       card.innerHTML=`
+        <div class="match-round-label">${esc(roundLabel)}</div>
         <div class="match-meta"><span class="match-meta-num">${esc(num)}</span>${infoBtn}<span class="match-meta-rest">${esc(rest)}</span></div>
         <div class="match-row">
           <div class="match-team-left"><span class="match-team-name" id="${rk}_${i}_TEAM1">${esc(match.team1)}</span></div>
@@ -1330,7 +1358,7 @@
     if(!validateDetails()||!validateGroups()||!validateThirdRank()||!validateKnockout()) return;
     $('submitBtn').disabled=true; showMsg($('submitStatus'),'Submitting your entry…','info');
     try {
-      const res = await apiGet('submitEntry', { payload: JSON.stringify(buildPayload()) });
+      const res = await apiPost('submitEntry', buildPayload());
       $('submitBtn').disabled=false;
       if(!res||!res.ok){showMsg($('submitStatus'),res&&res.message?res.message:'Submission failed.','error');return;}
       clearDraft(false); resetFormState(); setDraftBanner('Draft cleared after submission');
