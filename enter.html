@@ -1144,15 +1144,12 @@
   }
 
   /* ── Bracket ── */
-$('generateBracketBtn').addEventListener('click', async () => {
+  $('generateBracketBtn').addEventListener('click', async () => {
     hideStatus('bracketStatus');
     if(!validateDetails()||!validateGroups()||!validateThirdRank()){showBracketStatus('Please fix the errors above first.','error');return;}
     $('generateBracketBtn').disabled=true; showBracketStatus('Generating your knockout fixtures…','info');
     try {
-      const full = buildPayload();
-      const bracketPayload = {};
-      Object.keys(full).forEach(k => { if(k !== 'KNOCKOUT_DATA') bracketPayload[k] = full[k]; });
-      const res = await apiGet('generateKnockoutBracket', { payload: JSON.stringify(bracketPayload) });
+      const res = await apiPost('generateKnockoutBracket', buildPayload());
       $('generateBracketBtn').disabled=false;
       if(!res||!res.ok){showBracketStatus(res&&res.message?res.message:'Failed to generate fixtures.','error');return;}
       renderGeneratedBracket(res.bracket); showBracketStatus('Knockout fixtures generated successfully.','success'); scheduleDraftSave();
@@ -1361,7 +1358,11 @@ $('generateBracketBtn').addEventListener('click', async () => {
     if(!validateDetails()||!validateGroups()||!validateThirdRank()||!validateKnockout()) return;
     $('submitBtn').disabled=true; showMsg($('submitStatus'),'Submitting your entry…','info');
     try {
-      const res = await apiPost('submitEntry', buildPayload());
+      const full = buildPayload();
+      const part1 = {};
+      Object.keys(full).forEach(k => { if(k !== 'KNOCKOUT_DATA') part1[k] = full[k]; });
+      const part2 = { FULL_NAME: full.FULL_NAME, EMAIL: full.EMAIL, FORM_VERSION: full.FORM_VERSION, KNOCKOUT_DATA: full.KNOCKOUT_DATA };
+      const res = await apiGet('submitEntry', { part1: JSON.stringify(part1), part2: JSON.stringify(part2) });
       $('submitBtn').disabled=false;
       if(!res||!res.ok){showMsg($('submitStatus'),res&&res.message?res.message:'Submission failed.','error');return;}
       clearDraft(false); resetFormState(); setDraftBanner('Draft cleared after submission');
