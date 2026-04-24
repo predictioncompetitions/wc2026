@@ -1328,7 +1328,7 @@
     if(!validateDetails()||!validateGroups()||!validateThirdRank()||!validateKnockout()) return;
     $('submitBtn').disabled=true; showMsg($('submitStatus'),'Submitting your entry…','info');
     try {
-      const res = await apiPost('submitEntry', buildPayload());
+      const res = await apiGet('submitEntry', { payload: JSON.stringify(buildPayload()) });
       $('submitBtn').disabled=false;
       if(!res||!res.ok){showMsg($('submitStatus'),res&&res.message?res.message:'Submission failed.','error');return;}
       clearDraft(false); resetFormState(); setDraftBanner('Draft cleared after submission');
