@@ -1438,10 +1438,9 @@ const firstName = $('fullName').value.trim().split(' ')[0];
         <div style="font-size:16px;font-weight:700;margin-bottom:6px;">🎉 Congratulations ${esc(firstName)}!</div>
         <div style="margin-bottom:8px;">Your entry has been submitted successfully. We'll email you a full copy of your picks.</div>
         <div style="margin-bottom:12px;">Your Entry ID is <strong>${esc(entryId)}</strong> — keep this safe.</div>
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;margin-bottom:12px;">
-          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#15803d;margin-bottom:6px;">Final step — Pay your €10 entry fee</div>
-          <div style="font-size:13px;color:#166534;margin-bottom:10px;">Please complete your payment via Revolut to finalise your entry. Your predictions are locked in regardless, but the fee is needed before kickoff.</div>
-          <a href="${revolutLink}" target="_blank" style="display:block;text-align:center;padding:12px;background:#0d5c2e;color:#fff;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none;">Pay €10 via Revolut →</a>
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;margin-bottom:12px;">
+          <div style="font-size:13px;color:#1e40af;margin-bottom:10px;">To complete your entry, please pay the <strong>€10 entry fee</strong> via Revolut. Your picks are locked in — this is just the payment step.</div>
+          <a href="${revolutLink}" target="_blank" style="display:block;text-align:center;padding:12px;background:#0075eb;color:#fff;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none;">Pay €10 via Revolut →</a>
         </div>
         <button onclick="startNewEntry()" style="width:100%;min-height:44px;background:#1a1f2e;color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;font-family:var(--font-body);cursor:pointer;">Submit another entry</button>
       `;
