@@ -1496,7 +1496,18 @@ const firstName = $('fullName').value.trim().split(' ')[0];
     go.addEventListener('click',()=>dismiss(false));
     if(cont)cont.addEventListener('click',()=>dismiss(true));
   }
-
+function startNewEntry() {
+    resetFormState();
+    hideStatus('submitStatus');
+    $('submitLocked').classList.remove('hidden');
+    $('submitReady').classList.add('hidden');
+    $('formBodyWrap').classList.add('hidden');
+    const ws = $('welcomeScreen');
+    ws.style.display = '';
+    ws.classList.remove('exiting');
+    $('welcomeDraftNote').classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
   /* ── Main init ── */
   async function initForm(){
     $('closedScreen').style.display='none';
