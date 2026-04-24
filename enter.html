@@ -1154,8 +1154,14 @@
       $('generateBracketBtn').disabled=false;
       if(!res||!res.ok){showBracketStatus(res&&res.message?res.message:'Failed to generate fixtures.','error');return;}
       renderGeneratedBracket(res.bracket); showBracketStatus('Knockout fixtures generated successfully.','success'); scheduleDraftSave();
-    } catch(err) {
-      $('generateBracketBtn').disabled=false; showBracketStatus('Error: '+(err&&err.message?err.message:String(err)),'error');
+} catch(err) {
+      $('generateBracketBtn').disabled=false;
+      const msg = err && err.message ? err.message : String(err);
+      if (msg.toLowerCase().includes('load failed') || msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('network')) {
+        showBracketStatus('Connection dropped — please tap Generate again. Your selections are saved.', 'warn');
+      } else {
+        showBracketStatus('Error: ' + msg, 'error');
+      }
     }
   });
 
