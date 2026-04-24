@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mick's World Cup Predictor 2026</title>
+  <title>Mickey's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -725,35 +725,12 @@
 <script>
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzThbgrqjQytw8ak4PY3GcnxhF-JdnF1CcossbeB4_NaXbKKIPfryU1oOm5Y6r9HSw/exec';
 
-  function apiGet(action, params) {
-    return new Promise((resolve, reject) => {
-      const callbackName = 'cb_' + Math.random().toString(36).slice(2);
-      const url = new URL(SCRIPT_URL);
-      url.searchParams.set('action', action);
-      url.searchParams.set('callback', callbackName);
-      if (params) Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
-
-      const script = document.createElement('script');
-      const timer = setTimeout(() => {
-        cleanup();
-        reject(new Error('Request timed out'));
-      }, 30000);
-
-      window[callbackName] = (data) => {
-        cleanup();
-        resolve(data);
-      };
-
-      function cleanup() {
-        clearTimeout(timer);
-        delete window[callbackName];
-        if (script.parentNode) script.parentNode.removeChild(script);
-      }
-
-      script.onerror = () => { cleanup(); reject(new Error('Failed to fetch')); };
-      script.src = url.toString();
-      document.head.appendChild(script);
-    });
+  async function apiGet(action, params) {
+    const url = new URL(SCRIPT_URL);
+    url.searchParams.set('action', action);
+    if (params) Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+    const res = await fetch(url.toString());
+    return res.json();
   }
 
   async function apiPost(action, payload) {
@@ -1381,11 +1358,7 @@
     if(!validateDetails()||!validateGroups()||!validateThirdRank()||!validateKnockout()) return;
     $('submitBtn').disabled=true; showMsg($('submitStatus'),'Submitting your entry…','info');
     try {
-      const full = buildPayload();
-      const part1 = {};
-      Object.keys(full).forEach(k => { if(k !== 'KNOCKOUT_DATA') part1[k] = full[k]; });
-      const part2 = { FULL_NAME: full.FULL_NAME, EMAIL: full.EMAIL, FORM_VERSION: full.FORM_VERSION, KNOCKOUT_DATA: full.KNOCKOUT_DATA };
-      const res = await apiGet('submitEntry', { part1: JSON.stringify(part1), part2: JSON.stringify(part2) });
+      const res = await apiPost('submitEntry', buildPayload());
       $('submitBtn').disabled=false;
       if(!res||!res.ok){showMsg($('submitStatus'),res&&res.message?res.message:'Submission failed.','error');return;}
       clearDraft(false); resetFormState(); setDraftBanner('Draft cleared after submission');
