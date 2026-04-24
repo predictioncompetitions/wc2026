@@ -1476,7 +1476,11 @@ $('submitStatus').innerHTML += ' <button onclick="startNewEntry()" style="margin
     go.addEventListener('click',()=>dismiss(false));
     if(cont)cont.addEventListener('click',()=>dismiss(true));
   }
-
+function startNewEntry() {
+  resetFormState();
+  hideStatus('submitStatus');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
   /* ── Main init ── */
   async function initForm(){
     $('closedScreen').style.display='none';
