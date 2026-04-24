@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Enter — Mick's World Cup Predictor 2026</title>
+  <title>Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1144,12 +1144,15 @@
   }
 
   /* ── Bracket ── */
-  $('generateBracketBtn').addEventListener('click', async () => {
+$('generateBracketBtn').addEventListener('click', async () => {
     hideStatus('bracketStatus');
     if(!validateDetails()||!validateGroups()||!validateThirdRank()){showBracketStatus('Please fix the errors above first.','error');return;}
     $('generateBracketBtn').disabled=true; showBracketStatus('Generating your knockout fixtures…','info');
     try {
-      const res = await apiPost('generateKnockoutBracket', buildPayload());
+      const full = buildPayload();
+      const bracketPayload = {};
+      Object.keys(full).forEach(k => { if(k !== 'KNOCKOUT_DATA') bracketPayload[k] = full[k]; });
+      const res = await apiGet('generateKnockoutBracket', { payload: JSON.stringify(bracketPayload) });
       $('generateBracketBtn').disabled=false;
       if(!res||!res.ok){showBracketStatus(res&&res.message?res.message:'Failed to generate fixtures.','error');return;}
       renderGeneratedBracket(res.bracket); showBracketStatus('Knockout fixtures generated successfully.','success'); scheduleDraftSave();
