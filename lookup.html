@@ -443,8 +443,18 @@
 
 <div class="main" id="lookupMain">
   <div class="loading-state" style="text-align:center;padding:40px;">
-    <div style="display:block;margin:0 auto 12px;width:44px;height:44px;border-radius:50%;border:4px solid var(--surface-3,#e5e7eb);border-top-color:var(--pitch,#16a34a);animation:spin 0.8s linear infinite;"></div>
-    <style>@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }</style>
+    <div class="spinner"></div>
+    <style>
+      @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+      .spinner {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        border: 4px solid #e5e7eb;
+        border-top-color: #16a34a;
+        margin: 0 auto 12px;
+        animation: spin 0.8s linear infinite;
+      }
+    </style>
     Loading entries…
   </div>
 </div>
@@ -568,7 +578,7 @@ async function init() {
 /* ── load entry detail ── */
 async function loadDetail(entryId) {
   const main = document.getElementById('lookupMain');
-  main.innerHTML = `<div class="loading-state" style="text-align:center;padding:40px;"><div style="width:44px;height:44px;border-radius:50%;border:4px solid #e5e7eb;border-top-color:#16a34a;margin:0 auto 12px;animation:spin 0.8s linear infinite;"></div>Loading entry…</div>`;
+  main.innerHTML = `<div class="loading-state" style="text-align:center;padding:40px;"><div class="spinner"></div>Loading entry…</div>`;
   window.scrollTo(0, 0);
 
   try {
