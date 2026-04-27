@@ -496,6 +496,7 @@ function renderList(entries, filter) {
 
   document.querySelectorAll('.entry-list-item').forEach(el => {
     el.addEventListener('click', () => {
+      console.log('Clicked entry:', el.dataset.id);
       currentScrollY = window.scrollY;
       loadDetail(el.dataset.id);
     });
