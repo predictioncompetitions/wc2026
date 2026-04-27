@@ -431,14 +431,28 @@
 
 <div class="main" id="lookupMain">
   <div class="loading-state" style="text-align:center;padding:40px;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" style="display:block;margin:0 auto 12px;animation:spin 1s linear infinite;">
-      <circle cx="20" cy="20" r="18" fill="#111" stroke="#333" stroke-width="1.5"/>
-      <polygon points="20,6 24,14 20,18 16,14" fill="#fff"/>
-      <polygon points="33,14 29,18 24,14 26,8" fill="#fff"/>
-      <polygon points="34,26 28,26 26,20 30,16" fill="#fff" transform="rotate(10,20,20)"/>
-      <polygon points="24,34 20,28 24,24 30,26" fill="#fff" transform="rotate(5,20,20)"/>
-      <polygon points="10,34 14,26 20,28 16,34" fill="#fff"/>
-      <polygon points="6,20 10,14 16,16 14,22" fill="#fff"/>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48" style="display:block;margin:0 auto 12px;animation:spin 1.2s linear infinite;">
+      <circle cx="50" cy="50" r="47" fill="white" stroke="#222" stroke-width="2"/>
+      <!-- centre pentagon -->
+      <polygon points="50,32 62,41 57,55 43,55 38,41" fill="#111"/>
+      <!-- top -->
+      <polygon points="50,2 64,12 62,28 50,32 38,28 36,12" fill="white" stroke="#111" stroke-width="1.5"/>
+      <!-- top-right -->
+      <polygon points="64,12 82,18 86,35 74,44 62,41 62,28" fill="white" stroke="#111" stroke-width="1.5"/>
+      <!-- bottom-right -->
+      <polygon points="86,35 92,52 80,64 66,60 57,55 62,41 74,44" fill="white" stroke="#111" stroke-width="1.5"/>
+      <!-- bottom -->
+      <polygon points="80,64 76,80 60,86 50,80 40,86 24,80 20,64 34,60 43,55 57,55 66,60" fill="white" stroke="#111" stroke-width="1.5"/>
+      <!-- bottom-left -->
+      <polygon points="20,64 8,52 14,35 26,44 38,41 43,55 34,60" fill="white" stroke="#111" stroke-width="1.5"/>
+      <!-- top-left -->
+      <polygon points="14,35 18,18 36,12 38,28 38,41 26,44" fill="white" stroke="#111" stroke-width="1.5"/>
+      <!-- black patches -->
+      <polygon points="50,2 64,12 62,28 50,32 38,28 36,12" fill="none" stroke="#111" stroke-width="1.5"/>
+      <polygon points="64,12 82,18 86,35 74,44 62,41 62,28" fill="#111"/>
+      <polygon points="14,35 18,18 36,12 38,28 38,41 26,44" fill="#111"/>
+      <polygon points="80,64 76,80 60,86 50,80 40,86 24,80 20,64 34,60 43,55 57,55 66,60" fill="#111"/>
+      <circle cx="50" cy="50" r="47" fill="none" stroke="#222" stroke-width="2"/>
     </svg>
     <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
     Loading entries…
@@ -514,6 +528,8 @@ function renderList(entries, filter) {
 
 /* ── load leaderboard then render list ── */
 async function init() {
+  const ballSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48" style="display:block;margin:0 auto 12px;animation:spin 1.2s linear infinite;"><circle cx="50" cy="50" r="47" fill="white" stroke="#222" stroke-width="2"/><polygon points="50,32 62,41 57,55 43,55 38,41" fill="#111"/><polygon points="50,2 64,12 62,28 50,32 38,28 36,12" fill="white" stroke="#111" stroke-width="1.5"/><polygon points="64,12 82,18 86,35 74,44 62,41 62,28" fill="#111"/><polygon points="86,35 92,52 80,64 66,60 57,55 62,41 74,44" fill="white" stroke="#111" stroke-width="1.5"/><polygon points="80,64 76,80 60,86 50,80 40,86 24,80 20,64 34,60 43,55 57,55 66,60" fill="#111"/><polygon points="20,64 8,52 14,35 26,44 38,41 43,55 34,60" fill="white" stroke="#111" stroke-width="1.5"/><polygon points="14,35 18,18 36,12 38,28 38,41 26,44" fill="#111"/><circle cx="50" cy="50" r="47" fill="none" stroke="#222" stroke-width="2"/></svg>`;
+
   const main = document.getElementById('lookupMain');
   try {
     const data = await apiFetch('getLeaderboard');
@@ -549,7 +565,7 @@ async function init() {
 /* ── load entry detail ── */
 async function loadDetail(entryId) {
   const main = document.getElementById('lookupMain');
-  main.innerHTML = '<div class="loading-state" style="text-align:center;padding:40px;"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" style="display:block;margin:0 auto 12px;animation:spin 1s linear infinite;"><circle cx="20" cy="20" r="18" fill="#111" stroke="#333" stroke-width="1.5"/><polygon points="20,6 24,14 20,18 16,14" fill="#fff"/><polygon points="33,14 29,18 24,14 26,8" fill="#fff"/><polygon points="34,26 28,26 26,20 30,16" fill="#fff" transform="rotate(10,20,20)"/><polygon points="24,34 20,28 24,24 30,26" fill="#fff" transform="rotate(5,20,20)"/><polygon points="10,34 14,26 20,28 16,34" fill="#fff"/><polygon points="6,20 10,14 16,16 14,22" fill="#fff"/></svg>Loading entry…</div>';
+  main.innerHTML = `<div class="loading-state" style="text-align:center;padding:40px;">${ballSvg}Loading entry…</div>`;
   window.scrollTo(0, 0);
 
   try {
