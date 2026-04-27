@@ -431,7 +431,16 @@
 
 <div class="main" id="lookupMain">
   <div class="loading-state" style="text-align:center;padding:40px;">
-    <span style="font-size:24px;display:block;margin-bottom:10px;">⚽</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" style="display:block;margin:0 auto 12px;animation:spin 1s linear infinite;">
+      <circle cx="20" cy="20" r="18" fill="#111" stroke="#333" stroke-width="1.5"/>
+      <polygon points="20,6 24,14 20,18 16,14" fill="#fff"/>
+      <polygon points="33,14 29,18 24,14 26,8" fill="#fff"/>
+      <polygon points="34,26 28,26 26,20 30,16" fill="#fff" transform="rotate(10,20,20)"/>
+      <polygon points="24,34 20,28 24,24 30,26" fill="#fff" transform="rotate(5,20,20)"/>
+      <polygon points="10,34 14,26 20,28 16,34" fill="#fff"/>
+      <polygon points="6,20 10,14 16,16 14,22" fill="#fff"/>
+    </svg>
+    <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
     Loading entries…
   </div>
 </div>
@@ -540,7 +549,7 @@ async function init() {
 /* ── load entry detail ── */
 async function loadDetail(entryId) {
   const main = document.getElementById('lookupMain');
-  main.innerHTML = '<div class="loading-state" style="text-align:center;padding:40px;"><span style="font-size:24px;display:block;margin-bottom:10px;">⚽</span>Loading entry…</div>';
+  main.innerHTML = '<div class="loading-state" style="text-align:center;padding:40px;"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" style="display:block;margin:0 auto 12px;animation:spin 1s linear infinite;"><circle cx="20" cy="20" r="18" fill="#111" stroke="#333" stroke-width="1.5"/><polygon points="20,6 24,14 20,18 16,14" fill="#fff"/><polygon points="33,14 29,18 24,14 26,8" fill="#fff"/><polygon points="34,26 28,26 26,20 30,16" fill="#fff" transform="rotate(10,20,20)"/><polygon points="24,34 20,28 24,24 30,26" fill="#fff" transform="rotate(5,20,20)"/><polygon points="10,34 14,26 20,28 16,34" fill="#fff"/><polygon points="6,20 10,14 16,16 14,22" fill="#fff"/></svg>Loading entry…</div>';
   window.scrollTo(0, 0);
 
   try {
