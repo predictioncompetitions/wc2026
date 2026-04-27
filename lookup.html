@@ -41,17 +41,17 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
+      padding: 7px 12px;
       border-bottom: 1px solid var(--surface-3);
       cursor: pointer;
       transition: background .1s;
-      gap: 12px;
+      gap: 10px;
     }
     .entry-list-item:last-child { border-bottom: none; }
     .entry-list-item:hover { background: var(--surface-2); }
-    .entry-list-name { font-weight: 600; color: var(--ink); font-size: 15px; }
-    .entry-list-rank { font-family: var(--font-head); font-size: 13px; color: var(--ink-3); white-space: nowrap; }
-    .entry-list-score { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--pitch); white-space: nowrap; }
+    .entry-list-name { font-weight: 600; color: var(--ink); font-size: 13px; }
+    .entry-list-rank { font-family: var(--font-head); font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+    .entry-list-score { font-family: var(--font-head); font-size: 14px; font-weight: 800; color: var(--pitch); white-space: nowrap; }
     .badge-paid { background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
     .badge-due  { background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
 
@@ -496,7 +496,9 @@ async function init() {
     const data = await apiFetch('getLeaderboard');
     if (!data || !data.ok) throw new Error(data?.error || 'Failed to load');
 
-    allEntries = data.entries || [];
+    allEntries = (data.entries || []).slice().sort((a, b) =>
+      (a.displayName || '').localeCompare(b.displayName || '')
+    );
 
     const params = new URLSearchParams(window.location.search);
     const idParam   = params.get('id');
@@ -765,15 +767,15 @@ function renderDetail(d) {
         const winnerPts = predWin && actWin && predWin.toUpperCase().trim() === actWin.toUpperCase().trim() ? 3 : 0;
         const goals1Pts = ps1 === as1 ? 2 : 0;
         const goals2Pts = ps2 === as2 ? 2 : 0;
-        const gdPts     = (!isExact && (ps1 - ps2) === (as1 - as2)) ? 1 : 0;
+        const gdPts     = ((ps1 - ps2) === (as1 - as2)) ? 1 : 0;
         const exactBonus = isExact ? 2 : 0;
 
         const chips = [
           { label: `Winner ${winnerPts ? '+3' : '0'}`, earned: winnerPts > 0 },
-          { label: `Goals 1 ${goals1Pts ? '+2' : '0'}`, earned: goals1Pts > 0 },
-          { label: `Goals 2 ${goals2Pts ? '+2' : '0'}`, earned: goals2Pts > 0 },
+          { label: `Team 1 Goals ${goals1Pts ? '+2' : '0'}`, earned: goals1Pts > 0 },
+          { label: `Team 2 Goals ${goals2Pts ? '+2' : '0'}`, earned: goals2Pts > 0 },
           { label: `GD ${gdPts ? '+1' : '0'}`, earned: gdPts > 0 },
-          { label: `Exact ${exactBonus ? '+2' : '0'}`, earned: exactBonus > 0, extra: exactBonus > 0 ? 'exact' : '' }
+          { label: `Exact Score ${exactBonus ? '+2' : '0'}`, earned: exactBonus > 0, extra: exactBonus > 0 ? 'exact' : '' }
         ];
 
         breakdownHtml = `<div class="match-pts-breakdown">`;
