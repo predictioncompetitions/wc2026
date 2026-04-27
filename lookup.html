@@ -240,6 +240,23 @@
 
     /* team row with inline pts badge */
     .prog-team-row {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      align-items: center;
+      padding: 3px 0;
+      gap: 6px;
+    }
+    .prog-team-group {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ink-3);
+      background: var(--surface-3);
+      border-radius: 4px;
+      padding: 1px 5px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .prog-team-row-simple {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -544,9 +561,8 @@ async function init() {
 
 /* ── load entry detail ── */
 async function loadDetail(entryId) {
-  const spinner = `<div style="display:block;margin:0 auto 12px;width:44px;height:44px;border-radius:50%;border:4px solid #e5e7eb;border-top-color:#16a34a;animation:spin 0.8s linear infinite;"></div>`;
   const main = document.getElementById('lookupMain');
-  main.innerHTML = `<div class="loading-state" style="text-align:center;padding:40px;">${spinner}Loading entry…</div>`;
+  main.innerHTML = `<div class="loading-state" style="text-align:center;padding:40px;"><div style="width:44px;height:44px;border-radius:50%;border:4px solid #e5e7eb;border-top-color:#16a34a;margin:0 auto 12px;animation:spin 0.8s linear infinite;"></div>Loading entry…</div>`;
   window.scrollTo(0, 0);
 
   try {
@@ -703,14 +719,16 @@ function renderDetail(d) {
         const statusClass = !hasActual ? '' : td.hit ? 'hit' : 'miss';
         const chipClass   = !hasActual ? '' : td.hit ? 'hit' : 'miss';
         const chipLabel   = !hasActual ? '?' : td.hit ? `+${td.pts}` : '0';
-      const groupLabel = r.round === 'R32'
-        ? (teamGroupMap[td.team] ? `<span style="font-size:10px;color:var(--ink-3);margin-left:4px;">Grp ${teamGroupMap[td.team]}</span>` : '')
+      const grpTag = r.round === 'R32' && teamGroupMap[td.team]
+        ? `<span class="prog-team-group">G${teamGroupMap[td.team]}</span>`
         : '';
-        html += `
-          <div class="prog-team-row">
-            <span class="prog-team-name ${statusClass}">${esc(td.team)}${groupLabel}</span>
-            <span class="prog-team-pts ${chipClass}">${chipLabel}</span>
-          </div>`;
+      const rowClass = grpTag ? 'prog-team-row' : 'prog-team-row-simple';
+      html += `
+        <div class="${rowClass}">
+          ${grpTag}
+          <span class="prog-team-name ${statusClass}">${esc(td.team)}</span>
+          <span class="prog-team-pts ${chipClass}">${chipLabel}</span>
+        </div>`;
       });
     } else {
       html += '<div class="prog-team-name miss">No prediction</div>';
