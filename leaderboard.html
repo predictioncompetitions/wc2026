@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Leaderboard — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="soccerball.png" type="image/png">
   <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
     .lb-meta {
       display: flex;
       align-items: center;
@@ -14,12 +17,7 @@
       gap: 10px;
       margin-bottom: 14px;
     }
-
-    .lb-meta-left {
-      font-size: 13px;
-      color: var(--ink-3);
-    }
-
+    .lb-meta-left { font-size: 13px; color: var(--ink-3); }
     .lb-meta strong { color: var(--ink-2); }
 
     .lb-table-wrap {
@@ -47,7 +45,6 @@
       white-space: nowrap;
       border-bottom: 2px solid var(--pitch);
     }
-
     table.lb-table th.num { text-align: right; }
 
     table.lb-table td {
@@ -55,12 +52,9 @@
       border-bottom: 1px solid var(--surface-3);
       vertical-align: middle;
     }
-
     table.lb-table tr:last-child td { border-bottom: none; }
+    table.lb-table tr:hover td { background: var(--surface-2); cursor: pointer; }
 
-    table.lb-table tr:hover td { background: var(--surface-2); }
-
-    /* Top 3 row highlights */
     table.lb-table tr.rank-1 td { background: #fffbeb; }
     table.lb-table tr.rank-2 td { background: #f8fafc; }
     table.lb-table tr.rank-3 td { background: #fff8f0; }
@@ -69,55 +63,24 @@
     table.lb-table tr.rank-3:hover td { background: #ffedd5; }
 
     .rank-badge {
-      width: 28px;
-      height: 28px;
+      width: 28px; height: 28px;
       border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       font-family: var(--font-head);
-      font-size: 14px;
-      font-weight: 800;
+      font-size: 14px; font-weight: 800;
     }
-
     .rb-1 { background: #fef3c7; color: #92400e; }
     .rb-2 { background: #f1f5f9; color: #475569; }
     .rb-3 { background: #ffedd5; color: #9a3412; }
     .rb-n { background: var(--surface-2); color: var(--ink-3); font-size: 12px; }
 
-    .lb-name {
-      font-weight: 600;
-      color: var(--ink);
-    }
+    .lb-name { font-weight: 600; color: var(--ink); }
+    .lb-champion { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
 
-    .lb-champion {
-      font-size: 12px;
-      color: var(--ink-3);
-      margin-top: 1px;
-    }
+    .lb-score { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--pitch); text-align: right; }
+    .lb-sub-score { text-align: right; font-size: 12px; color: var(--ink-3); }
 
-    .lb-score {
-      font-family: var(--font-head);
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--pitch);
-      text-align: right;
-    }
-
-    .lb-sub-score {
-      text-align: right;
-      font-size: 12px;
-      color: var(--ink-3);
-    }
-
-    .lb-view-btn {
-      font-size: 12px;
-      color: var(--pitch);
-      font-weight: 600;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
+    .lb-view-btn { font-size: 12px; color: var(--pitch); font-weight: 600; text-decoration: none; white-space: nowrap; }
     .lb-view-btn:hover { text-decoration: underline; }
 
     .podium {
@@ -126,7 +89,6 @@
       gap: 12px;
       margin-bottom: 20px;
     }
-
     .podium-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -135,38 +97,13 @@
       text-align: center;
       box-shadow: var(--shadow-sm);
     }
-
     .podium-card.p-1 { border-top: 3px solid var(--gold); }
     .podium-card.p-2 { border-top: 3px solid #94a3b8; }
     .podium-card.p-3 { border-top: 3px solid #cd7c4a; }
-
-    .podium-rank {
-      font-size: 28px;
-      margin-bottom: 6px;
-    }
-
-    .podium-name {
-      font-family: var(--font-head);
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--ink);
-      margin-bottom: 4px;
-    }
-
-    .podium-score {
-      font-family: var(--font-head);
-      font-size: 26px;
-      font-weight: 900;
-      color: var(--pitch);
-    }
-
-    .podium-label {
-      font-size: 11px;
-      color: var(--ink-3);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .3px;
-    }
+    .podium-rank { font-size: 28px; margin-bottom: 6px; }
+    .podium-name { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+    .podium-score { font-family: var(--font-head); font-size: 26px; font-weight: 900; color: var(--pitch); }
+    .podium-label { font-size: 11px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
 
     @media (max-width: 600px) {
       .podium { grid-template-columns: 1fr; }
@@ -179,41 +116,44 @@
 
 <nav class="nav">
   <a class="nav-brand" href="index.html">
-    <span class="nav-brand-icon">⚽</span>
+    <span class="nav-brand-icon">
+      <img src="soccerball.png" width="28" height="28" alt="" style="display:block;" />
+    </span>
     <span class="nav-brand-text">Mick's <span>WC26</span></span>
   </a>
   <ul class="nav-links">
-    <li><a href="https://predictioncompetitions.github.io/wc2026/index.html"><span class="nav-icon">🏠</span> Home</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/enter.html"><span class="nav-icon">✏️</span> Enter</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/rules.html"><span class="nav-icon">📋</span> Rules</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/stats.html"><span class="nav-icon">📊</span> Stats</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/lookup.html"><span class="nav-icon">🔍</span> My Scores</a></li>
-    <li><a href="https://predictioncompetitions.github.io/wc2026/leaderboard.html" class="active"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="enter.html"><span class="nav-icon">✏️</span> Enter</a></li>
+    <li><a href="rules.html"><span class="nav-icon">📋</span> Rules</a></li>
+    <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
+    <li><a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a></li>
+    <li><a href="leaderboard.html" class="active"><span class="nav-icon">🏆</span> Leaderboard</a></li>
   </ul>
   <button class="nav-toggle" id="navToggle">☰</button>
 </nav>
 
 <nav class="nav-mobile" id="navMobile">
-  <a href="https://predictioncompetitions.github.io/wc2026/index.html"><span class="nav-icon">🏠</span> Home</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/enter.html"><span class="nav-icon">✏️</span> Enter the Competition</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/rules.html"><span class="nav-icon">📋</span> Rules & Scoring</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/lookup.html"><span class="nav-icon">🔍</span> My Scores</a>
-  <a href="https://predictioncompetitions.github.io/wc2026/leaderboard.html" class="active"><span class="nav-icon">🏆</span> Leaderboard</a>
+  <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+  <a href="enter.html"><span class="nav-icon">✏️</span> Enter the Competition</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules & Scoring</a>
+  <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
+  <a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a>
+  <a href="leaderboard.html" class="active"><span class="nav-icon">🏆</span> Leaderboard</a>
 </nav>
 
 <div class="page-hero">
   <div class="page-hero-inner">
     <div class="page-hero-eyebrow">Live standings</div>
     <h1>Leader<span>board</span></h1>
-    <p class="page-hero-sub">Updated after every matchday. Click any name to view their full entry and scores.</p>
+    <p class="page-hero-sub">Updated after every matchday. Click any row to view that entry in full.</p>
   </div>
   <div class="page-hero-rainbow"></div>
 </div>
 
 <div class="main" id="lbMain">
-  <div class="loading-state" style="text-align:center;padding:40px;">
-    <span style="font-size:24px;display:block;margin-bottom:10px;">⚽</span>
+  <div style="text-align:center;padding:40px;">
+    <img src="soccerball.png" width="32" height="32" alt=""
+         style="display:block;margin:0 auto 10px;animation:spin 1s linear infinite;" />
     Loading leaderboard…
   </div>
 </div>
@@ -227,123 +167,153 @@
 
 <script src="site.js"></script>
 <script>
-async function loadLeaderboard() {
-  const main = document.getElementById('lbMain');
-  try {
-    const data = await apiFetch('getLeaderboard');
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 
-    // Pre-tournament — scoring not started yet
-    if (!data || !data.ok || !data.hasScores) {
-      main.innerHTML = `
-        <div class="card">
-          <div class="card-body">
-            <div class="coming-soon">
-              <div class="coming-soon-icon">🏆</div>
-              <h2>Leaderboard not available yet</h2>
-              <p>Scoring starts when the tournament kicks off. Check back after the first matches are played.</p>
-              <div class="coming-soon-date">⚽ Tournament starts 11 June 2026</div>
+  async function loadLeaderboard() {
+    const main = document.getElementById('lbMain');
+    try {
+      const data = await apiFetch('getLeaderboard');
+
+      if (!data || !data.ok) {
+        main.innerHTML = `
+          <div class="card">
+            <div class="card-body">
+              <div class="coming-soon">
+                <div class="coming-soon-icon">🏆</div>
+                <h2>Leaderboard not available yet</h2>
+                <p>Scoring starts when the tournament kicks off. Check back after the first matches are played.</p>
+                <div class="coming-soon-date">⚽ Tournament starts 11 June 2026</div>
+              </div>
             </div>
-          </div>
-        </div>
-        ${data && data.entryCount ? `
-        <div class="card">
-          <div class="card-head"><span class="card-head-icon">📋</span><div><h2>${data.entryCount} entries received</h2><p>All entries are locked in and ready to go.</p></div></div>
-        </div>` : ''}
-      `;
-      return;
-    }
-
-    const entries = data.entries || [];
-    if (!entries.length) {
-      main.innerHTML = '<div class="status-msg status-warn">No entries found.</div>';
-      return;
-    }
-
-    const top3 = entries.slice(0, 3);
-    const medals = ['🥇','🥈','🥉'];
-    const podiumCards = ['p-1','p-2','p-3'];
-
-    let html = '';
-
-    // Podium for top 3
-    if (top3.length >= 2) {
-      html += '<div class="podium">';
-      top3.forEach((e, i) => {
-        html += `
-          <div class="podium-card ${podiumCards[i]}">
-            <div class="podium-rank">${medals[i]}</div>
-            <div class="podium-name">${esc(e.displayName || e.fullName)}</div>
-            <div class="podium-label">Total points</div>
-            <div class="podium-score">${e.totalScore}</div>
           </div>`;
-      });
-      html += '</div>';
-    }
+        return;
+      }
 
-    // Full table
-    html += `
-      <div class="lb-meta">
-        <div class="lb-meta-left">
-          <strong>${entries.length}</strong> entries · Last updated: ${esc(data.lastUpdated || 'recently')}
-        </div>
-        <a href="lookup.html" class="btn btn-outline" style="min-height:36px;font-size:13px;">🔍 Look up my scores</a>
-      </div>
-      <div class="lb-table-wrap">
-        <table class="lb-table">
-          <thead>
-            <tr>
-              <th style="width:48px;">Rank</th>
-              <th>Entrant</th>
-              <th class="num">Total</th>
-              <th class="num">Group</th>
-              <th class="num">Prog.</th>
-              <th class="num">KO scores</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-    `;
+      const entries = data.entries || [];
 
-    entries.forEach((e, i) => {
-      const rank = i + 1;
-      const rankClass = rank <= 3 ? `rank-${rank}` : '';
-      const rbClass = rank === 1 ? 'rb-1' : rank === 2 ? 'rb-2' : rank === 3 ? 'rb-3' : 'rb-n';
+      if (!entries.length) {
+        main.innerHTML = '<div class="status-msg status-warn">No entries found.</div>';
+        return;
+      }
+
+      // Field mapping — matches your LEADERBOARD sheet columns
+      // ENTRY_ID, DISPLAY_NAME, PAYMENT_STATUS, GROUP_TOTAL,
+      // PROGRESSION_TOTAL, MATCH_TOTAL, TOTAL_POINTS, EXACT_SCORE_COUNT, RANK
+      function name(e)        { return e.displayName || e.DISPLAY_NAME || e.display_name || '—'; }
+      function total(e)       { return e.totalPoints  || e.TOTAL_POINTS  || e.total_points  || 0; }
+      function groupPts(e)    { return e.groupTotal    || e.GROUP_TOTAL    || e.group_total    || '—'; }
+      function progPts(e)     { return e.progressionTotal || e.PROGRESSION_TOTAL || e.progression_total || '—'; }
+      function matchPts(e)    { return e.matchTotal    || e.MATCH_TOTAL    || e.match_total    || '—'; }
+      function exact(e)       { return e.exactScoreCount || e.EXACT_SCORE_COUNT || e.exact_score_count || 0; }
+      function champion(e)    { return e.predictedChampion || e.PREDICTED_CHAMPION || '—'; }
+      function rank(e, i)     { return e.rank || e.RANK || (i + 1); }
+      function payment(e)     { return e.paymentStatus || e.PAYMENT_STATUS || ''; }
+
+      // Check if any scoring has happened
+      const hasScores = entries.some(e => total(e) > 0);
+
+      const medals = ['🥇','🥈','🥉'];
+      const podiumClasses = ['p-1','p-2','p-3'];
+      let html = '';
+
+      if (hasScores) {
+        // Podium for top 3
+        const top3 = entries.slice(0, 3);
+        if (top3.length >= 2) {
+          html += '<div class="podium">';
+          top3.forEach((e, i) => {
+            html += `
+              <div class="podium-card ${podiumClasses[i]}">
+                <div class="podium-rank">${medals[i]}</div>
+                <div class="podium-name">${esc(name(e))}</div>
+                <div class="podium-label">Total points</div>
+                <div class="podium-score">${total(e)}</div>
+              </div>`;
+          });
+          html += '</div>';
+        }
+      } else {
+        html += `
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-body" style="padding:16px;">
+              <p style="font-size:14px;color:var(--ink-3);">
+                ⚽ Scoring hasn't started yet — the leaderboard will show points once the tournament kicks off on 11 June 2026.
+                All entries are listed below.
+              </p>
+            </div>
+          </div>`;
+      }
+
+      // Counts
+      const paid  = entries.filter(e => String(payment(e)).toUpperCase() === 'PAID').length;
+      const total_entries = entries.length;
 
       html += `
-        <tr class="${rankClass}">
-          <td><div class="rank-badge ${rbClass}">${rank}</div></td>
-          <td>
-            <div class="lb-name">${esc(e.displayName || e.fullName)}</div>
-            <div class="lb-champion">🏆 ${esc(e.predictedChampion || '—')}</div>
-          </td>
-          <td class="lb-score">${e.totalScore}</td>
-          <td class="lb-sub-score">${e.groupScore ?? '—'}</td>
-          <td class="lb-sub-score">${e.progressionScore ?? '—'}</td>
-          <td class="lb-sub-score">${e.knockoutScore ?? '—'}</td>
-          <td><a class="lb-view-btn" href="lookup.html?name=${encodeURIComponent(e.displayName || e.fullName)}">View →</a></td>
-        </tr>`;
-    });
+        <div class="lb-meta">
+          <div class="lb-meta-left">
+            <strong>${total_entries}</strong> entr${total_entries === 1 ? 'y' : 'ies'}
+            · <strong>${paid}</strong> paid
+            ${data.lastUpdated ? `· Updated: ${esc(data.lastUpdated)}` : ''}
+          </div>
+          <a href="lookup.html" class="btn btn-outline" style="min-height:36px;font-size:13px;">🔍 Look up my scores</a>
+        </div>
+        <div class="lb-table-wrap">
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th style="width:48px;">Rank</th>
+                <th>Entrant</th>
+                <th class="num">Total</th>
+                <th class="num">Groups</th>
+                <th class="num">Prog.</th>
+                <th class="num">KO scores</th>
+                <th class="num">Exact</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>`;
 
-    html += '</tbody></table></div>';
-    main.innerHTML = html;
+      entries.forEach((e, i) => {
+        const r = rank(e, i);
+        const rankClass = r <= 3 ? `rank-${r}` : '';
+        const rbClass   = r === 1 ? 'rb-1' : r === 2 ? 'rb-2' : r === 3 ? 'rb-3' : 'rb-n';
 
-  } catch(e) {
-    document.getElementById('lbMain').innerHTML =
-      '<div class="status-msg status-error">Could not load leaderboard. Please try again shortly.</div>';
+        html += `
+          <tr class="${rankClass}" data-name="${esc(name(e))}" style="cursor:pointer;">
+            <td><div class="rank-badge ${rbClass}">${r}</div></td>
+            <td>
+              <div class="lb-name">${esc(name(e))}</div>
+              <div class="lb-champion">🏆 ${esc(champion(e))}</div>
+            </td>
+            <td class="lb-score">${hasScores ? total(e) : '—'}</td>
+            <td class="lb-sub-score">${hasScores ? groupPts(e) : '—'}</td>
+            <td class="lb-sub-score">${hasScores ? progPts(e) : '—'}</td>
+            <td class="lb-sub-score">${hasScores ? matchPts(e) : '—'}</td>
+            <td class="lb-sub-score">${hasScores ? exact(e) : '—'}</td>
+            <td><a class="lb-view-btn" href="lookup.html?name=${encodeURIComponent(name(e))}">View →</a></td>
+          </tr>`;
+      });
+
+      html += '</tbody></table></div>';
+      main.innerHTML = html;
+
+      // Row click — navigate to lookup
+      main.querySelectorAll('tr[data-name]').forEach(row => {
+        row.addEventListener('click', () => {
+          window.location.href = `lookup.html?name=${encodeURIComponent(row.dataset.name)}`;
+        });
+      });
+
+    } catch(err) {
+      document.getElementById('lbMain').innerHTML =
+        '<div class="status-msg status-error">Could not load leaderboard. Please try again shortly.</div>';
+      console.error('Leaderboard error:', err);
+    }
   }
-}
 
-loadLeaderboard();
-
-// If name is pre-filled in URL (coming from leaderboard view link), auto-trigger lookup
-window.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get('name');
-  if (name) {
-    // Redirect to lookup page with name pre-selected
-    window.location.href = `lookup.html?name=${encodeURIComponent(name)}`;
-  }
-});
+  loadLeaderboard();
 </script>
 </body>
 </html>
