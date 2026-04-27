@@ -89,23 +89,41 @@
     .detail-breakdown-label { font-size: 11px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
 
     /* ── Tabs ── */
-    .tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid var(--surface-3); }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
     .tab-btn {
-      padding: 10px 18px;
-      font-size: 13px;
+      flex: 1;
+      min-width: 100px;
+      padding: 13px 18px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--ink-3);
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: color .15s, border-color .15s;
+      transition: color .15s, border-color .15s, background .15s, box-shadow .15s;
       font-family: var(--font-body);
       white-space: nowrap;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
     }
-    .tab-btn:hover { color: var(--ink); }
-    .tab-btn.active { color: var(--pitch); border-bottom-color: var(--pitch); }
+    .tab-btn:hover {
+      color: var(--pitch);
+      border-color: var(--pitch);
+      background: var(--surface);
+    }
+    .tab-btn.active {
+      color: #fff;
+      background: var(--pitch);
+      border-color: var(--pitch);
+      box-shadow: 0 4px 12px rgba(0,0,0,.18);
+      font-weight: 800;
+    }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
@@ -130,7 +148,7 @@
       justify-content: space-between;
       align-items: center;
     }
-    .group-card-head-label { font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; opacity: .7; }
+    .group-card-head-label { font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; opacity: .7; margin-right: 6px; }
     .group-card-head-name { font-family: var(--font-head); font-size: 15px; font-weight: 800; }
     .group-card-pts { font-family: var(--font-head); font-size: 16px; font-weight: 800; color: var(--gold); }
     .group-card-body { padding: 10px 14px; }
@@ -577,10 +595,10 @@ function renderDetail(d) {
     const hasActual = g.actual.some(t => t);
     html += `
       <div class="group-card">
-        <div class="group-card-head">
-          <div>
-            <div class="group-card-head-label">Group</div>
-            <div class="group-card-head-name">${esc(g.group)}</div>
+                  <div class="group-card-head">
+          <div style="display:flex;align-items:center;">
+            <span class="group-card-head-label">Group</span>
+            <span class="group-card-head-name">${esc(g.group)}</span>
           </div>
           <div class="group-card-pts">${g.pts} pts</div>
         </div>
