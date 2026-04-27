@@ -79,44 +79,58 @@
     .detail-breakdown {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 16px;
-      padding-top: 16px;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 12px;
       border-top: 1px solid var(--surface-3);
     }
     .detail-breakdown-item { text-align: center; }
-    .detail-breakdown-val { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: var(--ink); }
-    .detail-breakdown-label { font-size: 11px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
+    .detail-breakdown-val { font-family: var(--font-head); font-size: 16px; font-weight: 800; color: var(--ink); }
+    .detail-breakdown-label { font-size: 10px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-top: 1px; }
 
-    /* ── Tabs ── */
+    /* ── Sticky tab bar ── */
+    .tabs-sticky-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface-2, #f3f4f6);
+      border: 2px solid var(--pitch);
+      border-radius: var(--radius);
+      padding: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+    }
+    .tabs-sticky-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--pitch);
+      margin-bottom: 8px;
+      text-align: center;
+    }
     .tabs {
       display: flex;
       gap: 8px;
-      margin-bottom: 20px;
       flex-wrap: wrap;
     }
     .tab-btn {
       flex: 1;
-      min-width: 100px;
-      padding: 13px 18px;
-      font-size: 14px;
+      min-width: 80px;
+      padding: 11px 12px;
+      font-size: 13px;
       font-weight: 700;
-      color: var(--ink-3);
+      color: var(--pitch);
       background: var(--surface);
-      border: 2px solid var(--border);
+      border: 2px solid var(--pitch);
       border-radius: var(--radius);
       cursor: pointer;
-      transition: color .15s, border-color .15s, background .15s, box-shadow .15s;
+      transition: color .15s, background .15s, box-shadow .15s;
       font-family: var(--font-body);
       white-space: nowrap;
       text-align: center;
-      box-shadow: var(--shadow-sm);
     }
-    .tab-btn:hover {
-      color: var(--pitch);
-      border-color: var(--pitch);
-      background: var(--surface);
-    }
+    .tab-btn:hover { background: #f0fdf4; }
     .tab-btn.active {
       color: #fff;
       background: var(--pitch);
@@ -581,10 +595,13 @@ function renderDetail(d) {
       </div>
     </div>
 
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="groups">Groups</button>
-      <button class="tab-btn" data-tab="progression">Progression</button>
-      <button class="tab-btn" data-tab="matches">Match Scores</button>
+    <div class="tabs-sticky-wrapper">
+      <div class="tabs-sticky-label">View section</div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="groups">Groups</button>
+        <button class="tab-btn" data-tab="progression">Progression</button>
+        <button class="tab-btn" data-tab="matches">Match Scores</button>
+      </div>
     </div>
   `;
 
