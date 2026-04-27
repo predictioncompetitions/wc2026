@@ -241,25 +241,20 @@
     /* team row with inline pts badge */
     .prog-team-row {
       display: grid;
-      grid-template-columns: 36px 1fr auto;
+      grid-template-columns: 1fr 60px auto;
       align-items: center;
       padding: 3px 0;
-      gap: 6px;
+      gap: 8px;
     }
     .prog-team-group {
-      font-size: 10px;
-      font-weight: 700;
+      font-size: 12px;
       color: var(--ink-3);
-      background: var(--surface-3);
-      border-radius: 4px;
-      padding: 1px 5px;
-      text-align: center;
       white-space: nowrap;
     }
     .prog-team-row-simple {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto;
       align-items: center;
-      justify-content: space-between;
       padding: 3px 0;
       gap: 8px;
     }
@@ -731,13 +726,13 @@ function renderDetail(d) {
         const chipClass   = !hasActual ? '' : td.hit ? 'hit' : 'miss';
         const chipLabel   = !hasActual ? '?' : td.hit ? `+${td.pts}` : '0';
       const grpTag = r.round === 'R32' && teamGroupMap[td.team]
-        ? `<span class="prog-team-group">G${teamGroupMap[td.team]}</span>`
+        ? `<span class="prog-team-group">Group ${teamGroupMap[td.team]}</span>`
         : '';
       const rowClass = grpTag ? 'prog-team-row' : 'prog-team-row-simple';
       html += `
         <div class="${rowClass}">
-          ${grpTag}
           <span class="prog-team-name ${statusClass}">${esc(td.team)}</span>
+          ${grpTag}
           <span class="prog-team-pts ${chipClass}">${chipLabel}</span>
         </div>`;
       });
