@@ -483,46 +483,57 @@ function renderList(entries, filter) {
   const f = (filter || '').toLowerCase();
   const filtered = f ? entries.filter(e => (e.displayName || '').toLowerCase().includes(f)) : entries;
 
-  let html = `
-    <div class="lookup-search">
-      <input type="text" id="searchInput" placeholder="Search by name…" value="${esc(filter || '')}" autocomplete="off" />
-    </div>`;
+  // First render: build the full shell including the search input
+  if (!document.getElementById('searchInput')) {
+    main.innerHTML = `
+      <div class="lookup-search">
+        <input type="text" id="searchInput" placeholder="Search by name…" autocomplete="off" />
+      </div>
+      <div class="entry-list" id="entryList"></div>`;
 
-  if (!filtered.length) {
-    html += '<div class="status-msg status-warn">No entries match that name.</div>';
-  } else {
-    html += '<div class="entry-list">';
-    filtered.forEach(e => {
-      html += `
-        <div class="entry-list-item" data-id="${esc(e.entryId)}">
-          <div>
-            <div class="entry-list-name">${esc(e.displayName)} ${payBadge(e.paymentStatus)}</div>
-            <div class="entry-list-rank" style="margin-top:2px;">Rank #${e.rank} · ${e.exactScoreCount} exact score${e.exactScoreCount !== 1 ? 's' : ''}</div>
-          </div>
-          <div class="entry-list-score">${e.totalPoints} pts</div>
-        </div>`;
+    document.getElementById('searchInput').addEventListener('input', function() {
+      renderEntryList(entries, this.value);
     });
-    html += '</div>';
+
+    const params = new URLSearchParams(window.location.search);
+    if (!params.get('id') && !params.get('name')) {
+      document.getElementById('searchInput').focus();
+    }
   }
 
-  main.innerHTML = html;
+  // Always set the input value without touching the input element itself
+  const input = document.getElementById('searchInput');
+  if (input && input.value !== (filter || '')) input.value = filter || '';
 
-  document.getElementById('searchInput').addEventListener('input', function() {
-    renderList(allEntries, this.value);
-  });
+  renderEntryList(entries, filter);
+}
 
-  document.querySelectorAll('.entry-list-item').forEach(el => {
+function renderEntryList(entries, filter) {
+  const f = (filter || '').toLowerCase();
+  const filtered = f ? entries.filter(e => (e.displayName || '').toLowerCase().includes(f)) : entries;
+  const list = document.getElementById('entryList');
+  if (!list) return;
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="status-msg status-warn" style="padding:12px 16px;">No entries match that name.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(e => `
+    <div class="entry-list-item" data-id="${esc(e.entryId)}">
+      <div>
+        <div class="entry-list-name">${esc(e.displayName)} ${payBadge(e.paymentStatus)}</div>
+        <div class="entry-list-rank" style="margin-top:2px;">Rank #${e.rank} · ${e.exactScoreCount} exact score${e.exactScoreCount !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="entry-list-score">${e.totalPoints} pts</div>
+    </div>`).join('');
+
+  list.querySelectorAll('.entry-list-item').forEach(el => {
     el.addEventListener('click', () => {
-      console.log('Clicked entry:', el.dataset.id);
       currentScrollY = window.scrollY;
       loadDetail(el.dataset.id);
     });
   });
-
-  const params = new URLSearchParams(window.location.search);
-  if (!params.get('id') && !params.get('name')) {
-    document.getElementById('searchInput').focus();
-  }
 }
 
 /* ── load leaderboard then render list ── */
