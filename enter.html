@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23111'/><polygon points='50,18 61,30 55,44 45,44 39,30' fill='%23fff'/><polygon points='22,36 35,32 39,44 28,52 17,46' fill='%23fff'/><polygon points='78,36 65,32 61,44 72,52 83,46' fill='%23fff'/><polygon points='28,68 28,54 39,47 50,55 50,70' fill='%23fff'/><polygon points='72,68 72,54 61,47 50,55 50,70' fill='%23fff'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -84,7 +84,16 @@
       flex-shrink: 0;
     }
 
-    .enter-nav-brand span:first-child { font-size: 20px; line-height: 1; }
+    .nav-ball-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .nav-ball-icon svg { width: 100%; height: 100%; }
+
     .enter-nav-brand-text {
       font-family: var(--font-head);
       font-size: 18px;
@@ -277,7 +286,6 @@
     .groups-progress-fill { height: 100%; background: var(--pitch); border-radius: 3px; transition: width .3s ease; }
     .groups-progress-count { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--pitch); white-space: nowrap; }
 
-    /* Group grid — responsive via media query (no JS needed) */
     .grid-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     @media (max-width: 700px) { .grid-groups { grid-template-columns: 1fr; gap: 10px; } }
     @media (min-width: 701px) and (max-width: 960px) { .grid-groups { grid-template-columns: repeat(2, 1fr); } }
@@ -363,13 +371,13 @@
     .rank-divider { display: flex; align-items: center; gap: 10px; margin: 4px 0; }
     .rank-divider-line { flex: 1; height: 1px; background: var(--border); }
     .rank-divider-label { font-size: 10px; font-weight: 600; color: var(--ink-3); letter-spacing: .5px; text-transform: uppercase; }
-    .qualification-note { padding: 8px 12px; background: var(--warn-bg); border: 1px solid #fde68a; border-radius: var(--radius); color: var(--warn); font-size: 12px; font-weight: 500; margin-top: 8px; }
+    .qualification-note { padding: 8px 12px; background: var(--warn-bg); border: 1px solid #fde68a; border-radius: var(--radius); color: var(--warn); font-size: 12px; font-weight: 500; }
     .third-rank-locked { padding: 14px; background: var(--surface-2); border: 1.5px dashed var(--border-2); border-radius: var(--radius); text-align: center; color: var(--ink-3); font-size: 13px; }
 
     /* ── KNOCKOUT ── */
-    .expand-note { margin-top: 10px; border: 1px solid #bfdbfe; border-radius: var(--radius); background: #eff6ff; overflow: hidden; }
-    .expand-note-btn { width: 100%; border: none; background: transparent; color: #1e40af; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; }
-    .expand-note-body { display: none; padding: 0 14px 14px; font-size: 13px; line-height: 1.5; color: #1e40af; }
+    .expand-note { margin-top: 10px; border: 1px solid #fde68a; border-radius: var(--radius); background: var(--warn-bg); overflow: hidden; }
+    .expand-note-btn { width: 100%; border: none; background: transparent; color: var(--warn); padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; }
+    .expand-note-body { display: none; padding: 0 14px 14px; font-size: 13px; line-height: 1.5; color: var(--warn); }
     .expand-note-body.open { display: block; }
     .expand-note-body p + p { margin-top: 10px; }
 
@@ -399,7 +407,6 @@
     .match-card { border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--surface); }
     .match-card.has-winner { border-color: #bbf7d0; background: #fafffe; }
 
-    /* Round-coloured match cards */
     .match-card.round-r32 { background: var(--r32-bg); border-color: var(--r32-border); }
     .match-card.round-r32.has-winner { background: #d1fae5; border-color: #6ee7b7; }
     .match-card.round-r16 { background: var(--r16-bg); border-color: var(--r16-border); }
@@ -429,7 +436,6 @@
     .match-meta-num { font-family: var(--font-head); font-size: 12px; font-weight: 800; color: var(--pitch); }
     .match-meta-rest { flex: 1; color: var(--ink-3); font-weight: 500; font-size: 10px; }
 
-    /* Mobile match layout — always use this on small screens */
     .match-row { display: none; }
     .match-row-mobile { display: block; }
 
@@ -489,7 +495,16 @@
 <!-- NAV -->
 <nav class="enter-nav">
   <a class="enter-nav-brand" href="index.html">
-    <span>⚽</span>
+    <span class="nav-ball-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="48" fill="#111" stroke="#444" stroke-width="2"/>
+        <polygon points="50,18 61,30 55,44 45,44 39,30" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <polygon points="22,36 35,32 39,44 28,52 17,46" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <polygon points="78,36 65,32 61,44 72,52 83,46" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <polygon points="28,68 28,54 39,47 50,55 50,70" fill="#fff" stroke="#111" stroke-width="1.5"/>
+        <polygon points="72,68 72,54 61,47 50,55 50,70" fill="#fff" stroke="#111" stroke-width="1.5"/>
+      </svg>
+    </span>
     <span class="enter-nav-brand-text">Mick's <em>WC26</em></span>
   </a>
   <div class="enter-nav-links">
@@ -545,7 +560,19 @@
         <div class="welcome-step"><div class="ws-num">5</div><div class="ws-icon">🏆</div><div class="ws-content"><div class="ws-label">Submit</div><div class="ws-desc">You'll get a confirmation email with a PDF of your picks.</div></div></div>
       </div>
       <div class="welcome-actions">
-        <button type="button" class="btn-welcome-go" id="welcomeGoBtn">Let's go ⚽</button>
+        <button type="button" class="btn-welcome-go" id="welcomeGoBtn">
+          Let's go
+          <span class="nav-ball-icon" style="width:24px;height:24px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="48" fill="#111" stroke="#444" stroke-width="2"/>
+              <polygon points="50,18 61,30 55,44 45,44 39,30" fill="#fff" stroke="#111" stroke-width="1.5"/>
+              <polygon points="22,36 35,32 39,44 28,52 17,46" fill="#fff" stroke="#111" stroke-width="1.5"/>
+              <polygon points="78,36 65,32 61,44 72,52 83,46" fill="#fff" stroke="#111" stroke-width="1.5"/>
+              <polygon points="28,68 28,54 39,47 50,55 50,70" fill="#fff" stroke="#111" stroke-width="1.5"/>
+              <polygon points="72,68 72,54 61,47 50,55 50,70" fill="#fff" stroke="#111" stroke-width="1.5"/>
+            </svg>
+          </span>
+        </button>
         <div class="welcome-draft-note hidden" id="welcomeDraftNote">
           You have a saved draft — <button type="button" id="welcomeContinueBtn">continue where you left off</button>
         </div>
@@ -642,8 +669,8 @@
           <div class="card-body">
             <div id="thirdRankLocked" class="third-rank-locked">Complete all 12 groups above and your 3rd-place ranking will appear here automatically.</div>
             <div id="thirdRankSection" class="hidden">
+              <div class="qualification-note" style="margin-bottom:10px;">Only the top 8 third-placed teams qualify. Teams ranked 9–12 are eliminated.</div>
               <div class="rank-list" id="thirdRankList"></div>
-              <div class="qualification-note">Only the top 8 third-placed teams qualify. Teams ranked 9–12 are eliminated.</div>
             </div>
             <div class="section-error" id="thirdRankError"></div>
           </div>
@@ -662,13 +689,13 @@
             </div>
             <div class="expand-note" style="margin-top:10px;">
               <button type="button" class="expand-note-btn" id="thirdPlaceNoteBtn">
-                <span>How are 3rd-placed teams assigned in the Round of 32?</span>
+                <span>⚠️ Important: how third-placed teams are assigned in the Round of 32</span>
                 <span id="thirdPlaceNoteIcon">+</span>
               </button>
               <div class="expand-note-body" id="thirdPlaceNoteBody">
-                <p>For this competition, the Round of 32 fixtures involving the best third-placed teams are generated using a simplified method rather than FIFA's full official allocation system.</p>
-                <p>The top 8 third-placed teams still qualify based on your rankings, but their Round of 32 matchups use this competition's own fixture logic. Safeguards prevent a group winner facing the third-placed team from their own group in Round of 32.</p>
-                <p>Some pairings may differ from the exact official FIFA bracket.</p>
+                <p><strong>Please read this before submitting.</strong> FIFA's official system for allocating the best third-placed teams to specific Round of 32 slots depends on which six groups the qualifiers come from — a combination that can't be known until the group stage ends. This competition can't replicate that system exactly at prediction time.</p>
+                <p>We have done our best to mirror the real fixture structure. Your top 8 third-placed teams still qualify based on your rankings, and safeguards prevent a group winner from facing the third-placed team from their own group in Round of 32. However, <strong>some specific match pairings may differ from the official FIFA bracket</strong> once the actual group stage concludes.</p>
+                <p>Knockout match scores are judged positionally — Team 1 vs Team 2 — so your score predictions will still be evaluated correctly regardless of which teams end up in those slots in reality. This only affects which teams you are asked to predict scores for in Round of 32.</p>
               </div>
             </div>
             <div class="status-msg" id="bracketStatus" style="margin-top:10px;"></div>
@@ -725,7 +752,7 @@
 
 <script>
 const SCRIPT_URL = 'https://api.micksworldcup2026.com';
-  
+
   async function apiGet(action, params) {
     const url = new URL(SCRIPT_URL);
     url.searchParams.set('action', action);
@@ -762,22 +789,37 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
   const FINAL_MATCH_NO = 104;
 
   const FIXTURE_DESC = {
-    73:'Runner-up Group A vs Runner-up Group B', 75:'Winner Group F vs Runner-up Group C',
-    76:'Winner Group C vs Runner-up Group F', 78:'Runner-up Group E vs Runner-up Group I',
-    83:'Runner-up Group K vs Runner-up Group L', 84:'Winner Group H vs Runner-up Group J',
-    86:'Winner Group J vs Runner-up Group H', 88:'Runner-up Group D vs Runner-up Group G',
-    74:'Winner Group E vs Best 3rd-place team', 77:'Winner Group I vs Best 3rd-place team',
-    79:'Winner Group A vs Best 3rd-place team', 80:'Winner Group L vs Best 3rd-place team',
-    81:'Winner Group D vs Best 3rd-place team', 82:'Winner Group G vs Best 3rd-place team',
-    85:'Winner Group B vs Best 3rd-place team', 87:'Winner Group K vs Best 3rd-place team',
-    89:'Winner Match 74 vs Winner Match 77', 90:'Winner Match 73 vs Winner Match 75',
-    91:'Winner Match 76 vs Winner Match 78', 92:'Winner Match 79 vs Winner Match 80',
-    93:'Winner Match 83 vs Winner Match 84', 94:'Winner Match 81 vs Winner Match 82',
-    95:'Winner Match 86 vs Winner Match 88', 96:'Winner Match 85 vs Winner Match 87',
-    97:'Winner Match 89 vs Winner Match 90', 98:'Winner Match 93 vs Winner Match 94',
-    99:'Winner Match 91 vs Winner Match 92', 100:'Winner Match 95 vs Winner Match 96',
-    101:'Winner Match 97 vs Winner Match 98', 102:'Winner Match 99 vs Winner Match 100',
-    104:'Winner Match 101 vs Winner Match 102'
+    73:  'Runner-up Group A vs Runner-up Group B',
+    74:  'Winner Group E vs 3rd from Group A/B/C/D/F',
+    75:  'Winner Group F vs Runner-up Group C',
+    76:  'Winner Group C vs Runner-up Group F',
+    77:  'Winner Group I vs 3rd from Group C/D/F/G/H',
+    78:  'Runner-up Group E vs Runner-up Group I',
+    79:  'Winner Group A vs 3rd from Group C/E/F/H/I',
+    80:  'Winner Group L vs 3rd from Group E/H/I/J/K',
+    81:  'Winner Group D vs 3rd from Group B/E/F/I/J',
+    82:  'Winner Group G vs 3rd from Group A/E/H/I/J',
+    83:  'Runner-up Group K vs Runner-up Group L',
+    84:  'Winner Group H vs Runner-up Group J',
+    85:  'Winner Group B vs 3rd from Group E/F/G/I/J',
+    86:  'Winner Group J vs Runner-up Group H',
+    87:  'Winner Group K vs 3rd from Group D/E/I/J/L',
+    88:  'Runner-up Group D vs Runner-up Group G',
+    89:  'Winner Match 74 vs Winner Match 77',
+    90:  'Winner Match 73 vs Winner Match 75',
+    91:  'Winner Match 76 vs Winner Match 78',
+    92:  'Winner Match 79 vs Winner Match 80',
+    93:  'Winner Match 83 vs Winner Match 84',
+    94:  'Winner Match 81 vs Winner Match 82',
+    95:  'Winner Match 86 vs Winner Match 88',
+    96:  'Winner Match 85 vs Winner Match 87',
+    97:  'Winner Match 89 vs Winner Match 90',
+    98:  'Winner Match 93 vs Winner Match 94',
+    99:  'Winner Match 91 vs Winner Match 92',
+    100: 'Winner Match 95 vs Winner Match 96',
+    101: 'Winner Match 97 vs Winner Match 98',
+    102: 'Winner Match 99 vs Winner Match 100',
+    104: 'Winner Match 101 vs Winner Match 102'
   };
 
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -1154,7 +1196,7 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
       $('generateBracketBtn').disabled=false;
       if(!res||!res.ok){showBracketStatus(res&&res.message?res.message:'Failed to generate fixtures.','error');return;}
       renderGeneratedBracket(res.bracket); showBracketStatus('Knockout fixtures generated successfully.','success'); scheduleDraftSave();
-} catch(err) {
+    } catch(err) {
       $('generateBracketBtn').disabled=false;
       const msg = err && err.message ? err.message : String(err);
       if (msg.toLowerCase().includes('load failed') || msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('network')) {
@@ -1214,7 +1256,6 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
       const infoEl=card.querySelector('.match-info-btn');
       if(infoEl){infoEl.addEventListener('click',e=>{e.stopPropagation();const isOpen=infoEl.classList.contains('tip-open');document.querySelectorAll('.match-info-btn.tip-open').forEach(el=>el.classList.remove('tip-open'));if(!isOpen){infoEl.classList.add('tip-open');const rect=infoEl.getBoundingClientRect();infoEl.classList.toggle('tip-down',rect.top<80);}});}
 
-      // Wire desktop and mobile inputs — keep them in sync
       const s1el  = $(`${rk}_${i}_S1`);
       const s2el  = $(`${rk}_${i}_S2`);
       const s1mel = $(`${rk}_${i}_S1M`);
@@ -1236,9 +1277,6 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
         el.addEventListener('input', e => {
           normaliseScoreInput(e.target);
           syncInputs(e.target, mirror);
-          // Always update the canonical score from whichever input is the source
-          const s1val = (s1el && s1el.value !== '' ? s1el : s1mel) ;
-          const s2val = (s2el && s2el.value !== '' ? s2el : s2mel);
           matches[i].score1 = s1el ? s1el.value : (s1mel ? s1mel.value : '');
           matches[i].score2 = s2el ? s2el.value : (s2mel ? s2mel.value : '');
           matches[i].winner = '';
@@ -1286,25 +1324,6 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
 
   function restrictScoreInput(e){const ok=['Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'];if(ok.includes(e.key))return;if(!/^[0-9]$/.test(e.key)){e.preventDefault();return;}const inp=e.target,sel=inp.selectionEnd-inp.selectionStart;if(inp.value.length>=1&&sel===0)e.preventDefault();}
   function normaliseScoreInput(inp){let v=String(inp.value||'').replace(/[^0-9]/g,'');if(v.length>1)v=v.slice(0,1);inp.value=v;}
-
-  function autoAdvanceScoreInput(input,rk,idx){
-    const v=String(input.value||''); if(!/^[0-9]$/.test(v))return;
-    const isS1=input.id.endsWith('_S1');
-    if(isS1){const n=$(`${rk}_${idx}_S2`);if(n)requestAnimationFrame(()=>{n.focus();n.select();});return;}
-    const nx=$(`${rk}_${idx+1}_S1`);
-    if(nx){requestAnimationFrame(()=>{nx.focus();nx.select();});return;}
-    updateProgression();
-    setTimeout(()=>{const order=['R32','R16','QF','SF','FINAL'],ci=order.indexOf(rk);for(let i=ci+1;i<order.length;i++){const el=$(`${order[i]}_0_S1`);if(el&&el.offsetParent!==null){el.focus();el.select();return;}}},30);
-  }
-
-  function handleScoreInput(matches,i,rk){
-    const s1=$(`${rk}_${i}_S1`).value, s2=$(`${rk}_${i}_S2`).value;
-    matches[i].score1=s1; matches[i].score2=s2; matches[i].winner='';
-    if(s1!==''&&s2!==''){const n1=Number(s1),n2=Number(s2);if(Number.isInteger(n1)&&Number.isInteger(n2)&&n1>=0&&n2>=0&&n1!==n2)matches[i].winner=n1>n2?matches[i].team1:matches[i].team2;}
-    updateTeamColours(matches,i,rk);
-    const e=$(`${rk}_${i}_ERROR`);if(e)e.textContent='';
-    updateProgression(); scheduleDraftSave();
-  }
 
   function handleScoreBlur(matches,i,rk){
     const e=$(`${rk}_${i}_ERROR`);if(!e)return;
@@ -1424,14 +1443,14 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
     e.preventDefault(); hideStatus('submitStatus');
     if(!validateDetails()||!validateGroups()||!validateThirdRank()||!validateKnockout()) return;
     $('submitBtn').disabled=true;
-$('submitStatus').className = 'status-msg visible info';
-$('submitStatus').innerHTML = `
-  <div style="display:flex;align-items:center;gap:12px;">
-    <span style="font-size:24px;animation:spin 1s linear infinite;display:inline-block;">⚽</span>
-    <span>Submitting your entry — this can take up to 30 seconds while we create your PDF…</span>
-  </div>`;
+    $('submitStatus').className = 'status-msg visible info';
+    $('submitStatus').innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:24px;animation:spin 1s linear infinite;display:inline-block;">⚽</span>
+        <span>Submitting your entry — this can take up to 30 seconds while we create your PDF…</span>
+      </div>`;
     try {
-const firstName = $('fullName').value.trim().split(' ')[0];
+      const firstName = $('fullName').value.trim().split(' ')[0];
       const res = await apiPost('submitEntry', buildPayload());
       $('submitBtn').disabled=false;
       if(!res||!res.ok){showMsg($('submitStatus'),res&&res.message?res.message:'Submission failed.','error');return;}
@@ -1502,7 +1521,8 @@ const firstName = $('fullName').value.trim().split(' ')[0];
     go.addEventListener('click',()=>dismiss(false));
     if(cont)cont.addEventListener('click',()=>dismiss(true));
   }
-function startNewEntry() {
+
+  function startNewEntry() {
     resetFormState();
     hideStatus('submitStatus');
     $('submitLocked').classList.remove('hidden');
@@ -1514,6 +1534,7 @@ function startNewEntry() {
     $('welcomeDraftNote').classList.add('hidden');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
+
   /* ── Main init ── */
   async function initForm(){
     $('closedScreen').style.display='none';
