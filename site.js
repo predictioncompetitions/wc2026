@@ -1,5 +1,4 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-//OLD_SCRIPT const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzThbgrqjQytw8ak4PY3GcnxhF-JdnF1CcossbeB4_NaXbKKIPfryU1oOm5Y6r9HSw/exec';
 const SCRIPT_URL = 'https://api.micksworldcup2026.com';
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
