@@ -340,7 +340,26 @@
     .match-scoreline.pending { background: var(--surface-3); color: var(--ink-3); }
     .match-row-label { font-size: 10px; text-align: center; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
 
-    /* match pts breakdown strip */
+    /* match info tooltip */
+    .match-info-btn {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.5px solid var(--border-2); background: var(--surface-2);
+      color: var(--ink-3); font-size: 11px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; position: relative; transition: all .18s; padding: 0;
+      vertical-align: middle; margin-left: 6px;
+    }
+    .match-info-btn:hover { background: var(--pitch); border-color: var(--pitch); color: #fff; }
+    .match-tooltip {
+      display: none; position: absolute; bottom: calc(100% + 6px); left: 0;
+      min-width: 200px; max-width: 280px; background: var(--ink); color: #fff;
+      font-size: 11px; font-weight: 500; line-height: 1.4; white-space: normal;
+      padding: 7px 11px; border-radius: 6px; box-shadow: var(--shadow-lg);
+      z-index: 50; pointer-events: none;
+    }
+    .match-tooltip::after { content:''; position:absolute; top:100%; left:10px; border:5px solid transparent; border-top-color: var(--ink); }
+    .match-info-btn:hover .match-tooltip,
+    .match-info-btn.tip-open .match-tooltip { display: block; }
     .match-pts-breakdown {
       display: flex;
       flex-wrap: wrap;
@@ -360,10 +379,7 @@
     .match-pts-chip.earned { background: #dcfce7; color: #166534; }
     .match-pts-chip.exact  { background: #fef9c3; color: #854d0e; }
 
-    .match-card.exact   { border-left: 3px solid #16a34a; }
-    .match-card.partial { border-left: 3px solid #2563eb; }
-    .match-card.zero    { border-left: 3px solid var(--surface-3); }
-    .match-card.pending { border-left: 3px solid var(--surface-3); opacity: .65; }
+    .match-card.pending { opacity: .65; }
 
     /* ── Back button ── */
     .back-btn {
@@ -445,7 +461,7 @@
   <div class="loading-state" style="text-align:center;padding:40px;">
     <style>
       @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-      .spinner { width:44px; height:44px; border-radius:50%; border:4px solid #e5e7eb; border-top-color:#16a34a; margin:0 auto 12px; animation:spin 0.8s linear infinite; }
+      .spinner { width:44px; height:44px; border-radius:50%; border:4px solid #e5e7eb; border-top-color:#16a34a; margin:0 auto 12px; animation:spin 0.8s linear infinite; display:block; }
     </style>
     <div class="spinner"></div>
     Loading entries…
@@ -461,6 +477,41 @@
 
 <script src="site.js"></script>
 <script>
+/* ── fixture descriptions (for ⓘ tooltips) ── */
+const FIXTURE_DESC = {
+  73:'Runner-up Group A vs Runner-up Group B',
+  74:'Winner Group E vs Best 3rd-place team',
+  75:'Winner Group F vs Runner-up Group C',
+  76:'Winner Group C vs Runner-up Group F',
+  77:'Winner Group I vs Best 3rd-place team',
+  78:'Runner-up Group E vs Runner-up Group I',
+  79:'Winner Group A vs Best 3rd-place team',
+  80:'Winner Group L vs Best 3rd-place team',
+  81:'Winner Group D vs Best 3rd-place team',
+  82:'Winner Group G vs Best 3rd-place team',
+  83:'Runner-up Group K vs Runner-up Group L',
+  84:'Winner Group H vs Runner-up Group J',
+  85:'Winner Group B vs Best 3rd-place team',
+  86:'Winner Group J vs Runner-up Group H',
+  87:'Winner Group K vs Best 3rd-place team',
+  88:'Runner-up Group D vs Runner-up Group G',
+  89:'Winner Match 74 vs Winner Match 77',
+  90:'Winner Match 73 vs Winner Match 75',
+  91:'Winner Match 76 vs Winner Match 78',
+  92:'Winner Match 79 vs Winner Match 80',
+  93:'Winner Match 83 vs Winner Match 84',
+  94:'Winner Match 81 vs Winner Match 82',
+  95:'Winner Match 86 vs Winner Match 88',
+  96:'Winner Match 85 vs Winner Match 87',
+  97:'Winner Match 89 vs Winner Match 90',
+  98:'Winner Match 93 vs Winner Match 94',
+  99:'Winner Match 91 vs Winner Match 92',
+  100:'Winner Match 95 vs Winner Match 96',
+  101:'Winner Match 97 vs Winner Match 98',
+  102:'Winner Match 99 vs Winner Match 100',
+  104:'Winner Match 101 vs Winner Match 102'
+};
+
 /* ── spinner ── */
 const ballSvg = `<div style="display:block;margin:0 auto 12px;width:44px;height:44px;border-radius:50%;border:4px solid #e5e7eb;border-top-color:#16a34a;animation:spin 0.8s linear infinite;"></div>`;
 
@@ -728,14 +779,10 @@ function renderDetail(d) {
         const statusClass = !hasActual ? '' : td.hit ? 'hit' : 'miss';
         const chipClass   = !hasActual ? '' : td.hit ? 'hit' : 'miss';
         const chipLabel   = !hasActual ? '?' : td.hit ? `+${td.pts}` : '0';
-      const grpTag = r.round === 'R32' && teamGroupMap[td.team]
-        ? `<span class="prog-team-group">Group ${teamGroupMap[td.team]}</span>`
-        : '';
-      const rowClass = grpTag ? 'prog-team-row' : 'prog-team-row-simple';
+      const rowClass = 'prog-team-row-simple';
       html += `
         <div class="${rowClass}">
           <span class="prog-team-name ${statusClass}">${esc(td.team)}</span>
-          ${grpTag}
           <span class="prog-team-pts ${chipClass}">${chipLabel}</span>
         </div>`;
       });
@@ -792,11 +839,7 @@ function renderDetail(d) {
   ══════════════════════════════════════════ */
   html += `
     <div class="tab-panel" id="tab-matches">
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot ld-exact"></div> Exact score</div>
-        <div class="legend-item"><div class="legend-dot ld-partial"></div> Partial points</div>
-        <div class="legend-item"><div class="legend-dot ld-zero"></div> No points / pending</div>
-      </div>`;
+      <div class="legend" style="display:none;"></div>`;
 
   const matchSections = [
     { label: 'Round of 32',   matches: (d.matchDetail || []).filter(m => m.label.startsWith('R32')) },
@@ -844,10 +887,15 @@ function renderDetail(d) {
         breakdownHtml += `</div>`;
       }
 
+      const desc = FIXTURE_DESC[Number(m.matchNo)] || '';
+      const infoBtn = desc
+        ? `<button type="button" class="match-info-btn" onclick="this.classList.toggle('tip-open')">ⓘ<span class="match-tooltip">${esc(desc)}</span></button>`
+        : '';
+
       html += `
         <div class="match-card ${cardClass}">
           <div class="match-card-head">
-            <span>Match ${esc(m.matchNo)}</span>
+            <span>Match ${esc(m.matchNo)}${infoBtn}</span>
             <span class="match-card-pts">${m.played ? m.pts + ' pts' : 'Pending'}</span>
           </div>
           <div class="match-card-body">
