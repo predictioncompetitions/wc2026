@@ -760,11 +760,8 @@ function renderDetail(d) {
       if (m.played && hasPred) {
         const ps1 = Number(m.predScore1), ps2 = Number(m.predScore2);
         const as1 = Number(m.actualScore1), as2 = Number(m.actualScore2);
-        const predWin = ps1 > ps2 ? m.predHome : m.predAway;
-        const actWin  = m.actualWinner || (as1 > as2 ? m.actualHome : m.actualAway);
         const isExact = ps1 === as1 && ps2 === as2;
-
-        const winnerPts = predWin && actWin && predWin.toUpperCase().trim() === actWin.toUpperCase().trim() ? 3 : 0;
+        const winnerPts = (ps1 > ps2) === (as1 > as2) ? 3 : 0;
         const goals1Pts = ps1 === as1 ? 2 : 0;
         const goals2Pts = ps2 === as2 ? 2 : 0;
         const gdPts     = ((ps1 - ps2) === (as1 - as2)) ? 1 : 0;
