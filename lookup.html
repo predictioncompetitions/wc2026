@@ -385,7 +385,60 @@
 
     .match-card.pending { opacity: .65; }
 
-    /* ── Back button ── */
+    /* ── Scoring info panel ── */
+    .scoring-info {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      overflow: hidden;
+      font-size: 13px;
+    }
+    .scoring-info-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-2);
+      text-align: left;
+      gap: 10px;
+    }
+    .scoring-info-btn:hover { background: var(--surface-3); }
+    .scoring-info-chevron { font-size: 11px; color: var(--ink-3); transition: transform .2s; flex-shrink: 0; }
+    .scoring-info.open .scoring-info-chevron { transform: rotate(180deg); }
+    .scoring-info-body {
+      display: none;
+      padding: 12px 14px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+    .scoring-info.open .scoring-info-body { display: block; }
+    .scoring-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--surface-3);
+      font-size: 13px;
+    }
+    .scoring-row:last-child { border-bottom: none; }
+    .scoring-pts {
+      font-family: var(--font-head);
+      font-weight: 800;
+      color: var(--pitch);
+      white-space: nowrap;
+      min-width: 36px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .scoring-desc { color: var(--ink-2); line-height: 1.4; }
+    .scoring-note { font-size: 12px; color: var(--ink-3); margin-bottom: 8px; }
     .back-btn {
       display: inline-flex;
       align-items: center;
@@ -690,7 +743,20 @@ function renderDetail(d) {
   /* ══════════════════════════════════════════
      GROUPS TAB
   ══════════════════════════════════════════ */
-  html += '<div class="tab-panel active" id="tab-groups"><div class="group-grid">';
+  html += `<div class="tab-panel active" id="tab-groups">
+    <div class="scoring-info open" id="si-groups">
+      <button class="scoring-info-btn" onclick="toggleScoring('si-groups')">
+        <span>📊 How group points are scored</span>
+        <span class="scoring-info-chevron">▼</span>
+      </button>
+      <div class="scoring-info-body">
+        <div class="scoring-row"><span class="scoring-pts">4 pts</span><span class="scoring-desc">Correct team qualifies in the correct position (1st, 2nd or 3rd)</span></div>
+        <div class="scoring-row"><span class="scoring-pts">1 pt</span><span class="scoring-desc">Correct team qualifies but in the wrong position</span></div>
+        <div class="scoring-row"><span class="scoring-pts">2 pts</span><span class="scoring-desc">Correct group winner</span></div>
+        <div class="scoring-row"><span class="scoring-pts">5 pts</span><span class="scoring-desc">Perfect group — all three teams qualify in the correct positions</span></div>
+      </div>
+    </div>
+    <div class="group-grid">`;
 
   (d.groupDetail || []).forEach(g => {
     const hasActual = g.actual.some(t => t);
@@ -746,12 +812,27 @@ function renderDetail(d) {
     html += `</div></div>`;
   });
 
-  html += '</div></div>';
+  html += '</div></div></div>';
 
   /* ══════════════════════════════════════════
      PROGRESSION TAB
   ══════════════════════════════════════════ */
-  html += '<div class="tab-panel" id="tab-progression">';
+  html += `<div class="tab-panel" id="tab-progression">
+    <div class="scoring-info open" id="si-prog">
+      <button class="scoring-info-btn" onclick="toggleScoring('si-prog')">
+        <span>📊 How progression points are scored</span>
+        <span class="scoring-info-chevron">▼</span>
+      </button>
+      <div class="scoring-info-body">
+        <div class="scoring-note">Points are cumulative — they stack as your picked teams progress further.</div>
+        <div class="scoring-row"><span class="scoring-pts">3 pts</span><span class="scoring-desc">Team reaches the Round of 32</span></div>
+        <div class="scoring-row"><span class="scoring-pts">3 pts</span><span class="scoring-desc">Team reaches the Round of 16</span></div>
+        <div class="scoring-row"><span class="scoring-pts">7 pts</span><span class="scoring-desc">Team reaches the Quarter-finals</span></div>
+        <div class="scoring-row"><span class="scoring-pts">10 pts</span><span class="scoring-desc">Team reaches the Semi-finals</span></div>
+        <div class="scoring-row"><span class="scoring-pts">15 pts</span><span class="scoring-desc">Team reaches the Final</span></div>
+        <div class="scoring-row"><span class="scoring-pts">20 pts</span><span class="scoring-desc">Team wins the World Cup</span></div>
+      </div>
+    </div>`;
 
   /* build team → group lookup from groupDetail */
   const teamGroupMap = {};
@@ -839,6 +920,20 @@ function renderDetail(d) {
   ══════════════════════════════════════════ */
   html += `
     <div class="tab-panel" id="tab-matches">
+              <div class="scoring-info open" id="si-matches">
+        <button class="scoring-info-btn" onclick="toggleScoring('si-matches')">
+          <span>📊 How knock out points are scored</span>
+          <span class="scoring-info-chevron">▼</span>
+        </button>
+        <div class="scoring-info-body">
+          <div class="scoring-note">Points below are awarded per match across all knockout rounds.</div>
+          <div class="scoring-row"><span class="scoring-pts">3 pts</span><span class="scoring-desc">Correct winner</span></div>
+          <div class="scoring-row"><span class="scoring-pts">2 pts</span><span class="scoring-desc">Correct number of goals for Team 1</span></div>
+          <div class="scoring-row"><span class="scoring-pts">2 pts</span><span class="scoring-desc">Correct number of goals for Team 2</span></div>
+          <div class="scoring-row"><span class="scoring-pts">1 pt</span><span class="scoring-desc">Correct goal difference</span></div>
+          <div class="scoring-row"><span class="scoring-pts">2 pts</span><span class="scoring-desc">Exact score (e.g. you predict 2–1 and it finishes 2–1)</span></div>
+        </div>
+      </div>
       <div class="legend" style="display:none;"></div>`;
 
   const matchSections = [
@@ -942,6 +1037,11 @@ function renderDetail(d) {
     renderList(allEntries, '');
     window.scrollTo(0, currentScrollY);
   });
+}
+
+function toggleScoring(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
 }
 
 init();
