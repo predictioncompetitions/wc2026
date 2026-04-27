@@ -677,6 +677,14 @@ function renderDetail(d) {
   ══════════════════════════════════════════ */
   html += '<div class="tab-panel" id="tab-progression">';
 
+  /* build team → group lookup from groupDetail */
+  const teamGroupMap = {};
+  (d.groupDetail || []).forEach(g => {
+    g.predicted.forEach(team => {
+      if (team) teamGroupMap[team.toUpperCase().trim()] = g.group;
+    });
+  });
+
   (d.progressionDetail || []).forEach(r => {
     const hasActual = r.actual.length > 0;
     html += `
@@ -695,9 +703,12 @@ function renderDetail(d) {
         const statusClass = !hasActual ? '' : td.hit ? 'hit' : 'miss';
         const chipClass   = !hasActual ? '' : td.hit ? 'hit' : 'miss';
         const chipLabel   = !hasActual ? '?' : td.hit ? `+${td.pts}` : '0';
+      const groupLabel = r.round === 'R32'
+        ? (teamGroupMap[td.team] ? `<span style="font-size:10px;color:var(--ink-3);margin-left:4px;">Grp ${teamGroupMap[td.team]}</span>` : '')
+        : '';
         html += `
           <div class="prog-team-row">
-            <span class="prog-team-name ${statusClass}">${esc(td.team)}</span>
+            <span class="prog-team-name ${statusClass}">${esc(td.team)}${groupLabel}</span>
             <span class="prog-team-pts ${chipClass}">${chipLabel}</span>
           </div>`;
       });
