@@ -134,10 +134,12 @@
     .group-card-head-name { font-family: var(--font-head); font-size: 15px; font-weight: 800; }
     .group-card-pts { font-family: var(--font-head); font-size: 16px; font-weight: 800; color: var(--gold); }
     .group-card-body { padding: 10px 14px; }
+
+    /* group row: pos | team | actual | pts */
     .group-row {
       display: grid;
-      grid-template-columns: 20px 1fr 1fr;
-      gap: 4px 10px;
+      grid-template-columns: 18px 1fr 1fr 32px;
+      gap: 4px 8px;
       align-items: center;
       padding: 5px 0;
       border-bottom: 1px solid var(--surface-3);
@@ -147,9 +149,35 @@
     .group-pos { color: var(--ink-3); font-weight: 700; font-size: 11px; }
     .group-pred { color: var(--ink); font-weight: 500; }
     .group-actual { color: var(--ink-3); font-size: 12px; }
-    .group-row.correct .group-pred { color: #16a34a; font-weight: 700; }
-    .group-row.correct-pos .group-pred { color: #2563eb; font-weight: 700; }
+    .group-item-pts {
+      font-family: var(--font-head);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .group-item-pts.pts-4  { color: #16a34a; }
+    .group-item-pts.pts-1  { color: #2563eb; }
+    .group-item-pts.pts-0  { color: var(--ink-3); }
+    .group-item-pts.pts-pending { color: var(--ink-3); opacity: .5; }
+
+    .group-row.correct     .group-pred { color: #2563eb; font-weight: 700; }
+    .group-row.correct-pos .group-pred { color: #16a34a; font-weight: 700; }
+
     .group-col-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--ink-3); }
+    .group-perfect-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #854d0e;
+      background: #fef9c3;
+      border: 1px solid #fde047;
+      border-radius: 20px;
+      padding: 3px 8px;
+      margin: 8px 0 2px;
+    }
 
     /* ── Progression ── */
     .prog-round {
@@ -177,13 +205,38 @@
       gap: 12px;
     }
     .prog-col-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--ink-3); margin-bottom: 6px; }
-    .prog-team {
+
+    /* team row with inline pts badge */
+    .prog-team-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3px 0;
+      gap: 8px;
+    }
+    .prog-team-name {
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .prog-team-name.hit  { color: #16a34a; font-weight: 700; }
+    .prog-team-name.miss { color: var(--ink-3); }
+    .prog-team-pts {
+      font-family: var(--font-head);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .prog-team-pts.hit  { background: #dcfce7; color: #166534; }
+    .prog-team-pts.miss { background: var(--surface-3); color: var(--ink-3); }
+
+    .prog-actual-team {
       font-size: 13px;
       padding: 3px 0;
       color: var(--ink);
     }
-    .prog-team.hit { color: #16a34a; font-weight: 700; }
-    .prog-team.miss { color: var(--ink-3); }
 
     /* ── Match table ── */
     .match-section { margin-bottom: 20px; }
@@ -242,9 +295,30 @@
     }
     .match-scoreline.pending { background: var(--surface-3); color: var(--ink-3); }
     .match-row-label { font-size: 10px; text-align: center; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
-    .match-card.exact { border-left: 3px solid #16a34a; }
+
+    /* match pts breakdown strip */
+    .match-pts-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--surface-3);
+    }
+    .match-pts-chip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: var(--surface-3);
+      color: var(--ink-3);
+    }
+    .match-pts-chip.earned { background: #dcfce7; color: #166534; }
+    .match-pts-chip.exact  { background: #fef9c3; color: #854d0e; }
+
+    .match-card.exact   { border-left: 3px solid #16a34a; }
     .match-card.partial { border-left: 3px solid #2563eb; }
-    .match-card.zero { border-left: 3px solid var(--surface-3); }
+    .match-card.zero    { border-left: 3px solid var(--surface-3); }
     .match-card.pending { border-left: 3px solid var(--surface-3); opacity: .65; }
 
     /* ── Back button ── */
@@ -391,7 +465,6 @@ function renderList(entries, filter) {
     });
   });
 
-  // Auto-focus search if no URL param
   const params = new URLSearchParams(window.location.search);
   if (!params.get('id') && !params.get('name')) {
     document.getElementById('searchInput').focus();
@@ -414,7 +487,6 @@ async function init() {
     if (idParam) {
       await loadDetail(idParam);
     } else if (nameParam) {
-      // Find matching entry ID
       const match = allEntries.find(e =>
         (e.displayName || '').toLowerCase() === nameParam.toLowerCase()
       );
@@ -442,7 +514,6 @@ async function loadDetail(entryId) {
     if (!data || !data.ok) throw new Error(data?.error || 'Entry not found');
     renderDetail(data);
 
-    // Update URL without reload
     const url = new URL(window.location);
     url.searchParams.set('id', entryId);
     url.searchParams.delete('name');
@@ -497,14 +568,20 @@ function renderDetail(d) {
     </div>
   `;
 
-  /* ── Groups tab ── */
+  /* ══════════════════════════════════════════
+     GROUPS TAB
+  ══════════════════════════════════════════ */
   html += '<div class="tab-panel active" id="tab-groups"><div class="group-grid">';
+
   (d.groupDetail || []).forEach(g => {
     const hasActual = g.actual.some(t => t);
     html += `
       <div class="group-card">
         <div class="group-card-head">
-          <div><div class="group-card-head-label">Group</div><div class="group-card-head-name">${esc(g.group)}</div></div>
+          <div>
+            <div class="group-card-head-label">Group</div>
+            <div class="group-card-head-name">${esc(g.group)}</div>
+          </div>
           <div class="group-card-pts">${g.pts} pts</div>
         </div>
         <div class="group-card-body">
@@ -512,33 +589,53 @@ function renderDetail(d) {
             <div class="group-pos"></div>
             <div class="group-col-head">Your pick</div>
             <div class="group-col-head">Actual</div>
+            <div class="group-col-head" style="text-align:right;">Pts</div>
           </div>`;
 
-    [0,1,2].forEach(pos => {
+    [0, 1, 2].forEach(pos => {
       const pred = g.predicted[pos] || '—';
       const act  = g.actual[pos]    || '—';
-      const norm = s => s.toUpperCase().trim();
+      const pts  = (g.positionPts && g.positionPts[pos] !== undefined && g.positionPts[pos] !== null)
+                    ? g.positionPts[pos] : null;
+
       let rowClass = '';
       if (hasActual && pred !== '—') {
-        if (norm(pred) === norm(act)) rowClass = 'correct-pos';
-        else if (g.actual.some(a => norm(a) === norm(pred))) rowClass = 'correct';
+        if (pts === 4) rowClass = 'correct-pos';
+        else if (pts === 1) rowClass = 'correct';
       }
+
+      let ptsHtml = '';
+      if (!hasActual || pts === null) {
+        ptsHtml = `<div class="group-item-pts pts-pending">—</div>`;
+      } else {
+        ptsHtml = `<div class="group-item-pts pts-${pts}">${pts}</div>`;
+      }
+
       html += `
         <div class="group-row ${rowClass}">
-          <div class="group-pos">${pos+1}</div>
+          <div class="group-pos">${pos + 1}</div>
           <div class="group-pred">${esc(pred)}</div>
           <div class="group-actual">${esc(act)}</div>
+          ${ptsHtml}
         </div>`;
     });
 
+    if (g.perfectGroup) {
+      html += `<div class="group-perfect-badge">⭐ Perfect group +5 bonus</div>`;
+    }
+
     html += `</div></div>`;
   });
+
   html += '</div></div>';
 
-  /* ── Progression tab ── */
+  /* ══════════════════════════════════════════
+     PROGRESSION TAB
+  ══════════════════════════════════════════ */
   html += '<div class="tab-panel" id="tab-progression">';
+
   (d.progressionDetail || []).forEach(r => {
-    const actualSet = new Set(r.actual.map(t => t.toUpperCase().trim()));
+    const hasActual = r.actual.length > 0;
     html += `
       <div class="prog-round">
         <div class="prog-round-head">
@@ -549,24 +646,36 @@ function renderDetail(d) {
           <div class="prog-cols">
             <div>
               <div class="prog-col-head">Your picks</div>`;
-    if (r.predicted.length) {
-      r.predicted.forEach(t => {
-        const hit = actualSet.has(t.toUpperCase().trim()) && r.actual.length > 0;
-        html += `<div class="prog-team ${hit ? 'hit' : r.actual.length ? 'miss' : ''}">${esc(t)}</div>`;
+
+    if (r.teamDetail && r.teamDetail.length) {
+      r.teamDetail.forEach(td => {
+        const statusClass = !hasActual ? '' : td.hit ? 'hit' : 'miss';
+        const chipClass   = !hasActual ? '' : td.hit ? 'hit' : 'miss';
+        const chipLabel   = !hasActual ? '?' : td.hit ? `+${td.pts}` : '0';
+        html += `
+          <div class="prog-team-row">
+            <span class="prog-team-name ${statusClass}">${esc(td.team)}</span>
+            <span class="prog-team-pts ${chipClass}">${chipLabel}</span>
+          </div>`;
       });
     } else {
-      html += '<div class="prog-team miss">No prediction</div>';
+      html += '<div class="prog-team-name miss">No prediction</div>';
     }
+
     html += `</div><div><div class="prog-col-head">Actual</div>`;
-    if (r.actual.length) {
-      r.actual.forEach(t => { html += `<div class="prog-team">${esc(t)}</div>`; });
+
+    if (hasActual) {
+      r.actual.forEach(t => {
+        html += `<div class="prog-actual-team">${esc(t)}</div>`;
+      });
     } else {
-      html += '<div class="prog-team miss">Not yet known</div>';
+      html += '<div class="prog-team-name miss">Not yet known</div>';
     }
+
     html += `</div></div></div></div>`;
   });
 
-  // Winner row
+  /* Winner row */
   const w = d.winnerDetail || {};
   const wHit = w.actualWinner && w.predictedWinner === w.actualWinner;
   html += `
@@ -579,19 +688,27 @@ function renderDetail(d) {
         <div class="prog-cols">
           <div>
             <div class="prog-col-head">Your pick</div>
-            <div class="prog-team ${wHit ? 'hit' : w.actualWinner ? 'miss' : ''}">${esc(w.predictedWinner || '—')}</div>
+            <div class="prog-team-row">
+              <span class="prog-team-name ${w.actualWinner ? (wHit ? 'hit' : 'miss') : ''}">${esc(w.predictedWinner || '—')}</span>
+              ${w.actualWinner
+                ? `<span class="prog-team-pts ${wHit ? 'hit' : 'miss'}">${wHit ? '+' + w.pts : '0'}</span>`
+                : `<span class="prog-team-pts">?</span>`}
+            </div>
           </div>
           <div>
             <div class="prog-col-head">Actual winner</div>
-            <div class="prog-team">${esc(w.actualWinner || 'Not yet known')}</div>
+            <div class="prog-actual-team">${esc(w.actualWinner || 'Not yet known')}</div>
           </div>
         </div>
       </div>
     </div>
   `;
+
   html += '</div>';
 
-  /* ── Match scores tab ── */
+  /* ══════════════════════════════════════════
+     MATCH SCORES TAB
+  ══════════════════════════════════════════ */
   html += `
     <div class="tab-panel" id="tab-matches">
       <div class="legend">
@@ -601,22 +718,53 @@ function renderDetail(d) {
       </div>`;
 
   const matchSections = [
-    { label: 'Round of 32', keys: d.matchDetail?.filter(m => m.label.startsWith('R32')) || [] },
-    { label: 'Round of 16', keys: d.matchDetail?.filter(m => m.label.startsWith('R16')) || [] },
-    { label: 'Quarter-finals', keys: d.matchDetail?.filter(m => m.label.startsWith('QF')) || [] },
-    { label: 'Semi-finals', keys: d.matchDetail?.filter(m => m.label.startsWith('SF')) || [] },
-    { label: 'Final', keys: d.matchDetail?.filter(m => m.label === 'Final') || [] }
+    { label: 'Round of 32',   matches: (d.matchDetail || []).filter(m => m.label.startsWith('R32')) },
+    { label: 'Round of 16',   matches: (d.matchDetail || []).filter(m => m.label.startsWith('R16')) },
+    { label: 'Quarter-finals',matches: (d.matchDetail || []).filter(m => m.label.startsWith('QF'))  },
+    { label: 'Semi-finals',   matches: (d.matchDetail || []).filter(m => m.label.startsWith('SF'))  },
+    { label: 'Final',         matches: (d.matchDetail || []).filter(m => m.label === 'Final')        }
   ];
 
   matchSections.forEach(section => {
-    if (!section.keys.length) return;
+    if (!section.matches.length) return;
     html += `<div class="match-section"><div class="match-section-head">${esc(section.label)}</div>`;
 
-    section.keys.forEach(m => {
-      const hasPred = m.predHome && m.predAway && m.predScore1 !== null && m.predScore2 !== null;
-      const cardClass = !m.played ? 'pending' : m.pts >= 5 ? 'exact' : m.pts > 0 ? 'partial' : 'zero';
-      const predLine  = hasPred ? `${m.predScore1} – ${m.predScore2}` : '? – ?';
-      const actLine   = m.played ? `${m.actualScore1} – ${m.actualScore2}` : 'TBD';
+    section.matches.forEach(m => {
+      const hasPred    = m.predHome && m.predAway && m.predScore1 !== null && m.predScore2 !== null;
+      const cardClass  = !m.played ? 'pending' : m.pts >= 5 ? 'exact' : m.pts > 0 ? 'partial' : 'zero';
+      const predLine   = hasPred ? `${m.predScore1} – ${m.predScore2}` : '? – ?';
+      const actLine    = m.played ? `${m.actualScore1} – ${m.actualScore2}` : 'TBD';
+
+      /* per-component pts breakdown (only shown when played) */
+      let breakdownHtml = '';
+      if (m.played && hasPred) {
+        const ps1 = Number(m.predScore1), ps2 = Number(m.predScore2);
+        const as1 = Number(m.actualScore1), as2 = Number(m.actualScore2);
+        const predWin = ps1 > ps2 ? m.predHome : m.predAway;
+        const actWin  = m.actualWinner || (as1 > as2 ? m.actualHome : m.actualAway);
+        const isExact = ps1 === as1 && ps2 === as2;
+
+        const winnerPts = predWin && actWin && predWin.toUpperCase().trim() === actWin.toUpperCase().trim() ? 3 : 0;
+        const goals1Pts = ps1 === as1 ? 2 : 0;
+        const goals2Pts = ps2 === as2 ? 2 : 0;
+        const gdPts     = (!isExact && (ps1 - ps2) === (as1 - as2)) ? 1 : 0;
+        const exactBonus = isExact ? 2 : 0;
+
+        const chips = [
+          { label: `Winner ${winnerPts ? '+3' : '0'}`, earned: winnerPts > 0 },
+          { label: `Goals 1 ${goals1Pts ? '+2' : '0'}`, earned: goals1Pts > 0 },
+          { label: `Goals 2 ${goals2Pts ? '+2' : '0'}`, earned: goals2Pts > 0 },
+          { label: `GD ${gdPts ? '+1' : '0'}`, earned: gdPts > 0 },
+          { label: `Exact ${exactBonus ? '+2' : '0'}`, earned: exactBonus > 0, extra: exactBonus > 0 ? 'exact' : '' }
+        ];
+
+        breakdownHtml = `<div class="match-pts-breakdown">`;
+        chips.forEach(c => {
+          const cls = c.extra === 'exact' ? 'exact' : c.earned ? 'earned' : '';
+          breakdownHtml += `<span class="match-pts-chip ${cls}">${esc(c.label)}</span>`;
+        });
+        breakdownHtml += `</div>`;
+      }
 
       html += `
         <div class="match-card ${cardClass}">
@@ -637,12 +785,14 @@ function renderDetail(d) {
               <div class="match-team-away">${esc(m.actualAway || '—')}</div>
             </div>
             <div class="match-row-label">Actual result</div>
+            ${breakdownHtml}
           </div>
         </div>`;
     });
 
     html += '</div>';
   });
+
   html += '</div>';
 
   main.innerHTML = html;
