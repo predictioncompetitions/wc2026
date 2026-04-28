@@ -9,47 +9,47 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    .scoring-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .scoring-grid.full { grid-template-columns: 1fr; }
+    .scoring-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .scoring-grid.full { grid-template-columns:1fr; }
 
-    .score-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-    .score-card-head { padding: 13px 16px; display: flex; align-items: center; gap: 10px; color: #fff; }
-    .score-card-num { width: 24px; height: 24px; border-radius: 6px; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 13px; font-weight: 800; flex-shrink: 0; }
-    .score-card-title { font-family: var(--font-head); font-size: 15px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase; }
-    .score-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+    .score-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .score-card-head { padding:13px 16px; display:flex; align-items:center; gap:10px; color:#fff; }
+    .score-card-num { width:24px; height:24px; border-radius:6px; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3); display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:13px; font-weight:800; flex-shrink:0; }
+    .score-card-title { font-family:var(--font-head); font-size:15px; font-weight:800; letter-spacing:.3px; text-transform:uppercase; }
+    .score-card-body { padding:14px 16px; display:flex; flex-direction:column; gap:2px; }
 
-    .score-row { display: flex; align-items: flex-start; gap: 10px; padding: 5px 0; border-bottom: 1px dashed var(--border); }
-    .score-row:last-child { border-bottom: none; }
-    .score-pts { flex-shrink: 0; min-width: 42px; padding: 3px 8px; border-radius: 5px; font-family: var(--font-head); font-size: 13px; font-weight: 800; text-align: center; line-height: 1.2; }
-    .score-desc { font-size: 13px; color: var(--ink-2); line-height: 1.4; padding-top: 2px; }
-    .score-note { font-size: 12px; color: var(--ink-3); padding: 4px 0; font-style: italic; }
-    .score-plain { font-size: 13px; color: var(--ink-2); padding: 4px 0; line-height: 1.4; }
-    .score-plain::before { content: '• '; color: var(--ink-3); }
+    .score-row { display:flex; align-items:flex-start; gap:10px; padding:5px 0; border-bottom:1px dashed var(--border); }
+    .score-row:last-child { border-bottom:none; }
+    .score-pts { flex-shrink:0; min-width:42px; padding:3px 8px; border-radius:5px; font-family:var(--font-head); font-size:13px; font-weight:800; text-align:center; line-height:1.2; }
+    .score-desc { font-size:13px; color:var(--ink-2); line-height:1.4; padding-top:2px; }
+    .score-note { font-size:12px; color:var(--ink-3); padding:4px 0; font-style:italic; }
+    .score-plain { font-size:13px; color:var(--ink-2); padding:4px 0; line-height:1.4; }
+    .score-plain::before { content:'• '; color:var(--ink-3); }
 
-    .card-group .score-card-head { background: #1a56db; }
-    .card-group .score-pts { background: #eff4ff; color: #1a56db; }
-    .card-prog .score-card-head { background: #7c3aed; }
-    .card-prog .score-pts { background: #f5f0ff; color: #7c3aed; }
-    .card-ko .score-card-head { background: #0f766e; }
-    .card-ko .score-pts { background: #effcfb; color: #0f766e; }
-    .card-rules .score-card-head { background: #b45309; }
-    .card-tie .score-card-head { background: #be123c; }
+    .card-group .score-card-head { background:#1a56db; }
+    .card-group .score-pts { background:#eff4ff; color:#1a56db; }
+    .card-prog .score-card-head { background:#7c3aed; }
+    .card-prog .score-pts { background:#f5f0ff; color:#7c3aed; }
+    .card-ko .score-card-head { background:#0f766e; }
+    .card-ko .score-pts { background:#effcfb; color:#0f766e; }
+    .card-rules .score-card-head { background:#b45309; }
+    .card-tie .score-card-head { background:#be123c; }
 
-    .score-card.card-group { border-top: 2px solid #1a56db; }
-    .score-card.card-prog  { border-top: 2px solid #7c3aed; }
-    .score-card.card-ko    { border-top: 2px solid #0f766e; }
-    .score-card.card-rules { border-top: 2px solid #b45309; }
-    .score-card.card-tie   { border-top: 2px solid #be123c; }
+    .score-card.card-group { border-top:2px solid #1a56db; }
+    .score-card.card-prog  { border-top:2px solid #7c3aed; }
+    .score-card.card-ko    { border-top:2px solid #0f766e; }
+    .score-card.card-rules { border-top:2px solid #b45309; }
+    .score-card.card-tie   { border-top:2px solid #be123c; }
 
-    .max-note { margin-top: 8px; padding: 8px 12px; background: var(--surface-2); border-radius: var(--radius); font-size: 12px; font-weight: 600; color: var(--ink-3); text-align: center; }
+    .max-note { margin-top:8px; padding:8px 12px; background:var(--surface-2); border-radius:var(--radius); font-size:12px; font-weight:600; color:var(--ink-3); text-align:center; }
 
-    .rules-note { background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 20px; }
-    .rules-note h3 { font-family: var(--font-head); font-size: 15px; font-weight: 800; color: #92400e; margin-bottom: 8px; }
-    .rules-note ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
-    .rules-note li { font-size: 13px; color: #78350f; padding-left: 14px; position: relative; line-height: 1.4; }
-    .rules-note li::before { content: '→'; position: absolute; left: 0; color: #d97706; }
+    .rules-note { background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:20px; }
+    .rules-note h3 { font-family:var(--font-head); font-size:15px; font-weight:800; color:#92400e; margin-bottom:8px; }
+    .rules-note ul { list-style:none; display:flex; flex-direction:column; gap:5px; }
+    .rules-note li { font-size:13px; color:#78350f; padding-left:14px; position:relative; line-height:1.4; }
+    .rules-note li::before { content:'→'; position:absolute; left:0; color:#d97706; }
 
-    @media (max-width: 600px) { .scoring-grid { grid-template-columns: 1fr; } }
+    @media (max-width:600px) { .scoring-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -104,6 +104,7 @@
   </div>
 
   <div class="scoring-grid mb-4">
+
     <div class="score-card card-group">
       <div class="score-card-head">
         <div class="score-card-num">1</div>
@@ -111,9 +112,9 @@
       </div>
       <div class="score-card-body">
         <div class="score-row"><span class="score-pts">4 pts</span><span class="score-desc">Correct team in the correct position (1st, 2nd or 3rd)</span></div>
-        <div class="score-row"><span class="score-pts">1 pt</span><span class="score-desc">Correct team but in the wrong position</span></div>
-        <div class="score-row"><span class="score-pts">2 pts</span><span class="score-desc">Correct group winner</span></div>
-        <div class="score-row"><span class="score-pts">5 pts</span><span class="score-desc">Perfect group — all three positions exactly correct</span></div>
+        <div class="score-row"><span class="score-pts">1 pt</span><span class="score-desc">Correct team but in the wrong position (top 3 only — 4th place does not count)</span></div>
+        <div class="score-row"><span class="score-pts">2 pts</span><span class="score-desc">Correct group winner (1st place) — awarded on top of the position points</span></div>
+        <p class="score-note" style="margin-top:8px;">Maximum per group: 14 pts (4+4+4+2)</p>
       </div>
     </div>
 
@@ -124,7 +125,7 @@
       </div>
       <div class="score-card-body">
         <p class="score-note">Points are cumulative — they stack as your picked teams progress further.</p>
-        <p class="score-note">Your 12 third-placed teams are ranked in step 3 of the entry form. The top 8 qualify for your knockout bracket. Progression points are awarded to any of those 8 teams that advance in the actual tournament, it doesn't matter whether you ranked them 1st or 8th. Their position within your top 8 only affects which group winner they face in the Round of 32.</p>
+        <p class="score-note">Your 12 third-placed teams are ranked in step 3 of the entry form. The top 8 qualify for your knockout bracket. Progression points are awarded to any of those 8 teams that advance in the actual tournament — their position within your top 8 only affects which group winner they face in the Round of 32.</p>
         <div class="score-row"><span class="score-pts">3 pts</span><span class="score-desc">Team reaches the Round of 32</span></div>
         <div class="score-row"><span class="score-pts">3 pts</span><span class="score-desc">Team reaches the Round of 16</span></div>
         <div class="score-row"><span class="score-pts">7 pts</span><span class="score-desc">Team reaches the Quarter-finals</span></div>
@@ -133,9 +134,11 @@
         <div class="score-row"><span class="score-pts">20 pts</span><span class="score-desc">Team wins the World Cup</span></div>
       </div>
     </div>
+
   </div>
 
   <div class="scoring-grid mb-4">
+
     <div class="score-card card-ko">
       <div class="score-card-head">
         <div class="score-card-num">3</div>
@@ -143,11 +146,12 @@
       </div>
       <div class="score-card-body">
         <p class="score-note">Points below are awarded per match across all knockout rounds.</p>
-        <div class="score-row"><span class="score-pts">5 pts</span><span class="score-desc">Exact score (e.g. you predict 2–1 and it finishes 2–1)</span></div>
         <div class="score-row"><span class="score-pts">3 pts</span><span class="score-desc">Correct winner</span></div>
-        <div class="score-row"><span class="score-pts">2 pts</span><span class="score-desc">Correct number of goals for each team individually</span></div>
+        <div class="score-row"><span class="score-pts">2 pts</span><span class="score-desc">Correct number of goals for Team 1</span></div>
+        <div class="score-row"><span class="score-pts">2 pts</span><span class="score-desc">Correct number of goals for Team 2</span></div>
         <div class="score-row"><span class="score-pts">1 pt</span><span class="score-desc">Correct goal difference</span></div>
-        <div class="max-note">Maximum per match: 10 pts</div>
+        <div class="score-row"><span class="score-pts">2 pts</span><span class="score-desc">Exact score bonus — awarded when all four components above are correct</span></div>
+        <div class="max-note">Maximum per match: 10 pts (3+2+2+1+2)</div>
       </div>
     </div>
 
@@ -159,10 +163,11 @@
       <div class="score-card-body">
         <p class="score-plain">No draws are allowed in knockout predictions.</p>
         <p class="score-plain">A penalty shootout win counts as a 1-goal win in the score.</p>
-        <p class="score-plain">Scores are applied to the fixture position, not the team — so if teams are listed home/away, your score prediction applies in that order.</p>
+        <p class="score-plain">Scores are applied to fixture position, not team name — your prediction applies in home/away order as listed.</p>
         <p class="score-plain">The third-place play-off match is not included in the competition.</p>
       </div>
     </div>
+
   </div>
 
   <div class="scoring-grid full mb-4">
@@ -173,7 +178,7 @@
       </div>
       <div class="score-card-body">
         <div class="score-row"><span class="score-pts">#1</span><span class="score-desc">Total points</span></div>
-        <div class="score-row"><span class="score-pts">#2</span><span class="score-desc">Progression points (total from team progression category)</span></div>
+        <div class="score-row"><span class="score-pts">#2</span><span class="score-desc">Progression points</span></div>
         <div class="score-row"><span class="score-pts">#3</span><span class="score-desc">Number of exact score predictions</span></div>
         <div class="score-row"><span class="score-pts">#4</span><span class="score-desc">Group stage points</span></div>
       </div>
