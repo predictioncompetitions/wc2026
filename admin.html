@@ -90,7 +90,6 @@
     .group-tab-btn { padding:5px 8px; font-size:12px; font-weight:700; border:1px solid var(--pitch); border-radius:20px; background:var(--surface); color:var(--pitch); cursor:pointer; transition:background .12s,color .12s; white-space:nowrap; flex-shrink:0; }
     .group-tab-btn.active { background:var(--pitch); color:#fff; }
 
-    /* Group team picker */
     .group-team-picker { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
     .team-pick-btn {
       flex:1 1 calc(50% - 4px);
@@ -114,7 +113,19 @@
     .assignment-slot .slot-team { font-size:12px; font-weight:700; color:var(--ink); min-height:16px; }
     .assignment-slot.filled { border-color:var(--pitch); background:#f0faf4; }
 
-    .match-form { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; margin-bottom:10px; }
+    /* Fixture description banner */
+    .fixture-desc-banner {
+      background:var(--surface-2); border:1px solid var(--border);
+      border-radius:var(--radius); padding:10px 14px;
+      margin-bottom:12px; font-size:13px; font-weight:700;
+      color:var(--ink); line-height:1.4;
+    }
+    .fixture-desc-banner .fixture-meta {
+      font-size:11px; font-weight:600; color:var(--ink-3);
+      margin-top:3px;
+    }
+
+    .match-form { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; margin-bottom:12px; }
     .match-form input[type="number"] { width:100%; padding:8px; text-align:center; font-family:var(--font-head); font-size:20px; font-weight:800; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--ink); }
     .match-form-vs { font-family:var(--font-head); font-size:13px; font-weight:800; color:var(--ink-3); text-align:center; }
     .match-team-label { font-size:12px; font-weight:700; color:var(--ink); margin-bottom:4px; text-align:center; }
@@ -152,10 +163,6 @@
     .btn-sm.neutral { background:var(--surface-3); color:var(--ink); }
 
     .full-width-card { grid-column:1/-1; }
-
-    .winner-row { margin-bottom:14px; }
-    .winner-row label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-3); display:block; margin-bottom:4px; }
-    .winner-row select { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius); font-size:13px; font-family:var(--font-body); background:var(--surface-2); color:var(--ink); }
 
     .api-warning { background:#fef3c7; border:1px solid #fcd34d; border-radius:var(--radius); padding:10px 14px; font-size:12px; color:#92400e; margin-bottom:16px; display:none; }
   </style>
@@ -236,6 +243,13 @@
           <span id="matchNavLabel">Match 1 of 1</span>
           <button class="btn-sm neutral" id="nextMatchBtn">&#8594;</button>
         </div>
+
+        <!-- Fixture description banner -->
+        <div class="fixture-desc-banner" id="fixtureBanner">
+          <div id="fixtureDescText"></div>
+          <div class="fixture-meta" id="fixtureMetaText"></div>
+        </div>
+
         <div class="match-select-row">
           <div><label>Team 1</label><select id="koTeam1"><option value="">TBD</option></select></div>
           <div><label>Team 2</label><select id="koTeam2"><option value="">TBD</option></select></div>
@@ -251,19 +265,10 @@
             <input type="number" id="koGoals2" min="0" max="20" placeholder="—" />
           </div>
         </div>
-        <div class="winner-row">
-          <label>Winner (for knockout / pens)</label>
-          <select id="koWinner">
-            <option value="">— not played —</option>
-            <option value="team1">Team 1</option>
-            <option value="team2">Team 2</option>
-          </select>
-        </div>
         <div class="live-checkbox-row">
           <input type="checkbox" id="koLive" />
           <label for="koLive">Mark as live</label>
         </div>
-        <div id="koMatchInfo" style="font-size:12px;color:var(--ink-3);margin-bottom:12px;"></div>
         <div style="display:flex;gap:8px;">
           <button class="btn-sm primary" id="saveKoBtn" style="flex:1">Save result</button>
           <button class="btn-sm neutral" id="clearKoBtn">Clear</button>
@@ -292,7 +297,6 @@
   </div>
 </footer>
 
-<!-- Use your existing code exactly as-is up to this line: -->
 <script src="site.js"></script>
 <script>
 const ADMIN_PW = 'MW1977';
@@ -333,11 +337,10 @@ function apiGet(action) {
   return fetch(SCRIPT_URL + '?action=' + action).then(r => r.json());
 }
 
-function getFixtureText(m) {
-  const team1 = m.team1 || m.teamOne || m.team_1 || m.home || m.teamA || '';
-  const team2 = m.team2 || m.teamTwo || m.team_2 || m.away || m.teamB || '';
-  if (!team1 && !team2) return '';
-  return `${team1 || 'TBD'} v ${team2 || 'TBD'}`;
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 /* ── Login ── */
@@ -355,7 +358,6 @@ function getFixtureText(m) {
       pwInput.select();
       return;
     }
-
     loginErr.classList.remove('show');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminScreen').style.display = 'block';
@@ -429,18 +431,14 @@ async function initAdmin() {
 /* ══ GROUP SECTION ══ */
 function buildGroupTabs() {
   const bar = document.getElementById('groupTabBar');
-
   bar.innerHTML = GROUPS.map(g =>
     `<button class="group-tab-btn${g === 'A' ? ' active' : ''}" data-g="${g}">${g}</button>`
   ).join('');
-
   bar.addEventListener('click', e => {
     const btn = e.target.closest('.group-tab-btn');
     if (!btn) return;
-
     bar.querySelectorAll('.group-tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
     activeGroup = btn.dataset.g;
     loadGroupForm(activeGroup);
   });
@@ -450,7 +448,6 @@ async function loadGroupForm(g) {
   const teams = groupTeams[g] || [];
   groupPositions = {};
   teams.forEach(t => { groupPositions[t] = null; });
-
   try {
     const d = await apiGet(`getGroupResult&group=${encodeURIComponent(g)}`);
     if (d?.ok && d.result) {
@@ -461,24 +458,20 @@ async function loadGroupForm(g) {
       if (r.pos4 && groupPositions.hasOwnProperty(r.pos4)) groupPositions[r.pos4] = 4;
     }
   } catch(e) {}
-
   renderGroupPicker(teams);
 }
 
 function renderGroupPicker(teams) {
   const picker = document.getElementById('groupTeamPicker');
-
   picker.innerHTML = teams.map((t, i) => {
     const pos = groupPositions[t];
     return `<button class="team-pick-btn${pos !== null ? ' assigned' : ''}" data-idx="${i}">
       ${esc(t)}${pos !== null ? `<span class="pos-badge">${pos}</span>` : ''}
     </button>`;
   }).join('');
-
   picker.querySelectorAll('.team-pick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const team = teams[parseInt(btn.dataset.idx, 10)];
-
       if (groupPositions[team] !== null) {
         groupPositions[team] = null;
       } else {
@@ -486,17 +479,13 @@ function renderGroupPicker(teams) {
         const next = [1,2,3,4].find(p => !taken.has(p));
         if (next) groupPositions[team] = next;
       }
-
       renderGroupPicker(teams);
     });
   });
-
   const slots = document.getElementById('groupAssignments');
-
   slots.innerHTML = [1,2,3,4].map(pos => {
     const team = Object.keys(groupPositions).find(t => groupPositions[t] === pos) || '';
     const label = pos === 1 ? '1st' : pos === 2 ? '2nd' : pos === 3 ? '3rd' : '4th';
-
     return `<div class="assignment-slot${team ? ' filled' : ''}">
       <div class="slot-label">${label}</div>
       <div class="slot-team">${team ? esc(team) : '—'}</div>
@@ -508,25 +497,18 @@ document.getElementById('saveGroupBtn').addEventListener('click', async () => {
   const pos = [1,2,3,4].map(p =>
     Object.keys(groupPositions).find(t => groupPositions[t] === p) || ''
   );
-
   if (pos.some(p => !p)) {
     toast('Assign all 4 positions first.', 'error');
     return;
   }
-
   const btn = document.getElementById('saveGroupBtn');
   btn.disabled = true;
   btn.textContent = 'Saving…';
-
   try {
     const res = await apiPost('saveGroupResult', {
       group: activeGroup,
-      pos1: pos[0],
-      pos2: pos[1],
-      pos3: pos[2],
-      pos4: pos[3]
+      pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3]
     });
-
     if (!res?.ok) throw new Error(res?.error || 'Save failed');
     toast(`Group ${activeGroup} saved.`, 'success');
   } catch(err) {
@@ -546,18 +528,14 @@ document.getElementById('clearGroupBtn').addEventListener('click', () => {
 /* ══ KNOCKOUT SECTION ══ */
 function buildRoundTabs() {
   const bar = document.getElementById('roundTabBar');
-
   bar.innerHTML = ROUNDS.map(r =>
     `<button class="round-tab-btn${r === 'r32' ? ' active' : ''}" data-r="${r}">${ROUND_LABELS[r]}</button>`
   ).join('');
-
   bar.addEventListener('click', e => {
     const btn = e.target.closest('.round-tab-btn');
     if (!btn) return;
-
     bar.querySelectorAll('.round-tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
     activeRound = btn.dataset.r;
     activeMatchIdx = 0;
     loadKoForm();
@@ -567,14 +545,13 @@ function buildRoundTabs() {
 function getRoundFixtures() {
   const sheetLabel = ROUND_SHEET_LABELS[activeRound];
   const found = fixtures.filter(f => f.round === sheetLabel);
-
   if (found.length) return found;
-
   return Array.from({ length: ROUND_COUNTS[activeRound] }, () => ({
     matchNo: null,
     round: sheetLabel,
     date: '',
     kickOffGmt: '',
+    description: '',
     _placeholder: true
   }));
 }
@@ -582,67 +559,57 @@ function getRoundFixtures() {
 function loadKoForm() {
   const matches = getRoundFixtures();
   const total = matches.length;
-
   activeMatchIdx = Math.max(0, Math.min(activeMatchIdx, total - 1));
 
   const m = matches[activeMatchIdx];
   const matchNo = m.matchNo ? String(m.matchNo) : null;
   const saved = matchNo ? (koData[matchNo] || {}) : {};
-  const fixtureText = getFixtureText(m);
 
-  document.getElementById('matchNavLabel').innerHTML =
-    `Match ${activeMatchIdx + 1} of ${total}${matchNo ? ` (no.&nbsp;${matchNo})` : ''}` +
-    (fixtureText
-      ? `<br><span style="font-size:12px;color:var(--ink-3);font-family:var(--font-body);font-weight:700;">${esc(fixtureText)}</span>`
-      : '');
+  // Nav label — match number only, description goes in the banner
+  document.getElementById('matchNavLabel').textContent =
+    matchNo ? `Match ${activeMatchIdx + 1} of ${total} (no. ${matchNo})` : `Match ${activeMatchIdx + 1} of ${total}`;
 
   document.getElementById('prevMatchBtn').disabled = activeMatchIdx === 0;
   document.getElementById('nextMatchBtn').disabled = activeMatchIdx === total - 1;
 
+  // Fixture description banner
+  const descEl  = document.getElementById('fixtureDescText');
+  const metaEl  = document.getElementById('fixtureMetaText');
+  const banner  = document.getElementById('fixtureBanner');
+
+  const desc = m.description || '';
+  const meta = [m.date, m.kickOffGmt ? m.kickOffGmt + ' GMT' : ''].filter(Boolean).join(' · ');
+
+  if (desc || meta) {
+    descEl.textContent  = desc || (matchNo ? `Match ${matchNo}` : '');
+    metaEl.textContent  = meta;
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // Team dropdowns
   const teamOptions = `<option value="">TBD</option>` +
     allTeams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
 
   document.getElementById('koTeam1').innerHTML = teamOptions;
   document.getElementById('koTeam2').innerHTML = teamOptions;
-
   document.getElementById('koTeam1').value = saved.team1 || '';
   document.getElementById('koTeam2').value = saved.team2 || '';
 
   document.getElementById('koGoals1').value =
     saved.goals1 !== null && saved.goals1 !== undefined ? saved.goals1 : '';
-
   document.getElementById('koGoals2').value =
     saved.goals2 !== null && saved.goals2 !== undefined ? saved.goals2 : '';
-
-  const kw = document.getElementById('koWinner');
-  kw.value = '';
-
-  if (saved.winner) {
-    if (saved.winner === saved.team1) kw.value = 'team1';
-    else if (saved.winner === saved.team2) kw.value = 'team2';
-  }
 
   document.getElementById('koLive').checked = !!saved.live;
 
   updateTeamLabels();
-
-  const info = document.getElementById('koMatchInfo');
-
-  const fixtureLine = fixtureText
-    ? `<div style="font-weight:800;color:var(--ink);margin-bottom:4px;">${esc(fixtureText)}</div>`
-    : '';
-
-  const dateLine = (m.date || m.kickOffGmt)
-    ? `<div>${esc(m.date || '')}${m.kickOffGmt ? ' · Kick off ' + esc(m.kickOffGmt) + ' GMT' : ''}</div>`
-    : '';
-
-  info.innerHTML = fixtureLine + dateLine;
 }
 
 function updateTeamLabels() {
   document.getElementById('koTeam1Label').textContent =
     document.getElementById('koTeam1').value || 'Team 1';
-
   document.getElementById('koTeam2Label').textContent =
     document.getElementById('koTeam2').value || 'Team 2';
 }
@@ -670,19 +637,26 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
     return;
   }
 
-  const t1 = document.getElementById('koTeam1').value;
-  const t2 = document.getElementById('koTeam2').value;
-  const g1Raw = document.getElementById('koGoals1').value;
-  const g2Raw = document.getElementById('koGoals2').value;
-  const winSel = document.getElementById('koWinner').value;
-  const live = document.getElementById('koLive').checked;
-  const winner = winSel === 'team1' ? t1 : winSel === 'team2' ? t2 : '';
+  const t1     = document.getElementById('koTeam1').value;
+  const t2     = document.getElementById('koTeam2').value;
+  const g1Raw  = document.getElementById('koGoals1').value;
+  const g2Raw  = document.getElementById('koGoals2').value;
+  const live   = document.getElementById('koLive').checked;
+
+  // Derive winner from scores — higher score wins; ties should not occur in knockout
+  let winner = '';
+  if (g1Raw !== '' && g2Raw !== '') {
+    const g1 = parseInt(g1Raw, 10);
+    const g2 = parseInt(g2Raw, 10);
+    if (g1 > g2) winner = t1;
+    else if (g2 > g1) winner = t2;
+  }
 
   const payload = {
     matchNo,
-    round: m.round,
-    team1: t1,
-    team2: t2,
+    round:  m.round,
+    team1:  t1,
+    team2:  t2,
     goals1: g1Raw !== '' ? parseInt(g1Raw, 10) : null,
     goals2: g2Raw !== '' ? parseInt(g2Raw, 10) : null,
     winner,
@@ -696,9 +670,7 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
   try {
     const res = await apiPost('saveKnockoutResult', payload);
     if (!res?.ok) throw new Error(res?.error || 'Save failed');
-
     koData[String(matchNo)] = { ...payload, ...(res.saved || {}) };
-
     toast(`Match ${matchNo} saved.`, 'success');
   } catch(err) {
     toast(err.message || 'Save failed.', 'error');
@@ -711,13 +683,12 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
 document.getElementById('clearKoBtn').addEventListener('click', () => {
   document.getElementById('koGoals1').value = '';
   document.getElementById('koGoals2').value = '';
-  document.getElementById('koWinner').value = '';
   document.getElementById('koLive').checked = false;
 });
 
 /* ══ REBUILD ══ */
 document.getElementById('rebuildBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('rebuildBtn');
+  const btn    = document.getElementById('rebuildBtn');
   const status = document.getElementById('rebuildStatus');
 
   btn.disabled = true;
@@ -727,7 +698,6 @@ document.getElementById('rebuildBtn').addEventListener('click', async () => {
   try {
     const res = await apiPost('rebuildScores', { clearCache: true });
     if (!res?.ok) throw new Error(res?.error || 'Rebuild failed');
-
     const dur = res.durationMs ? ` (${(res.durationMs / 1000).toFixed(1)}s)` : '';
     status.textContent = `Done${dur}.`;
     toast('Rebuild complete.', 'success');
