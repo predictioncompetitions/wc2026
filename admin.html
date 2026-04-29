@@ -456,15 +456,15 @@ function renderGroupPicker(teams) {
   picker.querySelectorAll('.team-pick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const team = teams[parseInt(btn.dataset.idx, 10)];
-      const cur  = groupPositions[team];
-      const next = cur === null ? 1 : cur === 4 ? null : cur + 1;
-      // Bump any other team that already holds the target position
-      if (next !== null) {
-        Object.keys(groupPositions).forEach(t => {
-          if (t !== team && groupPositions[t] === next) groupPositions[t] = null;
-        });
+      if (groupPositions[team] !== null) {
+        // Already assigned — unassign it
+        groupPositions[team] = null;
+      } else {
+        // Assign next available position
+        const taken = new Set(Object.values(groupPositions).filter(v => v !== null));
+        const next  = [1,2,3,4].find(p => !taken.has(p));
+        if (next) groupPositions[team] = next;
       }
-      groupPositions[team] = next;
       renderGroupPicker(teams);
     });
   });
