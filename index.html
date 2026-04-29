@@ -60,7 +60,61 @@
     .prize-strip-right { text-align: right; flex-shrink: 0; }
     .prize-strip-amount { font-family: var(--font-head); font-size: 36px; font-weight: 900; color: var(--gold); line-height: 1; }
     .prize-strip-label { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 2px; }
+.prize-detail-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  border-top: 3px solid var(--gold);
+}
 
+.prize-detail-card h2 {
+  font-family: var(--font-head);
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.prize-detail-card p {
+  font-size: 14px;
+  color: var(--ink-3);
+  line-height: 1.55;
+}
+
+.prize-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.prize-detail-box {
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.prize-detail-box h3 {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--pitch);
+  margin-bottom: 6px;
+}
+
+.prize-note {
+  background: #fef9ec;
+  border: 1px solid #fde68a;
+  color: #92400e !important;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-top: 6px;
+  font-weight: 500;
+}
     @media (max-width: 600px) {
       .nav-grid { grid-template-columns: 1fr; }
       .prize-strip { flex-direction: column; text-align: center; }
@@ -126,6 +180,38 @@
       <div class="prize-strip-amount" id="prizeAmount">€10</div>
       <div class="prize-strip-label">per entry · all to prizes</div>
     </div>
+  </div>
+    <div class="prize-detail-card">
+    <h2>Prize Money</h2>
+
+    <p>
+      All entry fees go into the prize fund. The final prize fund will depend on
+      the total number of entries received.
+    </p>
+
+    <div class="prize-detail-grid">
+      <div class="prize-detail-box">
+        <h3>🏆 Top 5 prizes</h3>
+        <p>
+          The main prize fund will be shared between the top 5 finishers.
+          The exact amounts will be confirmed after entries close.
+        </p>
+      </div>
+
+      <div class="prize-detail-box">
+        <h3>💶 Every 10th place</h3>
+        <p>
+          10th, 20th, 30th, 40th, 50th place and so on will each receive a fixed
+          €20 prize.
+        </p>
+      </div>
+    </div>
+
+    <p class="prize-note">
+      The €20 prizes are fixed regardless of the total pot. Once those fixed prizes
+      are deducted, the remaining prize fund will be split between the top 5 by
+      percentage.
+    </p>
   </div>
 
   <div class="nav-grid">
