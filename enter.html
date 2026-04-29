@@ -976,7 +976,22 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
 		if (semiFinalMatches.length) { $('semiFinalsWrap').classList.remove('hidden'); renderRound(semiFinalMatches, $('semiFinalsContainer'), 'SF'); updateRoundChip('sfChip', semiFinalMatches); }
 		if (finalMatch) { $('finalWrap').classList.remove('hidden'); renderRound([finalMatch], $('finalContainer'), 'FINAL'); updateRoundChip('finalChip', [finalMatch]); }
 		updateProgression();
-        showBracketStatus('Saved draft restored.', 'success');
+      showBracketStatus('Saved draft restored.', 'success');
+[
+  { arr: roundOf32Matches,    chipId: 'r32Chip' },
+  { arr: roundOf16Matches,    chipId: 'r16Chip' },
+  { arr: quarterFinalMatches, chipId: 'qfChip' },
+  { arr: semiFinalMatches,    chipId: 'sfChip' },
+  { arr: finalMatch ? [finalMatch] : [], chipId: 'finalChip' },
+].forEach(({ arr, chipId }) => {
+  arr.forEach(m => {
+    if (m.score1 !== '' && m.score2 !== '' && m.winner === '') {
+      const n1 = Number(m.score1), n2 = Number(m.score2);
+      if (n1 !== n2) m.winner = n1 > n2 ? m.team1 : m.team2;
+    }
+  });
+  updateRoundChip(chipId, arr);
+});
       }
       setDraftBanner(d.savedAt ? `Restored from ${new Date(d.savedAt).toLocaleString()}` : 'Draft restored');
     } catch(e) { console.error(e); }
