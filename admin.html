@@ -328,6 +328,18 @@ const FIXED_R32 = {
   88: { team1: { type:'RUNNER_UP', group:'D' }, team2: { type:'RUNNER_UP', group:'G' } }
 };
 
+// Flexible R32 slots — Team 1 is always the group winner; Team 2 is a 3rd-place qualifier (manual)
+const FLEXIBLE_R32_TEAM1 = {
+  74: { type:'WINNER', group:'E' },
+  77: { type:'WINNER', group:'I' },
+  79: { type:'WINNER', group:'A' },
+  80: { type:'WINNER', group:'L' },
+  81: { type:'WINNER', group:'D' },
+  82: { type:'WINNER', group:'G' },
+  85: { type:'WINNER', group:'B' },
+  87: { type:'WINNER', group:'K' }
+};
+
 // Progression map — mirrors getKnockoutProgression_() in Code.gs
 // Each entry: which two feeder match winners meet here
 const PROGRESSION = {
@@ -654,6 +666,9 @@ function loadKoForm() {
       const rule = FIXED_R32[matchNoNum];
       if (!autoT1) autoT1 = resolveFixedSlot(rule.team1);
       if (!autoT2) autoT2 = resolveFixedSlot(rule.team2);
+    } else if (activeRound === 'r32' && FLEXIBLE_R32_TEAM1[matchNoNum]) {
+      if (!autoT1) autoT1 = resolveFixedSlot(FLEXIBLE_R32_TEAM1[matchNoNum]);
+      // Team 2 is a 3rd-place qualifier — stays manual
     } else if (PROGRESSION[matchNoNum]) {
       const prog = PROGRESSION[matchNoNum];
       if (!autoT1) autoT1 = resolveProgressionTeam(prog.team1);
