@@ -970,11 +970,12 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
         finalMatch = d.finalMatch||null;
         predictedChampion = d.predictedChampion||null;
         renderRound(roundOf32Matches, $('roundOf32Container'), 'R32');
-        if (roundOf16Matches.length) { $('roundOf16Wrap').classList.remove('hidden'); renderRound(roundOf16Matches, $('roundOf16Container'), 'R16'); }
-        if (quarterFinalMatches.length) { $('quarterFinalsWrap').classList.remove('hidden'); renderRound(quarterFinalMatches, $('quarterFinalsContainer'), 'QF'); }
-        if (semiFinalMatches.length) { $('semiFinalsWrap').classList.remove('hidden'); renderRound(semiFinalMatches, $('semiFinalsContainer'), 'SF'); }
-        if (finalMatch) { $('finalWrap').classList.remove('hidden'); renderRound([finalMatch], $('finalContainer'), 'FINAL'); }
-        updateProgression();
+		updateRoundChip('r32Chip', roundOf32Matches);
+		if (roundOf16Matches.length) { $('roundOf16Wrap').classList.remove('hidden'); renderRound(roundOf16Matches, $('roundOf16Container'), 'R16'); updateRoundChip('r16Chip', roundOf16Matches); }
+		if (quarterFinalMatches.length) { $('quarterFinalsWrap').classList.remove('hidden'); renderRound(quarterFinalMatches, $('quarterFinalsContainer'), 'QF'); updateRoundChip('qfChip', quarterFinalMatches); }
+		if (semiFinalMatches.length) { $('semiFinalsWrap').classList.remove('hidden'); renderRound(semiFinalMatches, $('semiFinalsContainer'), 'SF'); updateRoundChip('sfChip', semiFinalMatches); }
+		if (finalMatch) { $('finalWrap').classList.remove('hidden'); renderRound([finalMatch], $('finalContainer'), 'FINAL'); updateRoundChip('finalChip', [finalMatch]); }
+		updateProgression();
         showBracketStatus('Saved draft restored.', 'success');
       }
       setDraftBanner(d.savedAt ? `Restored from ${new Date(d.savedAt).toLocaleString()}` : 'Draft restored');
