@@ -292,6 +292,7 @@
   </div>
 </footer>
 
+<!-- Use your existing code exactly as-is up to this line: -->
 <script src="site.js"></script>
 <script>
 const ADMIN_PW = 'MW1977';
@@ -301,7 +302,6 @@ const ROUND_LABELS       = { r32:'R32', r16:'R16', qf:'QF', sf:'SF', final:'Fina
 const ROUND_COUNTS       = { r32:16, r16:8, qf:4, sf:2, final:1 };
 const ROUND_SHEET_LABELS = { r32:'Round of 32', r16:'Round of 16', qf:'Quarter-final', sf:'Semi-final', final:'Final' };
 
-// esc() is defined in site.js — do not redeclare here
 let allTeams   = [];
 let groupTeams = {};
 let fixtures   = [];
@@ -309,7 +309,7 @@ let koData     = {};
 let activeGroup    = 'A';
 let activeRound    = 'r32';
 let activeMatchIdx = 0;
-let groupPositions = {}; // team -> 1|2|3|4|null
+let groupPositions = {};
 
 /* ── Helpers ── */
 function toast(msg, type = 'info') {
@@ -333,6 +333,13 @@ function apiGet(action) {
   return fetch(SCRIPT_URL + '?action=' + action).then(r => r.json());
 }
 
+function getFixtureText(m) {
+  const team1 = m.team1 || m.teamOne || m.team_1 || m.home || m.teamA || '';
+  const team2 = m.team2 || m.teamTwo || m.team_2 || m.away || m.teamB || '';
+  if (!team1 && !team2) return '';
+  return `${team1 || 'TBD'} v ${team2 || 'TBD'}`;
+}
+
 /* ── Login ── */
 (function() {
   const pwInput  = document.getElementById('pwInput');
@@ -348,6 +355,7 @@ function apiGet(action) {
       pwInput.select();
       return;
     }
+
     loginErr.classList.remove('show');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminScreen').style.display = 'block';
@@ -358,9 +366,10 @@ function apiGet(action) {
 
   loginBtn.addEventListener('click', tryLogin);
   pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
   pwToggle.addEventListener('click', () => {
     const hidden = pwInput.type === 'password';
-    pwInput.type  = hidden ? 'text' : 'password';
+    pwInput.type = hidden ? 'text' : 'password';
     pwToggle.textContent = hidden ? '🙈' : '👁';
     pwInput.focus();
   });
@@ -374,11 +383,13 @@ async function initAdmin() {
     const d = await apiGet('getGroupTeams');
     if (d?.ok && d.groups) {
       groupTeams = d.groups;
-      allTeams   = Object.values(groupTeams).flat().sort();
+      allTeams = Object.values(groupTeams).flat().sort();
     } else {
       warnings.push('Could not load group teams — dropdowns may be empty.');
     }
-  } catch(e) { warnings.push('getGroupTeams failed: ' + e.message); }
+  } catch(e) {
+    warnings.push('getGroupTeams failed: ' + e.message);
+  }
 
   try {
     const d = await apiGet('getFixtures');
@@ -387,17 +398,23 @@ async function initAdmin() {
     } else {
       warnings.push('Could not load fixtures — match info will be missing.');
     }
-  } catch(e) { warnings.push('getFixtures failed: ' + e.message); }
+  } catch(e) {
+    warnings.push('getFixtures failed: ' + e.message);
+  }
 
   try {
     const d = await apiGet('getResults');
     if (d?.ok && d.knockout) {
       Object.values(d.knockout).forEach(matches => {
         if (!Array.isArray(matches)) return;
-        matches.forEach(m => { if (m.matchNo) koData[String(m.matchNo)] = m; });
+        matches.forEach(m => {
+          if (m.matchNo) koData[String(m.matchNo)] = m;
+        });
       });
     }
-  } catch(e) { warnings.push('getResults failed (existing KO data not pre-loaded): ' + e.message); }
+  } catch(e) {
+    warnings.push('getResults failed: ' + e.message);
+  }
 
   if (warnings.length) {
     const w = document.getElementById('apiWarning');
@@ -412,14 +429,18 @@ async function initAdmin() {
 /* ══ GROUP SECTION ══ */
 function buildGroupTabs() {
   const bar = document.getElementById('groupTabBar');
+
   bar.innerHTML = GROUPS.map(g =>
     `<button class="group-tab-btn${g === 'A' ? ' active' : ''}" data-g="${g}">${g}</button>`
   ).join('');
+
   bar.addEventListener('click', e => {
     const btn = e.target.closest('.group-tab-btn');
     if (!btn) return;
+
     bar.querySelectorAll('.group-tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+
     activeGroup = btn.dataset.g;
     loadGroupForm(activeGroup);
   });
@@ -439,13 +460,14 @@ async function loadGroupForm(g) {
       if (r.pos3 && groupPositions.hasOwnProperty(r.pos3)) groupPositions[r.pos3] = 3;
       if (r.pos4 && groupPositions.hasOwnProperty(r.pos4)) groupPositions[r.pos4] = 4;
     }
-  } catch(e) { /* non-fatal */ }
+  } catch(e) {}
 
   renderGroupPicker(teams);
 }
 
 function renderGroupPicker(teams) {
   const picker = document.getElementById('groupTeamPicker');
+
   picker.innerHTML = teams.map((t, i) => {
     const pos = groupPositions[t];
     return `<button class="team-pick-btn${pos !== null ? ' assigned' : ''}" data-idx="${i}">
@@ -456,24 +478,25 @@ function renderGroupPicker(teams) {
   picker.querySelectorAll('.team-pick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const team = teams[parseInt(btn.dataset.idx, 10)];
+
       if (groupPositions[team] !== null) {
-        // Already assigned — unassign it
         groupPositions[team] = null;
       } else {
-        // Assign next available position
         const taken = new Set(Object.values(groupPositions).filter(v => v !== null));
-        const next  = [1,2,3,4].find(p => !taken.has(p));
+        const next = [1,2,3,4].find(p => !taken.has(p));
         if (next) groupPositions[team] = next;
       }
+
       renderGroupPicker(teams);
     });
   });
 
-  // Assignment summary strip
   const slots = document.getElementById('groupAssignments');
+
   slots.innerHTML = [1,2,3,4].map(pos => {
     const team = Object.keys(groupPositions).find(t => groupPositions[t] === pos) || '';
     const label = pos === 1 ? '1st' : pos === 2 ? '2nd' : pos === 3 ? '3rd' : '4th';
+
     return `<div class="assignment-slot${team ? ' filled' : ''}">
       <div class="slot-label">${label}</div>
       <div class="slot-team">${team ? esc(team) : '—'}</div>
@@ -482,19 +505,35 @@ function renderGroupPicker(teams) {
 }
 
 document.getElementById('saveGroupBtn').addEventListener('click', async () => {
-  const pos = [1,2,3,4].map(p => Object.keys(groupPositions).find(t => groupPositions[t] === p) || '');
-  if (pos.some(p => !p)) { toast('Assign all 4 positions first.', 'error'); return; }
+  const pos = [1,2,3,4].map(p =>
+    Object.keys(groupPositions).find(t => groupPositions[t] === p) || ''
+  );
+
+  if (pos.some(p => !p)) {
+    toast('Assign all 4 positions first.', 'error');
+    return;
+  }
 
   const btn = document.getElementById('saveGroupBtn');
-  btn.disabled = true; btn.textContent = 'Saving…';
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
   try {
-    const res = await apiPost('saveGroupResult', { group: activeGroup, pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3] });
+    const res = await apiPost('saveGroupResult', {
+      group: activeGroup,
+      pos1: pos[0],
+      pos2: pos[1],
+      pos3: pos[2],
+      pos4: pos[3]
+    });
+
     if (!res?.ok) throw new Error(res?.error || 'Save failed');
     toast(`Group ${activeGroup} saved.`, 'success');
   } catch(err) {
     toast(err.message || 'Save failed.', 'error');
   } finally {
-    btn.disabled = false; btn.textContent = 'Save group';
+    btn.disabled = false;
+    btn.textContent = 'Save group';
   }
 });
 
@@ -507,15 +546,19 @@ document.getElementById('clearGroupBtn').addEventListener('click', () => {
 /* ══ KNOCKOUT SECTION ══ */
 function buildRoundTabs() {
   const bar = document.getElementById('roundTabBar');
+
   bar.innerHTML = ROUNDS.map(r =>
     `<button class="round-tab-btn${r === 'r32' ? ' active' : ''}" data-r="${r}">${ROUND_LABELS[r]}</button>`
   ).join('');
+
   bar.addEventListener('click', e => {
     const btn = e.target.closest('.round-tab-btn');
     if (!btn) return;
+
     bar.querySelectorAll('.round-tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    activeRound    = btn.dataset.r;
+
+    activeRound = btn.dataset.r;
     activeMatchIdx = 0;
     loadKoForm();
   });
@@ -524,65 +567,102 @@ function buildRoundTabs() {
 function getRoundFixtures() {
   const sheetLabel = ROUND_SHEET_LABELS[activeRound];
   const found = fixtures.filter(f => f.round === sheetLabel);
+
   if (found.length) return found;
-  return Array.from({ length: ROUND_COUNTS[activeRound] }, (_, i) => ({
-    matchNo: null, round: sheetLabel, date: '', kickOffGmt: '', _placeholder: true
+
+  return Array.from({ length: ROUND_COUNTS[activeRound] }, () => ({
+    matchNo: null,
+    round: sheetLabel,
+    date: '',
+    kickOffGmt: '',
+    _placeholder: true
   }));
 }
 
 function loadKoForm() {
   const matches = getRoundFixtures();
-  const total   = matches.length;
+  const total = matches.length;
+
   activeMatchIdx = Math.max(0, Math.min(activeMatchIdx, total - 1));
 
-  const m       = matches[activeMatchIdx];
+  const m = matches[activeMatchIdx];
   const matchNo = m.matchNo ? String(m.matchNo) : null;
-  const saved   = matchNo ? (koData[matchNo] || {}) : {};
+  const saved = matchNo ? (koData[matchNo] || {}) : {};
+  const fixtureText = getFixtureText(m);
 
-  document.getElementById('matchNavLabel').textContent =
-    `Match ${activeMatchIdx + 1} of ${total}${matchNo ? ` (no.\u00a0${matchNo})` : ''}`;
+  document.getElementById('matchNavLabel').innerHTML =
+    `Match ${activeMatchIdx + 1} of ${total}${matchNo ? ` (no.&nbsp;${matchNo})` : ''}` +
+    (fixtureText
+      ? `<br><span style="font-size:12px;color:var(--ink-3);font-family:var(--font-body);font-weight:700;">${esc(fixtureText)}</span>`
+      : '');
+
   document.getElementById('prevMatchBtn').disabled = activeMatchIdx === 0;
   document.getElementById('nextMatchBtn').disabled = activeMatchIdx === total - 1;
 
   const teamOptions = `<option value="">TBD</option>` +
     allTeams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+
   document.getElementById('koTeam1').innerHTML = teamOptions;
   document.getElementById('koTeam2').innerHTML = teamOptions;
+
   document.getElementById('koTeam1').value = saved.team1 || '';
   document.getElementById('koTeam2').value = saved.team2 || '';
 
-  document.getElementById('koGoals1').value = (saved.goals1 !== null && saved.goals1 !== undefined) ? saved.goals1 : '';
-  document.getElementById('koGoals2').value = (saved.goals2 !== null && saved.goals2 !== undefined) ? saved.goals2 : '';
+  document.getElementById('koGoals1').value =
+    saved.goals1 !== null && saved.goals1 !== undefined ? saved.goals1 : '';
+
+  document.getElementById('koGoals2').value =
+    saved.goals2 !== null && saved.goals2 !== undefined ? saved.goals2 : '';
 
   const kw = document.getElementById('koWinner');
   kw.value = '';
+
   if (saved.winner) {
     if (saved.winner === saved.team1) kw.value = 'team1';
     else if (saved.winner === saved.team2) kw.value = 'team2';
   }
 
   document.getElementById('koLive').checked = !!saved.live;
+
   updateTeamLabels();
 
   const info = document.getElementById('koMatchInfo');
-  info.textContent = (m.date || m.kickOffGmt)
-    ? `${m.date || ''}${m.kickOffGmt ? ' · Kick off ' + m.kickOffGmt + ' GMT' : ''}`
+
+  const fixtureLine = fixtureText
+    ? `<div style="font-weight:800;color:var(--ink);margin-bottom:4px;">${esc(fixtureText)}</div>`
     : '';
+
+  const dateLine = (m.date || m.kickOffGmt)
+    ? `<div>${esc(m.date || '')}${m.kickOffGmt ? ' · Kick off ' + esc(m.kickOffGmt) + ' GMT' : ''}</div>`
+    : '';
+
+  info.innerHTML = fixtureLine + dateLine;
 }
 
 function updateTeamLabels() {
-  document.getElementById('koTeam1Label').textContent = document.getElementById('koTeam1').value || 'Team 1';
-  document.getElementById('koTeam2Label').textContent = document.getElementById('koTeam2').value || 'Team 2';
+  document.getElementById('koTeam1Label').textContent =
+    document.getElementById('koTeam1').value || 'Team 1';
+
+  document.getElementById('koTeam2Label').textContent =
+    document.getElementById('koTeam2').value || 'Team 2';
 }
 
 document.getElementById('koTeam1').addEventListener('change', updateTeamLabels);
 document.getElementById('koTeam2').addEventListener('change', updateTeamLabels);
-document.getElementById('prevMatchBtn').addEventListener('click', () => { activeMatchIdx--; loadKoForm(); });
-document.getElementById('nextMatchBtn').addEventListener('click', () => { activeMatchIdx++; loadKoForm(); });
+
+document.getElementById('prevMatchBtn').addEventListener('click', () => {
+  activeMatchIdx--;
+  loadKoForm();
+});
+
+document.getElementById('nextMatchBtn').addEventListener('click', () => {
+  activeMatchIdx++;
+  loadKoForm();
+});
 
 document.getElementById('saveKoBtn').addEventListener('click', async () => {
   const matches = getRoundFixtures();
-  const m       = matches[activeMatchIdx];
+  const m = matches[activeMatchIdx];
   const matchNo = m.matchNo;
 
   if (!matchNo) {
@@ -590,19 +670,19 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
     return;
   }
 
-  const t1     = document.getElementById('koTeam1').value;
-  const t2     = document.getElementById('koTeam2').value;
-  const g1Raw  = document.getElementById('koGoals1').value;
-  const g2Raw  = document.getElementById('koGoals2').value;
+  const t1 = document.getElementById('koTeam1').value;
+  const t2 = document.getElementById('koTeam2').value;
+  const g1Raw = document.getElementById('koGoals1').value;
+  const g2Raw = document.getElementById('koGoals2').value;
   const winSel = document.getElementById('koWinner').value;
-  const live   = document.getElementById('koLive').checked;
+  const live = document.getElementById('koLive').checked;
   const winner = winSel === 'team1' ? t1 : winSel === 'team2' ? t2 : '';
 
   const payload = {
     matchNo,
-    round:  m.round,
-    team1:  t1,
-    team2:  t2,
+    round: m.round,
+    team1: t1,
+    team2: t2,
     goals1: g1Raw !== '' ? parseInt(g1Raw, 10) : null,
     goals2: g2Raw !== '' ? parseInt(g2Raw, 10) : null,
     winner,
@@ -610,16 +690,21 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
   };
 
   const btn = document.getElementById('saveKoBtn');
-  btn.disabled = true; btn.textContent = 'Saving…';
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
   try {
     const res = await apiPost('saveKnockoutResult', payload);
     if (!res?.ok) throw new Error(res?.error || 'Save failed');
+
     koData[String(matchNo)] = { ...payload, ...(res.saved || {}) };
+
     toast(`Match ${matchNo} saved.`, 'success');
   } catch(err) {
     toast(err.message || 'Save failed.', 'error');
   } finally {
-    btn.disabled = false; btn.textContent = 'Save result';
+    btn.disabled = false;
+    btn.textContent = 'Save result';
   }
 });
 
@@ -627,18 +712,22 @@ document.getElementById('clearKoBtn').addEventListener('click', () => {
   document.getElementById('koGoals1').value = '';
   document.getElementById('koGoals2').value = '';
   document.getElementById('koWinner').value = '';
-  document.getElementById('koLive').checked  = false;
+  document.getElementById('koLive').checked = false;
 });
 
 /* ══ REBUILD ══ */
 document.getElementById('rebuildBtn').addEventListener('click', async () => {
-  const btn    = document.getElementById('rebuildBtn');
+  const btn = document.getElementById('rebuildBtn');
   const status = document.getElementById('rebuildStatus');
-  btn.disabled = true; btn.textContent = 'Rebuilding…';
+
+  btn.disabled = true;
+  btn.textContent = 'Rebuilding…';
   status.textContent = 'Running scoringRebuildAll() — this may take 20–30 seconds…';
+
   try {
     const res = await apiPost('rebuildScores', { clearCache: true });
     if (!res?.ok) throw new Error(res?.error || 'Rebuild failed');
+
     const dur = res.durationMs ? ` (${(res.durationMs / 1000).toFixed(1)}s)` : '';
     status.textContent = `Done${dur}.`;
     toast('Rebuild complete.', 'success');
@@ -646,7 +735,8 @@ document.getElementById('rebuildBtn').addEventListener('click', async () => {
     status.textContent = `Error: ${err.message}`;
     toast('Rebuild failed.', 'error');
   } finally {
-    btn.disabled = false; btn.textContent = 'Rebuild all scores';
+    btn.disabled = false;
+    btn.textContent = 'Rebuild all scores';
   }
 });
 
