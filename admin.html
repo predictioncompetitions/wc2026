@@ -86,8 +86,8 @@
     .admin-card-head h2 { font-family:var(--font-head); font-size:16px; font-weight:800; margin:0; letter-spacing:.3px; }
     .admin-card-body { padding:16px; }
 
-    .group-tab-bar { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-    .group-tab-btn { padding:5px 10px; font-size:12px; font-weight:700; border:1px solid var(--pitch); border-radius:20px; background:var(--surface); color:var(--pitch); cursor:pointer; transition:background .12s,color .12s; }
+    .group-tab-bar { display:flex; flex-wrap:nowrap; gap:4px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px; }
+    .group-tab-btn { padding:5px 8px; font-size:12px; font-weight:700; border:1px solid var(--pitch); border-radius:20px; background:var(--surface); color:var(--pitch); cursor:pointer; transition:background .12s,color .12s; white-space:nowrap; flex-shrink:0; }
     .group-tab-btn.active { background:var(--pitch); color:#fff; }
 
     /* Group team picker */
@@ -446,16 +446,16 @@ async function loadGroupForm(g) {
 
 function renderGroupPicker(teams) {
   const picker = document.getElementById('groupTeamPicker');
-  picker.innerHTML = teams.map(t => {
+  picker.innerHTML = teams.map((t, i) => {
     const pos = groupPositions[t];
-    return `<button class="team-pick-btn${pos !== null ? ' assigned' : ''}" data-team="${esc(t)}">
+    return `<button class="team-pick-btn${pos !== null ? ' assigned' : ''}" data-idx="${i}">
       ${esc(t)}${pos !== null ? `<span class="pos-badge">${pos}</span>` : ''}
     </button>`;
   }).join('');
 
   picker.querySelectorAll('.team-pick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const team = btn.dataset.team;
+      const team = teams[parseInt(btn.dataset.idx, 10)];
       const cur  = groupPositions[team];
       const next = cur === null ? 1 : cur === 4 ? null : cur + 1;
       // Bump any other team that already holds the target position
