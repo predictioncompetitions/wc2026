@@ -32,9 +32,7 @@
     }
     .login-card p { color:var(--ink-3); font-size:14px; margin:0 0 28px; }
 
-    .pw-field {
-      position:relative; margin-bottom:8px;
-    }
+    .pw-field { position:relative; margin-bottom:8px; }
     .pw-field input {
       width:100%; padding:13px 44px 13px 16px; box-sizing:border-box;
       border:2px solid var(--border); border-radius:10px;
@@ -43,19 +41,12 @@
       transition:border-color .15s, box-shadow .15s;
       outline:none;
     }
-    .pw-field input:focus {
-      border-color:var(--pitch);
-      box-shadow:0 0 0 3px rgba(13,92,46,.12);
-    }
-    .pw-field input.shake {
-      animation:shake .4s ease;
-      border-color:#dc2626;
-    }
+    .pw-field input:focus { border-color:var(--pitch); box-shadow:0 0 0 3px rgba(13,92,46,.12); }
+    .pw-field input.shake { animation:shake .4s ease; border-color:#dc2626; }
     .pw-toggle {
       position:absolute; right:13px; top:50%; transform:translateY(-50%);
       background:none; border:none; cursor:pointer; padding:4px;
-      color:var(--ink-3); font-size:16px; line-height:1;
-      transition:color .15s;
+      color:var(--ink-3); font-size:16px; line-height:1; transition:color .15s;
     }
     .pw-toggle:hover { color:var(--ink); }
 
@@ -95,13 +86,33 @@
     .admin-card-head h2 { font-family:var(--font-head); font-size:16px; font-weight:800; margin:0; letter-spacing:.3px; }
     .admin-card-body { padding:16px; }
 
-    .group-select-row { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
-    .group-select-row label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-3); min-width:34px; }
-    .group-select-row select { flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius); font-size:13px; font-family:var(--font-body); background:var(--surface-2); color:var(--ink); }
-
     .group-tab-bar { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
     .group-tab-btn { padding:5px 10px; font-size:12px; font-weight:700; border:1px solid var(--pitch); border-radius:20px; background:var(--surface); color:var(--pitch); cursor:pointer; transition:background .12s,color .12s; }
     .group-tab-btn.active { background:var(--pitch); color:#fff; }
+
+    /* Group team picker */
+    .group-team-picker { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+    .team-pick-btn {
+      flex:1 1 calc(50% - 4px);
+      padding:10px 8px;
+      font-family:var(--font-body); font-size:13px; font-weight:600;
+      border:2px solid var(--border); border-radius:var(--radius);
+      background:var(--surface-2); color:var(--ink);
+      cursor:pointer; text-align:center;
+      transition:background .12s, border-color .12s, color .12s;
+    }
+    .team-pick-btn .pos-badge {
+      display:inline-block; margin-left:6px; padding:1px 7px;
+      font-size:11px; font-weight:800; border-radius:20px;
+      background:var(--pitch); color:#fff; vertical-align:middle;
+    }
+    .team-pick-btn.assigned { border-color:var(--pitch); background:#f0faf4; color:var(--ink); }
+
+    .group-assignments { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:4px; }
+    .assignment-slot { text-align:center; padding:6px 4px; border-radius:var(--radius); background:var(--surface-2); border:1px solid var(--border); }
+    .assignment-slot .slot-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-3); margin-bottom:3px; }
+    .assignment-slot .slot-team { font-size:12px; font-weight:700; color:var(--ink); min-height:16px; }
+    .assignment-slot.filled { border-color:var(--pitch); background:#f0faf4; }
 
     .match-form { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; margin-bottom:10px; }
     .match-form input[type="number"] { width:100%; padding:8px; text-align:center; font-family:var(--font-head); font-size:20px; font-weight:800; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--ink); }
@@ -125,7 +136,6 @@
     .live-checkbox-row input[type="checkbox"] { width:16px; height:16px; cursor:pointer; accent-color:#ef4444; }
     .live-checkbox-row label { font-size:13px; font-weight:600; color:#ef4444; cursor:pointer; }
 
-    .rebuild-card { grid-column:1/-1; }
     .rebuild-info { font-size:13px; color:var(--ink-3); margin-bottom:16px; line-height:1.5; }
     .rebuild-info strong { color:var(--ink); }
 
@@ -207,10 +217,8 @@
       <div class="admin-card-head"><h2>Group standings</h2></div>
       <div class="admin-card-body">
         <div class="group-tab-bar" id="groupTabBar"></div>
-        <div class="group-select-row"><label>1st</label><select id="gPos1"></select></div>
-        <div class="group-select-row"><label>2nd</label><select id="gPos2"></select></div>
-        <div class="group-select-row"><label>3rd</label><select id="gPos3"></select></div>
-        <div class="group-select-row"><label>4th</label><select id="gPos4"></select></div>
+        <div id="groupTeamPicker" class="group-team-picker"></div>
+        <div id="groupAssignments" class="group-assignments"></div>
         <div style="margin-top:12px;display:flex;gap:8px;">
           <button class="btn-sm primary" id="saveGroupBtn" style="flex:1">Save group</button>
           <button class="btn-sm neutral" id="clearGroupBtn">Clear</button>
@@ -287,21 +295,21 @@
 <script src="site.js"></script>
 <script>
 const ADMIN_PW = 'MW1977';
-const GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-const ROUNDS = ['r32','r16','qf','sf','final'];
-const ROUND_LABELS   = { r32:'R32', r16:'R16', qf:'QF', sf:'SF', final:'Final' };
-const ROUND_COUNTS   = { r32:16,    r16:8,      qf:4,    sf:2,   final:1 };
-// These must match the ROUND column values in the FIXTURES and ACTUAL_KNOCKOUT sheets exactly
+const GROUPS   = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+const ROUNDS   = ['r32','r16','qf','sf','final'];
+const ROUND_LABELS       = { r32:'R32', r16:'R16', qf:'QF', sf:'SF', final:'Final' };
+const ROUND_COUNTS       = { r32:16, r16:8, qf:4, sf:2, final:1 };
 const ROUND_SHEET_LABELS = { r32:'Round of 32', r16:'Round of 16', qf:'Quarter-final', sf:'Semi-final', final:'Final' };
 
-// esc() is already defined in site.js — do not redeclare it here
+// esc() is defined in site.js — do not redeclare here
 let allTeams   = [];
 let groupTeams = {};
-let fixtures   = [];   // flat array from API: { matchNo, round, date, kickOffGmt }
-let koData     = {};   // keyed by matchNo (number or string)
+let fixtures   = [];
+let koData     = {};
 let activeGroup    = 'A';
 let activeRound    = 'r32';
 let activeMatchIdx = 0;
+let groupPositions = {}; // team -> 1|2|3|4|null
 
 /* ── Helpers ── */
 function toast(msg, type = 'info') {
@@ -313,33 +321,27 @@ function toast(msg, type = 'info') {
 }
 
 function apiPost(action, payload) {
-  // Uses apiFetch from site.js if it supports POST, otherwise falls back to direct fetch
-  if (typeof apiFetch === 'function') {
-    return apiFetch(action, { method: 'POST', body: JSON.stringify(payload) });
-  }
-  return fetch(API_BASE + '?action=' + action, {
+  return fetch(SCRIPT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ action, payload })
   }).then(r => r.json());
 }
 
 function apiGet(action) {
   if (typeof apiFetch === 'function') return apiFetch(action);
-  return fetch(API_BASE + '?action=' + action).then(r => r.json());
+  return fetch(SCRIPT_URL + '?action=' + action).then(r => r.json());
 }
 
 /* ── Login ── */
-// Wire up login — all in one place, no dependencies on other elements
 (function() {
-  const pwInput   = document.getElementById('pwInput');
-  const loginBtn  = document.getElementById('loginBtn');
-  const pwToggle  = document.getElementById('pwToggle');
-  const loginErr  = document.getElementById('loginError');
+  const pwInput  = document.getElementById('pwInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const pwToggle = document.getElementById('pwToggle');
+  const loginErr = document.getElementById('loginError');
 
   function tryLogin() {
-    const pw = pwInput.value;
-    if (pw !== ADMIN_PW) {
+    if (pwInput.value !== ADMIN_PW) {
       loginErr.classList.add('show');
       pwInput.classList.add('shake');
       pwInput.addEventListener('animationend', () => pwInput.classList.remove('shake'), { once: true });
@@ -356,23 +358,22 @@ function apiGet(action) {
 
   loginBtn.addEventListener('click', tryLogin);
   pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-
   pwToggle.addEventListener('click', () => {
     const hidden = pwInput.type === 'password';
-    pwInput.type = hidden ? 'text' : 'password';
+    pwInput.type  = hidden ? 'text' : 'password';
     pwToggle.textContent = hidden ? '🙈' : '👁';
     pwInput.focus();
   });
 })();
 
-/* ── Init: load data from API ── */
+/* ── Init ── */
 async function initAdmin() {
   const warnings = [];
 
   try {
-    const teamsData = await apiGet('getGroupTeams');
-    if (teamsData?.ok && teamsData.groups) {
-      groupTeams = teamsData.groups;
+    const d = await apiGet('getGroupTeams');
+    if (d?.ok && d.groups) {
+      groupTeams = d.groups;
       allTeams   = Object.values(groupTeams).flat().sort();
     } else {
       warnings.push('Could not load group teams — dropdowns may be empty.');
@@ -380,18 +381,18 @@ async function initAdmin() {
   } catch(e) { warnings.push('getGroupTeams failed: ' + e.message); }
 
   try {
-    const fixturesData = await apiGet('getFixtures');
-    if (fixturesData?.ok && Array.isArray(fixturesData.fixtures)) {
-      fixtures = fixturesData.fixtures;
+    const d = await apiGet('getFixtures');
+    if (d?.ok && Array.isArray(d.fixtures)) {
+      fixtures = d.fixtures;
     } else {
       warnings.push('Could not load fixtures — match info will be missing.');
     }
   } catch(e) { warnings.push('getFixtures failed: ' + e.message); }
 
   try {
-    const resultsData = await apiGet('getResults');
-    if (resultsData?.ok && resultsData.knockout) {
-      Object.values(resultsData.knockout).forEach(matches => {
+    const d = await apiGet('getResults');
+    if (d?.ok && d.knockout) {
+      Object.values(d.knockout).forEach(matches => {
         if (!Array.isArray(matches)) return;
         matches.forEach(m => { if (m.matchNo) koData[String(m.matchNo)] = m; });
       });
@@ -426,31 +427,63 @@ function buildGroupTabs() {
 
 async function loadGroupForm(g) {
   const teams = groupTeams[g] || [];
+  groupPositions = {};
+  teams.forEach(t => { groupPositions[t] = null; });
 
-  // Populate dropdowns
-  ['gPos1','gPos2','gPos3','gPos4'].forEach(id => {
-    document.getElementById(id).innerHTML =
-      `<option value="">— select —</option>` +
-      teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
-  });
-
-  // Load existing saved value from API
   try {
     const d = await apiGet(`getGroupResult&group=${encodeURIComponent(g)}`);
     if (d?.ok && d.result) {
       const r = d.result;
-      if (r.pos1) document.getElementById('gPos1').value = r.pos1;
-      if (r.pos2) document.getElementById('gPos2').value = r.pos2;
-      if (r.pos3) document.getElementById('gPos3').value = r.pos3;
-      if (r.pos4) document.getElementById('gPos4').value = r.pos4;
+      if (r.pos1 && groupPositions.hasOwnProperty(r.pos1)) groupPositions[r.pos1] = 1;
+      if (r.pos2 && groupPositions.hasOwnProperty(r.pos2)) groupPositions[r.pos2] = 2;
+      if (r.pos3 && groupPositions.hasOwnProperty(r.pos3)) groupPositions[r.pos3] = 3;
+      if (r.pos4 && groupPositions.hasOwnProperty(r.pos4)) groupPositions[r.pos4] = 4;
     }
   } catch(e) { /* non-fatal */ }
+
+  renderGroupPicker(teams);
+}
+
+function renderGroupPicker(teams) {
+  const picker = document.getElementById('groupTeamPicker');
+  picker.innerHTML = teams.map(t => {
+    const pos = groupPositions[t];
+    return `<button class="team-pick-btn${pos !== null ? ' assigned' : ''}" data-team="${esc(t)}">
+      ${esc(t)}${pos !== null ? `<span class="pos-badge">${pos}</span>` : ''}
+    </button>`;
+  }).join('');
+
+  picker.querySelectorAll('.team-pick-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const team = btn.dataset.team;
+      const cur  = groupPositions[team];
+      const next = cur === null ? 1 : cur === 4 ? null : cur + 1;
+      // Bump any other team that already holds the target position
+      if (next !== null) {
+        Object.keys(groupPositions).forEach(t => {
+          if (t !== team && groupPositions[t] === next) groupPositions[t] = null;
+        });
+      }
+      groupPositions[team] = next;
+      renderGroupPicker(teams);
+    });
+  });
+
+  // Assignment summary strip
+  const slots = document.getElementById('groupAssignments');
+  slots.innerHTML = [1,2,3,4].map(pos => {
+    const team = Object.keys(groupPositions).find(t => groupPositions[t] === pos) || '';
+    const label = pos === 1 ? '1st' : pos === 2 ? '2nd' : pos === 3 ? '3rd' : '4th';
+    return `<div class="assignment-slot${team ? ' filled' : ''}">
+      <div class="slot-label">${label}</div>
+      <div class="slot-team">${team ? esc(team) : '—'}</div>
+    </div>`;
+  }).join('');
 }
 
 document.getElementById('saveGroupBtn').addEventListener('click', async () => {
-  const pos = ['gPos1','gPos2','gPos3','gPos4'].map(id => document.getElementById(id).value);
-  if (pos.some(p => !p)) { toast('Select all 4 positions first.', 'error'); return; }
-  if (new Set(pos).size < 4) { toast('Each position must be a different team.', 'error'); return; }
+  const pos = [1,2,3,4].map(p => Object.keys(groupPositions).find(t => groupPositions[t] === p) || '');
+  if (pos.some(p => !p)) { toast('Assign all 4 positions first.', 'error'); return; }
 
   const btn = document.getElementById('saveGroupBtn');
   btn.disabled = true; btn.textContent = 'Saving…';
@@ -466,7 +499,9 @@ document.getElementById('saveGroupBtn').addEventListener('click', async () => {
 });
 
 document.getElementById('clearGroupBtn').addEventListener('click', () => {
-  ['gPos1','gPos2','gPos3','gPos4'].forEach(id => { document.getElementById(id).value = ''; });
+  const teams = groupTeams[activeGroup] || [];
+  teams.forEach(t => { groupPositions[t] = null; });
+  renderGroupPicker(teams);
 });
 
 /* ══ KNOCKOUT SECTION ══ */
@@ -487,11 +522,9 @@ function buildRoundTabs() {
 }
 
 function getRoundFixtures() {
-  // Match fixtures sheet ROUND column values exactly
   const sheetLabel = ROUND_SHEET_LABELS[activeRound];
   const found = fixtures.filter(f => f.round === sheetLabel);
   if (found.length) return found;
-  // Fallback: generate placeholder slots
   return Array.from({ length: ROUND_COUNTS[activeRound] }, (_, i) => ({
     matchNo: null, round: sheetLabel, date: '', kickOffGmt: '', _placeholder: true
   }));
@@ -506,13 +539,11 @@ function loadKoForm() {
   const matchNo = m.matchNo ? String(m.matchNo) : null;
   const saved   = matchNo ? (koData[matchNo] || {}) : {};
 
-  // Nav label
   document.getElementById('matchNavLabel').textContent =
     `Match ${activeMatchIdx + 1} of ${total}${matchNo ? ` (no.\u00a0${matchNo})` : ''}`;
   document.getElementById('prevMatchBtn').disabled = activeMatchIdx === 0;
   document.getElementById('nextMatchBtn').disabled = activeMatchIdx === total - 1;
 
-  // Team dropdowns
   const teamOptions = `<option value="">TBD</option>` +
     allTeams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
   document.getElementById('koTeam1').innerHTML = teamOptions;
@@ -520,11 +551,9 @@ function loadKoForm() {
   document.getElementById('koTeam1').value = saved.team1 || '';
   document.getElementById('koTeam2').value = saved.team2 || '';
 
-  // Scores
   document.getElementById('koGoals1').value = (saved.goals1 !== null && saved.goals1 !== undefined) ? saved.goals1 : '';
   document.getElementById('koGoals2').value = (saved.goals2 !== null && saved.goals2 !== undefined) ? saved.goals2 : '';
 
-  // Winner — stored as team name, shown as team1/team2 positional
   const kw = document.getElementById('koWinner');
   kw.value = '';
   if (saved.winner) {
@@ -532,12 +561,9 @@ function loadKoForm() {
     else if (saved.winner === saved.team2) kw.value = 'team2';
   }
 
-  // Live
   document.getElementById('koLive').checked = !!saved.live;
-
   updateTeamLabels();
 
-  // Fixture date/time
   const info = document.getElementById('koMatchInfo');
   info.textContent = (m.date || m.kickOffGmt)
     ? `${m.date || ''}${m.kickOffGmt ? ' · Kick off ' + m.kickOffGmt + ' GMT' : ''}`
@@ -557,20 +583,19 @@ document.getElementById('nextMatchBtn').addEventListener('click', () => { active
 document.getElementById('saveKoBtn').addEventListener('click', async () => {
   const matches = getRoundFixtures();
   const m       = matches[activeMatchIdx];
-  const matchNo = m.matchNo; // must be a real match number from fixtures
+  const matchNo = m.matchNo;
 
   if (!matchNo) {
     toast('No match number for this slot. Check your FIXTURES sheet.', 'error');
     return;
   }
 
-  const t1      = document.getElementById('koTeam1').value;
-  const t2      = document.getElementById('koTeam2').value;
-  const g1Raw   = document.getElementById('koGoals1').value;
-  const g2Raw   = document.getElementById('koGoals2').value;
-  const winSel  = document.getElementById('koWinner').value;
-  const live    = document.getElementById('koLive').checked;
-
+  const t1     = document.getElementById('koTeam1').value;
+  const t2     = document.getElementById('koTeam2').value;
+  const g1Raw  = document.getElementById('koGoals1').value;
+  const g2Raw  = document.getElementById('koGoals2').value;
+  const winSel = document.getElementById('koWinner').value;
+  const live   = document.getElementById('koLive').checked;
   const winner = winSel === 'team1' ? t1 : winSel === 'team2' ? t2 : '';
 
   const payload = {
@@ -599,9 +624,9 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
 });
 
 document.getElementById('clearKoBtn').addEventListener('click', () => {
-  document.getElementById('koGoals1').value  = '';
-  document.getElementById('koGoals2').value  = '';
-  document.getElementById('koWinner').value  = '';
+  document.getElementById('koGoals1').value = '';
+  document.getElementById('koGoals2').value = '';
+  document.getElementById('koWinner').value = '';
   document.getElementById('koLive').checked  = false;
 });
 
