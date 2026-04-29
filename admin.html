@@ -306,14 +306,58 @@ const ROUND_LABELS       = { r32:'R32', r16:'R16', qf:'QF', sf:'SF', final:'Fina
 const ROUND_COUNTS       = { r32:16, r16:8, qf:4, sf:2, final:1 };
 const ROUND_SHEET_LABELS = { r32:'Round of 32', r16:'Round of 16', qf:'Quarter-final', sf:'Semi-final', final:'Final' };
 
-let allTeams   = [];
-let groupTeams = {};
-let fixtures   = [];
-let koData     = {};
+let allTeams       = [];
+let groupTeams     = {};
+let fixtures       = [];
+let koData         = {};
 let activeGroup    = 'A';
 let activeRound    = 'r32';
 let activeMatchIdx = 0;
 let groupPositions = {};
+let actualGroups   = {}; // populated from getResults
+
+// Fixed R32 slots — mirrors getFixedRoundOf32Rules_() in Code.gs
+const FIXED_R32 = {
+  73: { team1: { type:'RUNNER_UP', group:'A' }, team2: { type:'RUNNER_UP', group:'B' } },
+  75: { team1: { type:'WINNER',    group:'F' }, team2: { type:'RUNNER_UP', group:'C' } },
+  76: { team1: { type:'WINNER',    group:'C' }, team2: { type:'RUNNER_UP', group:'F' } },
+  78: { team1: { type:'RUNNER_UP', group:'E' }, team2: { type:'RUNNER_UP', group:'I' } },
+  83: { team1: { type:'RUNNER_UP', group:'K' }, team2: { type:'RUNNER_UP', group:'L' } },
+  84: { team1: { type:'WINNER',    group:'H' }, team2: { type:'RUNNER_UP', group:'J' } },
+  86: { team1: { type:'WINNER',    group:'J' }, team2: { type:'RUNNER_UP', group:'H' } },
+  88: { team1: { type:'RUNNER_UP', group:'D' }, team2: { type:'RUNNER_UP', group:'G' } }
+};
+
+// Progression map — mirrors getKnockoutProgression_() in Code.gs
+// Each entry: which two feeder match winners meet here
+const PROGRESSION = {
+  89:  { team1: 74, team2: 77 },
+  90:  { team1: 73, team2: 75 },
+  91:  { team1: 76, team2: 78 },
+  92:  { team1: 79, team2: 80 },
+  93:  { team1: 83, team2: 84 },
+  94:  { team1: 81, team2: 82 },
+  95:  { team1: 86, team2: 88 },
+  96:  { team1: 85, team2: 87 },
+  97:  { team1: 89, team2: 90 },
+  98:  { team1: 93, team2: 94 },
+  99:  { team1: 91, team2: 92 },
+  100: { team1: 95, team2: 96 },
+  101: { team1: 97, team2: 98 },
+  102: { team1: 99, team2: 100 },
+  104: { team1: 101, team2: 102 }
+};
+
+function resolveFixedSlot(slot) {
+  const g = actualGroups[slot.group];
+  if (!g) return '';
+  return slot.type === 'WINNER' ? (g.pos1 || '') : (g.pos2 || '');
+}
+
+function resolveProgressionTeam(feederMatchNo) {
+  const saved = koData[String(feederMatchNo)];
+  return saved && saved.winner ? saved.winner : '';
+}
 
 /* ── Helpers ── */
 function toast(msg, type = 'info') {
@@ -406,13 +450,19 @@ async function initAdmin() {
 
   try {
     const d = await apiGet('getResults');
-    if (d?.ok && d.knockout) {
-      Object.values(d.knockout).forEach(matches => {
-        if (!Array.isArray(matches)) return;
-        matches.forEach(m => {
-          if (m.matchNo) koData[String(m.matchNo)] = m;
+    if (d?.ok) {
+      // Store actual group standings for auto-fill
+      if (d.groups) {
+        Object.keys(d.groups).forEach(g => { actualGroups[g] = d.groups[g]; });
+      }
+      if (d.knockout) {
+        Object.values(d.knockout).forEach(matches => {
+          if (!Array.isArray(matches)) return;
+          matches.forEach(m => {
+            if (m.matchNo) koData[String(m.matchNo)] = m;
+          });
         });
-      });
+      }
     }
   } catch(e) {
     warnings.push('getResults failed: ' + e.message);
@@ -594,8 +644,25 @@ function loadKoForm() {
 
   document.getElementById('koTeam1').innerHTML = teamOptions;
   document.getElementById('koTeam2').innerHTML = teamOptions;
-  document.getElementById('koTeam1').value = saved.team1 || '';
-  document.getElementById('koTeam2').value = saved.team2 || '';
+
+  // Auto-fill teams from group results (fixed R32) or feeder match winners (R16+)
+  let autoT1 = saved.team1 || '';
+  let autoT2 = saved.team2 || '';
+  if (matchNo) {
+    const matchNoNum = Number(matchNo);
+    if (activeRound === 'r32' && FIXED_R32[matchNoNum]) {
+      const rule = FIXED_R32[matchNoNum];
+      if (!autoT1) autoT1 = resolveFixedSlot(rule.team1);
+      if (!autoT2) autoT2 = resolveFixedSlot(rule.team2);
+    } else if (PROGRESSION[matchNoNum]) {
+      const prog = PROGRESSION[matchNoNum];
+      if (!autoT1) autoT1 = resolveProgressionTeam(prog.team1);
+      if (!autoT2) autoT2 = resolveProgressionTeam(prog.team2);
+    }
+  }
+
+  document.getElementById('koTeam1').value = autoT1;
+  document.getElementById('koTeam2').value = autoT2;
 
   document.getElementById('koGoals1').value =
     saved.goals1 !== null && saved.goals1 !== undefined ? saved.goals1 : '';
