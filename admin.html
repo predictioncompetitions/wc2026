@@ -371,6 +371,18 @@ function resolveProgressionTeam(feederMatchNo) {
   return saved && saved.winner ? saved.winner : '';
 }
 
+// Returns true if the given R32 match has a team slot sourced from the specified group
+function matchDependsOnGroup(matchNoNum, group) {
+  if (FIXED_R32[matchNoNum]) {
+    const r = FIXED_R32[matchNoNum];
+    return r.team1.group === group || r.team2.group === group;
+  }
+  if (FLEXIBLE_R32_TEAM1[matchNoNum]) {
+    return FLEXIBLE_R32_TEAM1[matchNoNum].group === group;
+  }
+  return false;
+}
+
 /* ── Helpers ── */
 function toast(msg, type = 'info') {
   const el = document.getElementById('toast');
@@ -572,6 +584,18 @@ document.getElementById('saveGroupBtn').addEventListener('click', async () => {
       pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3]
     });
     if (!res?.ok) throw new Error(res?.error || 'Save failed');
+
+    // Update local actualGroups so knockout auto-fill reflects the new result immediately
+    actualGroups[activeGroup] = { pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3] };
+
+    // Refresh the knockout form if the current match depends on this group
+    const matches = getRoundFixtures();
+    const currentMatch = matches[activeMatchIdx];
+    const matchNoNum = currentMatch?.matchNo ? Number(currentMatch.matchNo) : null;
+    if (matchNoNum && matchDependsOnGroup(matchNoNum, activeGroup)) {
+      loadKoForm();
+    }
+
     toast(`Group ${activeGroup} saved.`, 'success');
   } catch(err) {
     toast(err.message || 'Save failed.', 'error');
