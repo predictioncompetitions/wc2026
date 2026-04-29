@@ -1207,105 +1207,140 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
 
   function splitMatchMeta(m){const num=`Match ${m.matchNo}`,parts=[];if(m.date)parts.push(m.date);if(m.kickOffGMT)parts.push(m.kickOffGMT);if(m.round)parts.push(m.round);return{num,rest:parts.join(' · ')};}
 
-  function renderRound(matches, container, rk) {
-    container.innerHTML='';
-    matches.forEach((match,i)=>{
-      const {num,rest}=splitMatchMeta(match), desc=FIXTURE_DESC[match.matchNo]||'';
-      const infoBtn=desc?`<button type="button" class="match-info-btn" data-desc="${esc(desc)}">ⓘ<span class="match-tooltip">${esc(desc)}</span></button>`:'';
-      const roundClass = rk==='R32'?'round-r32':rk==='R16'?'round-r16':rk==='QF'?'round-qf':rk==='SF'?'round-sf':rk==='FINAL'?'round-final':'';
-      const roundLabel = rk==='R32'?'Round of 32':rk==='R16'?'Round of 16':rk==='QF'?'Quarter-final':rk==='SF'?'Semi-final':rk==='FINAL'?'Final':'';
-      const card=document.createElement('div'); card.className=`match-card ${roundClass}`+(match.winner?' has-winner':'');
-      card.innerHTML=`
-        <div class="match-round-label">${esc(roundLabel)}</div>
-        <div class="match-meta"><span class="match-meta-num">${esc(num)}</span>${infoBtn}<span class="match-meta-rest">${esc(rest)}</span></div>
-        <div class="match-row">
-          <div class="match-team-left"><span class="match-team-name" id="${rk}_${i}_TEAM1">${esc(match.team1)}</span></div>
-          <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S1" value="${match.score1}" aria-label="${esc(match.team1)} score">
-          <div class="score-sep">–</div>
-          <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S2" value="${match.score2}" aria-label="${esc(match.team2)} score">
-          <div class="match-team-right"><span class="match-team-name" id="${rk}_${i}_TEAM2d">${esc(match.team2)}</span></div>
-        </div>
-        <div class="match-row-mobile">
-          <div class="mobile-team-score-row">
-            <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S1M" value="${match.score1}" aria-label="${esc(match.team1)} score">
-            <span class="mobile-team-name" id="${rk}_${i}_TEAM1">${esc(match.team1)}</span>
-          </div>
-          <div class="mobile-team-score-row" style="margin-top:4px;">
-            <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S2M" value="${match.score2}" aria-label="${esc(match.team2)} score">
-            <span class="mobile-team-name" id="${rk}_${i}_TEAM2">${esc(match.team2)}</span>
-          </div>
-        </div>
-        <div class="match-error" id="${rk}_${i}_ERROR"></div>`;
-      container.appendChild(card);
+// Replace the wireInput function inside renderRound with this version.
+// The only change is adding updateCurrentRoundChip() inside the input handler,
+// so the chip reflects the live match array on every keystroke.
 
-      const infoEl=card.querySelector('.match-info-btn');
-      if(infoEl){infoEl.addEventListener('click',e=>{e.stopPropagation();const isOpen=infoEl.classList.contains('tip-open');document.querySelectorAll('.match-info-btn.tip-open').forEach(el=>el.classList.remove('tip-open'));if(!isOpen){infoEl.classList.add('tip-open');const rect=infoEl.getBoundingClientRect();infoEl.classList.toggle('tip-down',rect.top<80);}});}
+function renderRound(matches, container, rk) {
+  container.innerHTML = '';
 
-      const s1el  = $(`${rk}_${i}_S1`);
-      const s2el  = $(`${rk}_${i}_S2`);
-      const s1mel = $(`${rk}_${i}_S1M`);
-      const s2mel = $(`${rk}_${i}_S2M`);
-
-      function getVisible(a, b) {
-        if (a && a.offsetParent !== null) return a;
-        if (b && b.offsetParent !== null) return b;
-        return a || b;
-      }
-
-      function syncInputs(source, target) {
-        if (target && target !== source) target.value = source.value;
-      }
-
-      function wireInput(el, mirror, isS1) {
-        if (!el) return;
-        el.addEventListener('keydown', restrictScoreInput);
-        el.addEventListener('input', e => {
-          normaliseScoreInput(e.target);
-          syncInputs(e.target, mirror);
-          matches[i].score1 = s1el ? s1el.value : (s1mel ? s1mel.value : '');
-          matches[i].score2 = s2el ? s2el.value : (s2mel ? s2mel.value : '');
-          matches[i].winner = '';
-          const n1 = Number(matches[i].score1), n2 = Number(matches[i].score2);
-          if (matches[i].score1 !== '' && matches[i].score2 !== '' &&
-              Number.isInteger(n1) && Number.isInteger(n2) && n1 >= 0 && n2 >= 0 && n1 !== n2) {
-            matches[i].winner = n1 > n2 ? matches[i].team1 : matches[i].team2;
-          }
-          updateTeamColours(matches, i, rk);
-          const errEl = $(`${rk}_${i}_ERROR`); if (errEl) errEl.textContent = '';
-          updateProgression(); scheduleDraftSave();
-
-          if (!/^[0-9]$/.test(e.target.value)) return;
-          if (isS1) {
-            const next = getVisible(s2mel, s2el);
-            if (next) requestAnimationFrame(() => { next.focus(); next.select(); });
-          } else {
-            const nextS1 = getVisible($(`${rk}_${i+1}_S1M`), $(`${rk}_${i+1}_S1`));
-            if (nextS1) {
-              requestAnimationFrame(() => { nextS1.focus(); nextS1.select(); });
-            } else {
-              updateProgression();
-              setTimeout(() => {
-                const order = ['R32','R16','QF','SF','FINAL'];
-                const ci = order.indexOf(rk);
-                for (let j = ci+1; j < order.length; j++) {
-                  const nxt = getVisible($(`${order[j]}_0_S1M`), $(`${order[j]}_0_S1`));
-                  if (nxt && nxt.offsetParent !== null) { nxt.focus(); nxt.select(); return; }
-                }
-              }, 30);
-            }
-          }
-        });
-        el.addEventListener('blur', () => handleScoreBlur(matches, i, rk));
-        el.addEventListener('paste', e => e.preventDefault());
-      }
-
-      wireInput(s1el,  s1mel, true);
-      wireInput(s1mel, s1el,  true);
-      wireInput(s2el,  s2mel, false);
-      wireInput(s2mel, s2el,  false);
-      updateTeamColours(matches,i,rk);
-    });
+  // Map round key to chip element ID and the correct module-level matches array
+  function getChipInfo(rk) {
+    switch (rk) {
+      case 'R32':    return { chipId: 'r32Chip',   arr: roundOf32Matches };
+      case 'R16':    return { chipId: 'r16Chip',   arr: roundOf16Matches };
+      case 'QF':     return { chipId: 'qfChip',    arr: quarterFinalMatches };
+      case 'SF':     return { chipId: 'sfChip',    arr: semiFinalMatches };
+      case 'FINAL':  return { chipId: 'finalChip', arr: finalMatch ? [finalMatch] : [] };
+      default:       return null;
+    }
   }
+
+  matches.forEach((match, i) => {
+    const { num, rest } = splitMatchMeta(match), desc = FIXTURE_DESC[match.matchNo] || '';
+    const infoBtn = desc ? `<button type="button" class="match-info-btn" data-desc="${esc(desc)}">ⓘ<span class="match-tooltip">${esc(desc)}</span></button>` : '';
+    const roundClass = rk === 'R32' ? 'round-r32' : rk === 'R16' ? 'round-r16' : rk === 'QF' ? 'round-qf' : rk === 'SF' ? 'round-sf' : rk === 'FINAL' ? 'round-final' : '';
+    const roundLabel = rk === 'R32' ? 'Round of 32' : rk === 'R16' ? 'Round of 16' : rk === 'QF' ? 'Quarter-final' : rk === 'SF' ? 'Semi-final' : rk === 'FINAL' ? 'Final' : '';
+    const card = document.createElement('div');
+    card.className = `match-card ${roundClass}` + (match.winner ? ' has-winner' : '');
+    card.innerHTML = `
+      <div class="match-round-label">${esc(roundLabel)}</div>
+      <div class="match-meta"><span class="match-meta-num">${esc(num)}</span>${infoBtn}<span class="match-meta-rest">${esc(rest)}</span></div>
+      <div class="match-row">
+        <div class="match-team-left"><span class="match-team-name" id="${rk}_${i}_TEAM1">${esc(match.team1)}</span></div>
+        <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S1" value="${match.score1}" aria-label="${esc(match.team1)} score">
+        <div class="score-sep">–</div>
+        <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S2" value="${match.score2}" aria-label="${esc(match.team2)} score">
+        <div class="match-team-right"><span class="match-team-name" id="${rk}_${i}_TEAM2d">${esc(match.team2)}</span></div>
+      </div>
+      <div class="match-row-mobile">
+        <div class="mobile-team-score-row">
+          <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S1M" value="${match.score1}" aria-label="${esc(match.team1)} score">
+          <span class="mobile-team-name" id="${rk}_${i}_TEAM1">${esc(match.team1)}</span>
+        </div>
+        <div class="mobile-team-score-row" style="margin-top:4px;">
+          <input class="score-input" type="text" inputmode="numeric" maxlength="1" id="${rk}_${i}_S2M" value="${match.score2}" aria-label="${esc(match.team2)} score">
+          <span class="mobile-team-name" id="${rk}_${i}_TEAM2">${esc(match.team2)}</span>
+        </div>
+      </div>
+      <div class="match-error" id="${rk}_${i}_ERROR"></div>`;
+    container.appendChild(card);
+
+    const infoEl = card.querySelector('.match-info-btn');
+    if (infoEl) {
+      infoEl.addEventListener('click', e => {
+        e.stopPropagation();
+        const isOpen = infoEl.classList.contains('tip-open');
+        document.querySelectorAll('.match-info-btn.tip-open').forEach(el => el.classList.remove('tip-open'));
+        if (!isOpen) {
+          infoEl.classList.add('tip-open');
+          const rect = infoEl.getBoundingClientRect();
+          infoEl.classList.toggle('tip-down', rect.top < 80);
+        }
+      });
+    }
+
+    const s1el  = $(`${rk}_${i}_S1`);
+    const s2el  = $(`${rk}_${i}_S2`);
+    const s1mel = $(`${rk}_${i}_S1M`);
+    const s2mel = $(`${rk}_${i}_S2M`);
+
+    function getVisible(a, b) {
+      if (a && a.offsetParent !== null) return a;
+      if (b && b.offsetParent !== null) return b;
+      return a || b;
+    }
+
+    function syncInputs(source, target) {
+      if (target && target !== source) target.value = source.value;
+    }
+
+    function wireInput(el, mirror, isS1) {
+      if (!el) return;
+      el.addEventListener('keydown', restrictScoreInput);
+      el.addEventListener('input', e => {
+        normaliseScoreInput(e.target);
+        syncInputs(e.target, mirror);
+        matches[i].score1 = s1el ? s1el.value : (s1mel ? s1mel.value : '');
+        matches[i].score2 = s2el ? s2el.value : (s2mel ? s2mel.value : '');
+        matches[i].winner = '';
+        const n1 = Number(matches[i].score1), n2 = Number(matches[i].score2);
+        if (matches[i].score1 !== '' && matches[i].score2 !== '' &&
+            Number.isInteger(n1) && Number.isInteger(n2) && n1 >= 0 && n2 >= 0 && n1 !== n2) {
+          matches[i].winner = n1 > n2 ? matches[i].team1 : matches[i].team2;
+        }
+        updateTeamColours(matches, i, rk);
+        const errEl = $(`${rk}_${i}_ERROR`); if (errEl) errEl.textContent = '';
+
+        // ── KEY FIX: update this round's chip immediately from the live array ──
+        const chipInfo = getChipInfo(rk);
+        if (chipInfo) updateRoundChip(chipInfo.chipId, chipInfo.arr);
+
+        updateProgression();
+        scheduleDraftSave();
+
+        if (!/^[0-9]$/.test(e.target.value)) return;
+        if (isS1) {
+          const next = getVisible(s2mel, s2el);
+          if (next) requestAnimationFrame(() => { next.focus(); next.select(); });
+        } else {
+          const nextS1 = getVisible($(`${rk}_${i + 1}_S1M`), $(`${rk}_${i + 1}_S1`));
+          if (nextS1) {
+            requestAnimationFrame(() => { nextS1.focus(); nextS1.select(); });
+          } else {
+            updateProgression();
+            setTimeout(() => {
+              const order = ['R32', 'R16', 'QF', 'SF', 'FINAL'];
+              const ci = order.indexOf(rk);
+              for (let j = ci + 1; j < order.length; j++) {
+                const nxt = getVisible($(`${order[j]}_0_S1M`), $(`${order[j]}_0_S1`));
+                if (nxt && nxt.offsetParent !== null) { nxt.focus(); nxt.select(); return; }
+              }
+            }, 30);
+          }
+        }
+      });
+      el.addEventListener('blur', () => handleScoreBlur(matches, i, rk));
+      el.addEventListener('paste', e => e.preventDefault());
+    }
+
+    wireInput(s1el,  s1mel, true);
+    wireInput(s1mel, s1el,  true);
+    wireInput(s2el,  s2mel, false);
+    wireInput(s2mel, s2el,  false);
+    updateTeamColours(matches, i, rk);
+  });
+}
 
   function restrictScoreInput(e){const ok=['Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'];if(ok.includes(e.key))return;if(!/^[0-9]$/.test(e.key)){e.preventDefault();return;}const inp=e.target,sel=inp.selectionEnd-inp.selectionStart;if(inp.value.length>=1&&sel===0)e.preventDefault();}
   function normaliseScoreInput(inp){let v=String(inp.value||'').replace(/[^0-9]/g,'');if(v.length>1)v=v.slice(0,1);inp.value=v;}
