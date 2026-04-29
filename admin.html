@@ -331,36 +331,40 @@ function apiGet(action) {
 }
 
 /* ── Login ── */
-document.getElementById('loginBtn').addEventListener('click', tryLogin);
-document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+// Wire up login — all in one place, no dependencies on other elements
+(function() {
+  const pwInput   = document.getElementById('pwInput');
+  const loginBtn  = document.getElementById('loginBtn');
+  const pwToggle  = document.getElementById('pwToggle');
+  const loginErr  = document.getElementById('loginError');
 
-// Show/hide password toggle
-document.getElementById('pwToggle').addEventListener('click', () => {
-  const inp = document.getElementById('pwInput');
-  const isHidden = inp.type === 'password';
-  inp.type = isHidden ? 'text' : 'password';
-  document.getElementById('pwToggle').textContent = isHidden ? '🙈' : '👁';
-  inp.focus();
-});
-
-function tryLogin() {
-  const pw  = document.getElementById('pwInput').value;
-  const err = document.getElementById('loginError');
-  const inp = document.getElementById('pwInput');
-  if (pw !== ADMIN_PW) {
-    err.classList.add('show');
-    inp.classList.add('shake');
-    inp.addEventListener('animationend', () => inp.classList.remove('shake'), { once: true });
-    inp.select();
-    return;
+  function tryLogin() {
+    const pw = pwInput.value;
+    if (pw !== ADMIN_PW) {
+      loginErr.classList.add('show');
+      pwInput.classList.add('shake');
+      pwInput.addEventListener('animationend', () => pwInput.classList.remove('shake'), { once: true });
+      pwInput.select();
+      return;
+    }
+    loginErr.classList.remove('show');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'block';
+    buildGroupTabs();
+    buildRoundTabs();
+    initAdmin();
   }
-  err.classList.remove('show');
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('adminScreen').style.display  = 'block';
-  buildGroupTabs();
-  buildRoundTabs();
-  initAdmin();
-}
+
+  loginBtn.addEventListener('click', tryLogin);
+  pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+  pwToggle.addEventListener('click', () => {
+    const hidden = pwInput.type === 'password';
+    pwInput.type = hidden ? 'text' : 'password';
+    pwToggle.textContent = hidden ? '🙈' : '👁';
+    pwInput.focus();
+  });
+})();
 
 /* ── Init: load data from API ── */
 async function initAdmin() {
