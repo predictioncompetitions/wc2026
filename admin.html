@@ -294,8 +294,7 @@ const ROUND_COUNTS   = { r32:16,    r16:8,      qf:4,    sf:2,   final:1 };
 // These must match the ROUND column values in the FIXTURES and ACTUAL_KNOCKOUT sheets exactly
 const ROUND_SHEET_LABELS = { r32:'Round of 32', r16:'Round of 16', qf:'Quarter-final', sf:'Semi-final', final:'Final' };
 
-const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-
+// esc() is already defined in site.js — do not redeclare it here
 let allTeams   = [];
 let groupTeams = {};
 let fixtures   = [];   // flat array from API: { matchNo, round, date, kickOffGmt }
