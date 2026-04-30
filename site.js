@@ -49,7 +49,7 @@ async function apiFetch(action, params = {}) {
   return res.json();
 }
 // ── FORMAT HELPERS ────────────────────────────────────────────────────────────
-function esc(str) {
+function escSite(str) {
   return String(str || '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
