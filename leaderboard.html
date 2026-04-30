@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leaderboard — Mick's World Cup Predictor 2026</title>
+  <title>Leaderboard Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="soccerball.png" type="image/png">
   <style>
@@ -292,7 +292,8 @@
       const payBadge = payStr === 'PAID'
         ? '<span class="badge-paid">Paid</span>'
         : '<span class="badge-due">Due</span>';
-          const prizeLabel = r === 1 ? '1st place prize' : r === 2 ? '2nd place prize' : r === 3 ? '3rd place prize' : r === 4 ? '4th place prize' : r === 5 ? '5th place prize' : `€20 prize`;
+      const prizeLabel = r === 1 ? '1st place prize' : r === 2 ? '2nd place prize' : r === 3 ? '3rd place prize' : r === 4 ? '4th place prize' : r === 5 ? '5th place prize' : `€20 prize`;
+      const cupCell = isPrize ? `<span title="${prizeLabel}" style="cursor:default;">🏆</span>` : '';
       
       html += `
         <tr class="${prizeClass}" data-name="${esc(getName(e))}" style="cursor:pointer;">
