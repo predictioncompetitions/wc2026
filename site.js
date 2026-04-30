@@ -1,11 +1,9 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 var SCRIPT_URL = 'https://api.micksworldcup2026.com';
-
 // ── NAV ───────────────────────────────────────────────────────────────────────
 async function initNav() {
   const toggle = document.getElementById('navToggle');
   const mobile = document.getElementById('navMobile');
-  // Mobile toggle
   if (toggle && mobile) {
     toggle.addEventListener('click', () => {
       mobile.classList.toggle('open');
@@ -18,7 +16,6 @@ async function initNav() {
       });
     });
   }
-  // Active state
   const path = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a, .nav-mobile a').forEach(a => {
     const href = a.getAttribute('href');
@@ -26,7 +23,6 @@ async function initNav() {
       a.classList.add('active');
     }
   });
-  // Phase visibility
   try {
     const data = await apiFetch('getInitialData');
     const isLive = data.tournamentStarted === true;
