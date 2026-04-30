@@ -2,24 +2,25 @@
 const SCRIPT_URL = 'https://api.micksworldcup2026.com';
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
-function initNav() {
+async function initNav() {
   const toggle = document.getElementById('navToggle');
   const mobile = document.getElementById('navMobile');
-  if (!toggle || !mobile) return;
 
-  toggle.addEventListener('click', () => {
-    mobile.classList.toggle('open');
-    toggle.textContent = mobile.classList.contains('open') ? '✕' : '☰';
-  });
-
-  mobile.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      mobile.classList.remove('open');
-      toggle.textContent = '☰';
+  // Mobile toggle
+  if (toggle && mobile) {
+    toggle.addEventListener('click', () => {
+      mobile.classList.toggle('open');
+      toggle.textContent = mobile.classList.contains('open') ? '✕' : '☰';
     });
-  });
+    mobile.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mobile.classList.remove('open');
+        toggle.textContent = '☰';
+      });
+    });
+  }
 
-  // Mark current page as active in nav
+  // Active state
   const path = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a, .nav-mobile a').forEach(a => {
     const href = a.getAttribute('href');
@@ -27,6 +28,25 @@ function initNav() {
       a.classList.add('active');
     }
   });
+
+  // Phase visibility
+  try {
+    const data = await apiFetch('getInitialData');
+    const isLive = data.tournamentStarted === true;
+    const entriesOpen = String(data.entryStatus || '').toUpperCase() === 'OPEN';
+
+    if (!entriesOpen) {
+      document.querySelectorAll('[data-phase="pre"]').forEach(el => el.style.display = 'none');
+    }
+
+    if (!isLive) {
+      document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = 'none');
+    } else {
+      document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = '');
+    }
+  } catch(e) {
+    document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = 'none');
+  }
 }
 
 // ── API ───────────────────────────────────────────────────────────────────────
