@@ -538,6 +538,7 @@
       <a href="stats.html" class="closed-btn">📊 Entry stats</a>
     </div>
   </div>
+</div>
 
 <!-- MAIN FORM WRAP -->
 <div id="mainFormWrap" class="hidden">
@@ -1620,15 +1621,16 @@ function resetFrom(stage){
     $('welcomeDraftNote').classList.add('hidden');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
+	
 function showWelcomeDeadline(deadline) {
   const banner = $('welcomeDeadline');
   const dateEl = $('welcomeDeadlineDate');
   if (!banner || !dateEl) return;
   banner.style.display = 'flex';
-deadline.toLocaleString('en-IE', {
-  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-  hour: '2-digit', minute: '2-digit'
-})
+  dateEl.textContent = deadline.toLocaleString('en-IE', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
 }
 
 	
