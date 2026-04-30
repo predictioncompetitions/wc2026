@@ -823,13 +823,6 @@ const SCRIPT_URL = 'https://api.micksworldcup2026.com';
     tick(); countdownInterval = setInterval(tick, 1000);
   }
 
-  function showClosedScreen(deadline) {
-    $('countdownBanner').classList.remove('visible');
-    $('mainFormWrap').classList.add('hidden');
-    $('closedScreen').style.display = 'block';
-	startClosedCountdown(); 
-  }
-
   /* ── Toast ── */
   let toastTimer;
   function showSaveToast() {
@@ -1623,8 +1616,9 @@ function resetFrom(stage){
   }
 
   initForm();
-function startClosedCountdown() {
-  const target = new Date('2026-06-11T19:00:00Z');
+	
+function startClosedCountdown(deadline) {
+  const target = new Date(deadline);
   const el = id => document.getElementById(id);
   function tick() {
     const diff = target - Date.now();
@@ -1640,6 +1634,13 @@ function startClosedCountdown() {
   }
   tick();
   setInterval(tick, 1000);
+}
+
+function showClosedScreen(deadline) {
+  $('countdownBanner').classList.remove('visible');
+  $('mainFormWrap').classList.add('hidden');
+  $('closedScreen').style.display = 'block';
+  if (deadline) startClosedCountdown(deadline.toISOString());
 }
 	
 </script>
