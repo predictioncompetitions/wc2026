@@ -1,5 +1,6 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-const SCRIPT_URL = 'https://api.micksworldcup2026.com';
+var SCRIPT_URL = 'https://api.micksworldcup2026.com';
+
 // ── NAV ───────────────────────────────────────────────────────────────────────
 async function initNav() {
   const toggle = document.getElementById('navToggle');
