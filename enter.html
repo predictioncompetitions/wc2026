@@ -48,7 +48,32 @@
       --sf-bg: #fff7ed;  --sf-border: #fdba74;  --sf-text: #c2410c;
       --final-bg: #fef3c7; --final-border: #fcd34d; --final-text: #92400e;
     }
+.welcome-deadline {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.welcome-deadline-label {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.welcome-deadline-date {
+  font-size: 13px;
+  color: rgba(255,255,255,.75);
+}
 
+	  
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { height: auto; }
     body {
@@ -531,7 +556,14 @@
         <div class="welcome-step"><div class="ws-num">4</div><div class="ws-icon">⚔️</div><div class="ws-content"><div class="ws-label">Knockout scores</div><div class="ws-desc">Predict every score from Round of 32 to the Final. No draws AND penalty wins count as a 1-goal win. Scores are positional: Team 1 and Team 2 refer to bracket positions, not the actual team names.</div></div></div>
         <div class="welcome-step"><div class="ws-num">5</div><div class="ws-icon">🏆</div><div class="ws-content"><div class="ws-label">Submit</div><div class="ws-desc">You'll get a confirmation email with a PDF of your picks.</div></div></div>
       </div>
+	
+		<div class="welcome-deadline" id="welcomeDeadline" style="display:none;">
+        <div class="welcome-deadline-label">⏰ Entries close</div>
+        <div class="welcome-deadline-date" id="welcomeDeadlineDate"></div>
+      </div>
+
       <div class="welcome-actions">
+		
         <button type="button" class="btn-welcome-go" id="welcomeGoBtn">
           Let's go
           <img src="soccerball.png" width="24" height="24" alt="" style="display:inline-block;vertical-align:middle;" />
@@ -1588,7 +1620,18 @@ function resetFrom(stage){
     $('welcomeDraftNote').classList.add('hidden');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
+function showWelcomeDeadline(deadline) {
+  const banner = $('welcomeDeadline');
+  const dateEl = $('welcomeDeadlineDate');
+  if (!banner || !dateEl) return;
+  banner.style.display = 'flex';
+  dateEl.textContent = deadline.toLocaleString('en-IE', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+  });
+}
 
+	
   /* ── Main init ── */
   async function initForm(){
     $('closedScreen').style.display='none';
@@ -1606,8 +1649,9 @@ function resetFrom(stage){
       if(!GROUP_LETTERS.length){$('closedScreen').querySelector('.closed-body').textContent='No group data found. Please contact the organiser.';$('closedScreen').style.display='block';return;}
       GROUP_LETTERS.forEach(g=>{groupSelections[g]={'1ST':'','2ND':'','3RD':''};});
       $('mainFormWrap').classList.remove('hidden');
-      if(deadline&&deadline>new Date())startCountdown(deadline);
-      buildGroupCards(); initExpandableNote(); formReady=true;
+	if(deadline&&deadline>new Date())startCountdown(deadline);
+	if(deadline) showWelcomeDeadline(deadline);
+	buildGroupCards(); initExpandableNote(); formReady=true;
       updateProgressBar(); updateGroupsProgress(); showWelcomeScreen();
     } catch(err) {
       $('closedScreen').querySelector('.closed-body').textContent='Something went wrong loading the form. Please refresh and try again.';
