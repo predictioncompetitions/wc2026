@@ -289,8 +289,8 @@
       const payBadge = payStr === 'PAID'
         ? '<span class="badge-paid">Paid</span>'
         : '<span class="badge-due">Due</span>';
-      const cupCell = isPrize ? '🏆' : '';
-
+    const prizeLabel = r === 1 ? '1st place prize' : r === 2 ? '2nd place prize' : r === 3 ? '3rd place prize' : r === 4 ? '4th place prize' : r === 5 ? '5th place prize' : `€20 prize`;
+      
       html += `
         <tr class="${prizeClass}" data-name="${esc(getName(e))}" style="cursor:pointer;">
           <td><div class="rank-badge ${rbClass}">${r}</div></td>
