@@ -1,11 +1,9 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const SCRIPT_URL = 'https://api.micksworldcup2026.com';
-
 // ── NAV ───────────────────────────────────────────────────────────────────────
 async function initNav() {
   const toggle = document.getElementById('navToggle');
   const mobile = document.getElementById('navMobile');
-
   // Mobile toggle
   if (toggle && mobile) {
     toggle.addEventListener('click', () => {
@@ -19,7 +17,6 @@ async function initNav() {
       });
     });
   }
-
   // Active state
   const path = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a, .nav-mobile a').forEach(a => {
@@ -28,17 +25,14 @@ async function initNav() {
       a.classList.add('active');
     }
   });
-
   // Phase visibility
   try {
     const data = await apiFetch('getInitialData');
     const isLive = data.tournamentStarted === true;
     const entriesOpen = String(data.entryStatus || '').toUpperCase() === 'OPEN';
-
     if (!entriesOpen) {
       document.querySelectorAll('[data-phase="pre"]').forEach(el => el.style.display = 'none');
     }
-
     if (!isLive) {
       document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = 'none');
     } else {
@@ -48,29 +42,24 @@ async function initNav() {
     document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = 'none');
   }
 }
-
 // ── API ───────────────────────────────────────────────────────────────────────
 async function apiFetch(action, params = {}) {
   const url = new URL(SCRIPT_URL);
   url.searchParams.set('action', action);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
-
 // ── FORMAT HELPERS ────────────────────────────────────────────────────────────
 function esc(str) {
   return String(str || '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-
 function pct(n, total) {
   if (!total) return '0%';
   return Math.round((n / total) * 100) + '%';
 }
-
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', initNav);
