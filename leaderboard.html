@@ -3,112 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leaderboard Mick's World Cup Predictor 2026</title>
+  <title>Leaderboard — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="soccerball.png" type="image/png">
   <style>
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+    /* ── Top 5 podium ── */
+    .top5-section {
+      background: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1px solid var(--pitch);
+    }
+    .top5-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .top5-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .top5-card {
+      background: rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+      border-top: 2px solid transparent;
+    }
+    .top5-card.p-1 { border-top-color: var(--gold); }
+    .top5-card.p-2 { border-top-color: #94a3b8; }
+    .top5-card.p-3 { border-top-color: #cd7c4a; }
+    .top5-card.p-4, .top5-card.p-5 { border-top-color: rgba(255,255,255,0.15); }
+    .top5-medal  { font-size: 16px; margin-bottom: 3px; }
+    .top5-name   { font-family: var(--font-head); font-size: 13px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .top5-pts    { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--gold); line-height: 1; }
+    .top5-ptslbl { font-size: 9px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .3px; }
+
+    /* ── Meta bar ── */
     .lb-meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: var(--ink-3);
     }
-    .lb-meta-left { font-size: 13px; color: var(--ink-3); }
     .lb-meta strong { color: var(--ink-2); }
 
+    /* ── Table ── */
     .lb-table-wrap {
       overflow-x: auto;
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
     }
-
     table.lb-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
+      font-size: 13px;
     }
-
     table.lb-table th {
       background: var(--ink);
-      color: rgba(255,255,255,.7);
-      padding: 11px 16px;
-      font-size: 11px;
+      color: rgba(255,255,255,.6);
+      padding: 8px 10px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: .5px;
       text-transform: uppercase;
-      text-align: left;
       white-space: nowrap;
       border-bottom: 2px solid var(--pitch);
+      cursor: pointer;
+      user-select: none;
+      position: relative;
     }
     table.lb-table th.num { text-align: right; }
+    table.lb-table th .sort-arrow { margin-left: 3px; opacity: .4; font-size: 9px; }
+    table.lb-table th.sorted .sort-arrow { opacity: 1; color: var(--gold); }
 
     table.lb-table td {
-      padding: 11px 16px;
-      border-bottom: 1px solid var(--surface-3);
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
       vertical-align: middle;
+      white-space: nowrap;
     }
     table.lb-table tr:last-child td { border-bottom: none; }
     table.lb-table tr:hover td { background: var(--surface-2); cursor: pointer; }
 
-    table.lb-table tr.rank-1 td { background: #fffbeb; }
-    table.lb-table tr.rank-2 td { background: #f8fafc; }
-    table.lb-table tr.rank-3 td { background: #fff8f0; }
-    table.lb-table tr.rank-1:hover td { background: #fef3c7; }
-    table.lb-table tr.rank-2:hover td { background: #f1f5f9; }
-    table.lb-table tr.rank-3:hover td { background: #ffedd5; }
+    /* Prize row highlights */
+    table.lb-table tr.prize-row-top td  { background: #fffbeb; }
+    table.lb-table tr.prize-row-10  td  { background: #f0fdf4; }
+    table.lb-table tr.prize-row-top:hover td { background: #fef3c7; }
+    table.lb-table tr.prize-row-10:hover  td { background: #dcfce7; }
 
+    /* Rank badge */
     .rank-badge {
-      width: 28px; height: 28px;
-      border-radius: 8px;
+      width: 24px; height: 24px;
+      border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
       font-family: var(--font-head);
-      font-size: 14px; font-weight: 800;
+      font-size: 12px; font-weight: 800;
     }
     .rb-1 { background: #fef3c7; color: #92400e; }
     .rb-2 { background: #f1f5f9; color: #475569; }
     .rb-3 { background: #ffedd5; color: #9a3412; }
-    .rb-n { background: var(--surface-2); color: var(--ink-3); font-size: 12px; }
+    .rb-n { background: var(--surface-2); color: var(--ink-3); font-size: 11px; }
 
-    .lb-name { font-weight: 600; color: var(--ink); }
-    .lb-champion { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
+    .lb-name { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+    .lb-score { font-family: var(--font-head); font-size: 16px; font-weight: 800; color: var(--pitch); text-align: right; }
+    .lb-num   { text-align: right; color: var(--ink-3); font-size: 12px; }
 
-    .lb-score { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--pitch); text-align: right; }
-    .lb-sub-score { text-align: right; font-size: 12px; color: var(--ink-3); }
+    /* Payment badge */
+    .badge-paid { background: #dcfce7; color: #166534; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
+    .badge-due  { background: #fee2e2; color: #991b1b; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
 
-    .lb-view-btn { font-size: 12px; color: var(--pitch); font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .lb-view-btn { font-size: 11px; color: var(--pitch); font-weight: 600; text-decoration: none; }
     .lb-view-btn:hover { text-decoration: underline; }
 
-    .podium {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .podium-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 18px 16px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-    }
-    .podium-card.p-1 { border-top: 3px solid var(--gold); }
-    .podium-card.p-2 { border-top: 3px solid #94a3b8; }
-    .podium-card.p-3 { border-top: 3px solid #cd7c4a; }
-    .podium-rank { font-size: 28px; margin-bottom: 6px; }
-    .podium-name { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
-    .podium-score { font-family: var(--font-head); font-size: 26px; font-weight: 900; color: var(--pitch); }
-    .podium-label { font-size: 11px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+    /* Prize cup column */
+    .prize-cup { text-align: center; font-size: 13px; }
 
-    @media (max-width: 600px) {
-      .podium { grid-template-columns: 1fr; }
-      table.lb-table td, table.lb-table th { padding: 9px 10px; }
-      .lb-sub-score, .lb-champion { display: none; }
+    @media (max-width: 640px) {
+      .top5-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+      .top5-name { font-size: 11px; }
+      .top5-pts  { font-size: 16px; }
+      table.lb-table td, table.lb-table th { padding: 6px 7px; }
+      .lb-name { max-width: 100px; }
     }
   </style>
 </head>
@@ -116,9 +144,7 @@
 
 <nav class="nav">
   <a class="nav-brand" href="index.html">
-    <span class="nav-brand-icon">
-      <img src="soccerball.png" width="28" height="28" alt="" style="display:block;" />
-    </span>
+    <span class="nav-brand-icon"><img src="soccerball.png" width="28" height="28" alt="" style="display:block;" /></span>
     <span class="nav-brand-text">Mick's <span>WC26</span></span>
   </a>
   <ul class="nav-links">
@@ -135,7 +161,7 @@
 <nav class="nav-mobile" id="navMobile">
   <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
   <a href="enter.html"><span class="nav-icon">✏️</span> Enter the Competition</a>
-  <a href="rules.html"><span class="nav-icon">📋</span> Rules & Scoring</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules &amp; Scoring</a>
   <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
   <a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a>
   <a href="leaderboard.html" class="active"><span class="nav-icon">🏆</span> Leaderboard</a>
@@ -171,6 +197,161 @@
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // ── Field accessors ──
+  function getName(e)    { return e.displayName || e.DISPLAY_NAME || e.display_name || '—'; }
+  function getTotal(e)   { return +(e.totalPoints || e.TOTAL_POINTS || e.total_points || 0); }
+  function getGroup(e)   { return +(e.groupTotal || e.GROUP_TOTAL || e.group_total || 0); }
+  function getProg(e)    { return +(e.progressionTotal || e.PROGRESSION_TOTAL || e.progression_total || 0); }
+  function getMatch(e)   { return +(e.matchTotal || e.MATCH_TOTAL || e.match_total || 0); }
+  function getExact(e)   { return +(e.exactScoreCount || e.EXACT_SCORE_COUNT || e.exact_score_count || 0); }
+  function getChamp(e)   { return e.predictedChampion || e.PREDICTED_CHAMPION || '—'; }
+  function getRank(e, i) { return +(e.rank || e.RANK || (i + 1)); }
+  function getPayment(e) { return e.paymentStatus || e.PAYMENT_STATUS || e.payment_status || ''; }
+  function getEntryId(e) { return e.entryId || e.ENTRY_ID || e.entry_id || ''; }
+
+  // Sort state
+  let sortCol = 'rank';
+  let sortAsc = true;
+  let allEntries = [];
+  let hasScores = false;
+
+  function isPrizePosition(rank, total) {
+    return rank <= 5 || (rank % 10 === 0 && rank <= total);
+  }
+
+  function renderTable(entries) {
+    const total = entries.length;
+    const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+
+    let html = '';
+
+    // ── Top 5 ──
+    const top5 = entries.slice().sort((a,b) => getRank(a,0) - getRank(b,0)).slice(0,5);
+    if (top5.length) {
+      html += '<div class="top5-section">';
+      html += '<div class="top5-label">🏆 Top 5</div>';
+      html += '<div class="top5-grid">';
+      top5.forEach((e, i) => {
+        html += `
+          <div class="top5-card p-${i+1}">
+            <div class="top5-medal">${medals[i]}</div>
+            <div class="top5-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
+            <div class="top5-pts">${hasScores ? getTotal(e) : '—'}</div>
+            <div class="top5-ptslbl">pts</div>
+          </div>`;
+      });
+      html += '</div></div>';
+    }
+
+    // ── Meta ──
+    const paid = entries.filter(e => String(getPayment(e)).toUpperCase() === 'PAID').length;
+    html += `
+      <div class="lb-meta">
+        <span><strong>${total}</strong> entr${total === 1 ? 'y' : 'ies'} &middot; <strong>${paid}</strong> paid</span>
+        <a href="lookup.html" class="btn btn-outline" style="min-height:32px;font-size:12px;">🔍 Look up my scores</a>
+      </div>`;
+
+    if (!hasScores) {
+      html += `<div class="card" style="margin-bottom:12px;"><div class="card-body" style="padding:12px;font-size:13px;color:var(--ink-3);">
+        ⚽ Scoring hasn't started — points will appear once the tournament kicks off on 11 June 2026. All entries are listed below.
+      </div></div>`;
+    }
+
+    // ── Table ──
+    const cols = [
+      { key: 'rank',   label: '#',         cls: '' },
+      { key: 'prize',  label: '',           cls: '', noSort: true },
+      { key: 'name',   label: 'Entrant',    cls: '' },
+      { key: 'total',  label: 'Total',      cls: 'num' },
+      { key: 'group',  label: 'Groups',     cls: 'num' },
+      { key: 'prog',   label: 'Prog.',      cls: 'num' },
+      { key: 'match',  label: 'KO',         cls: 'num' },
+      { key: 'exact',  label: 'Exact',      cls: 'num' },
+      { key: 'pay',    label: 'Payment',    cls: '' },
+      { key: 'action', label: '',           cls: '', noSort: true },
+    ];
+
+    html += '<div class="lb-table-wrap"><table class="lb-table"><thead><tr>';
+    cols.forEach(c => {
+      if (c.noSort) { html += `<th class="${c.cls}"></th>`; return; }
+      const sorted = sortCol === c.key ? 'sorted' : '';
+      const arrow = sortCol === c.key ? (sortAsc ? '▲' : '▼') : '▲';
+      html += `<th class="${c.cls} ${sorted}" data-col="${c.key}">${c.label}<span class="sort-arrow">${arrow}</span></th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    entries.forEach((e, i) => {
+      const r = getRank(e, i);
+      const isPrize = isPrizePosition(r, total);
+      const prizeClass = r <= 5 ? 'prize-row-top' : isPrize ? 'prize-row-10' : '';
+      const rbClass = r === 1 ? 'rb-1' : r === 2 ? 'rb-2' : r === 3 ? 'rb-3' : 'rb-n';
+      const payStr = String(getPayment(e)).toUpperCase();
+      const payBadge = payStr === 'PAID'
+        ? '<span class="badge-paid">Paid</span>'
+        : '<span class="badge-due">Due</span>';
+      const cupCell = isPrize ? '🏆' : '';
+
+      html += `
+        <tr class="${prizeClass}" data-name="${esc(getName(e))}" style="cursor:pointer;">
+          <td><div class="rank-badge ${rbClass}">${r}</div></td>
+          <td class="prize-cup">${cupCell}</td>
+          <td><div class="lb-name" title="${esc(getName(e))}">${esc(getName(e))}</div></td>
+          <td class="lb-score">${hasScores ? getTotal(e) : '—'}</td>
+          <td class="lb-num">${hasScores ? getGroup(e) : '—'}</td>
+          <td class="lb-num">${hasScores ? getProg(e) : '—'}</td>
+          <td class="lb-num">${hasScores ? getMatch(e) : '—'}</td>
+          <td class="lb-num">${hasScores ? getExact(e) : '—'}</td>
+          <td>${payBadge}</td>
+          <td><a class="lb-view-btn" href="lookup.html?name=${encodeURIComponent(getName(e))}">View →</a></td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    document.getElementById('lbMain').innerHTML = html;
+
+    // Sort click handlers
+    document.querySelectorAll('table.lb-table th[data-col]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (sortCol === col) { sortAsc = !sortAsc; }
+        else { sortCol = col; sortAsc = col === 'rank' || col === 'name'; }
+        renderTable(sortEntries(allEntries));
+      });
+    });
+
+    // Row click
+    document.querySelectorAll('tr[data-name]').forEach(row => {
+      row.addEventListener('click', e => {
+        if (e.target.tagName === 'A') return;
+        window.location.href = `lookup.html?name=${encodeURIComponent(row.dataset.name)}`;
+      });
+    });
+  }
+
+  function getVal(e, col, i) {
+    switch(col) {
+      case 'rank':  return getRank(e, i);
+      case 'name':  return getName(e).toLowerCase();
+      case 'total': return getTotal(e);
+      case 'group': return getGroup(e);
+      case 'prog':  return getProg(e);
+      case 'match': return getMatch(e);
+      case 'exact': return getExact(e);
+      case 'pay':   return String(getPayment(e)).toUpperCase();
+      default:      return getRank(e, i);
+    }
+  }
+
+  function sortEntries(entries) {
+    return [...entries].sort((a, b) => {
+      const av = getVal(a, sortCol, entries.indexOf(a));
+      const bv = getVal(b, sortCol, entries.indexOf(b));
+      if (av < bv) return sortAsc ? -1 : 1;
+      if (av > bv) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }
+
   async function loadLeaderboard() {
     const main = document.getElementById('lbMain');
     try {
@@ -178,133 +359,25 @@
 
       if (!data || !data.ok) {
         main.innerHTML = `
-          <div class="card">
-            <div class="card-body">
-              <div class="coming-soon">
-                <div class="coming-soon-icon">🏆</div>
-                <h2>Leaderboard not available yet</h2>
-                <p>Scoring starts when the tournament kicks off. Check back after the first matches are played.</p>
-                <div class="coming-soon-date">⚽ Tournament starts 11 June 2026</div>
-              </div>
+          <div class="card"><div class="card-body">
+            <div class="coming-soon">
+              <div class="coming-soon-icon">🏆</div>
+              <h2>Leaderboard not available yet</h2>
+              <p>Scoring starts when the tournament kicks off. Check back after the first matches are played.</p>
+              <div class="coming-soon-date">⚽ Tournament starts 11 June 2026</div>
             </div>
-          </div>`;
+          </div></div>`;
         return;
       }
 
-      const entries = data.entries || [];
-
-      if (!entries.length) {
+      allEntries = data.entries || [];
+      if (!allEntries.length) {
         main.innerHTML = '<div class="status-msg status-warn">No entries found.</div>';
         return;
       }
 
-      // Field mapping — matches your LEADERBOARD sheet columns
-      // ENTRY_ID, DISPLAY_NAME, PAYMENT_STATUS, GROUP_TOTAL,
-      // PROGRESSION_TOTAL, MATCH_TOTAL, TOTAL_POINTS, EXACT_SCORE_COUNT, RANK
-      function name(e)        { return e.displayName || e.DISPLAY_NAME || e.display_name || '—'; }
-      function total(e)       { return e.totalPoints  || e.TOTAL_POINTS  || e.total_points  || 0; }
-      function groupPts(e)    { return e.groupTotal    || e.GROUP_TOTAL    || e.group_total    || '—'; }
-      function progPts(e)     { return e.progressionTotal || e.PROGRESSION_TOTAL || e.progression_total || '—'; }
-      function matchPts(e)    { return e.matchTotal    || e.MATCH_TOTAL    || e.match_total    || '—'; }
-      function exact(e)       { return e.exactScoreCount || e.EXACT_SCORE_COUNT || e.exact_score_count || 0; }
-      function champion(e)    { return e.predictedChampion || e.PREDICTED_CHAMPION || '—'; }
-      function rank(e, i)     { return e.rank || e.RANK || (i + 1); }
-      function payment(e)     { return e.paymentStatus || e.PAYMENT_STATUS || ''; }
-
-      // Check if any scoring has happened
-      const hasScores = entries.some(e => total(e) > 0);
-
-      const medals = ['🥇','🥈','🥉'];
-      const podiumClasses = ['p-1','p-2','p-3'];
-      let html = '';
-
-      if (hasScores) {
-        // Podium for top 3
-        const top3 = entries.slice(0, 3);
-        if (top3.length >= 2) {
-          html += '<div class="podium">';
-          top3.forEach((e, i) => {
-            html += `
-              <div class="podium-card ${podiumClasses[i]}">
-                <div class="podium-rank">${medals[i]}</div>
-                <div class="podium-name">${esc(name(e))}</div>
-                <div class="podium-label">Total points</div>
-                <div class="podium-score">${total(e)}</div>
-              </div>`;
-          });
-          html += '</div>';
-        }
-      } else {
-        html += `
-          <div class="card" style="margin-bottom:16px;">
-            <div class="card-body" style="padding:16px;">
-              <p style="font-size:14px;color:var(--ink-3);">
-                ⚽ Scoring hasn't started yet — the leaderboard will show points once the tournament kicks off on 11 June 2026.
-                All entries are listed below.
-              </p>
-            </div>
-          </div>`;
-      }
-
-      // Counts
-      const paid  = entries.filter(e => String(payment(e)).toUpperCase() === 'PAID').length;
-      const total_entries = entries.length;
-
-      html += `
-        <div class="lb-meta">
-          <div class="lb-meta-left">
-            <strong>${total_entries}</strong> entr${total_entries === 1 ? 'y' : 'ies'}
-            · <strong>${paid}</strong> paid
-            ${data.lastUpdated ? `· Updated: ${esc(data.lastUpdated)}` : ''}
-          </div>
-          <a href="lookup.html" class="btn btn-outline" style="min-height:36px;font-size:13px;">🔍 Look up my scores</a>
-        </div>
-        <div class="lb-table-wrap">
-          <table class="lb-table">
-            <thead>
-              <tr>
-                <th style="width:48px;">Rank</th>
-                <th>Entrant</th>
-                <th class="num">Total</th>
-                <th class="num">Groups</th>
-                <th class="num">Prog.</th>
-                <th class="num">KO scores</th>
-                <th class="num">Exact</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>`;
-
-      entries.forEach((e, i) => {
-        const r = rank(e, i);
-        const rankClass = r <= 3 ? `rank-${r}` : '';
-        const rbClass   = r === 1 ? 'rb-1' : r === 2 ? 'rb-2' : r === 3 ? 'rb-3' : 'rb-n';
-
-        html += `
-          <tr class="${rankClass}" data-name="${esc(name(e))}" style="cursor:pointer;">
-            <td><div class="rank-badge ${rbClass}">${r}</div></td>
-            <td>
-              <div class="lb-name">${esc(name(e))}</div>
-              <div class="lb-champion">🏆 ${esc(champion(e))}</div>
-            </td>
-            <td class="lb-score">${hasScores ? total(e) : '—'}</td>
-            <td class="lb-sub-score">${hasScores ? groupPts(e) : '—'}</td>
-            <td class="lb-sub-score">${hasScores ? progPts(e) : '—'}</td>
-            <td class="lb-sub-score">${hasScores ? matchPts(e) : '—'}</td>
-            <td class="lb-sub-score">${hasScores ? exact(e) : '—'}</td>
-            <td><a class="lb-view-btn" href="lookup.html?name=${encodeURIComponent(name(e))}">View →</a></td>
-          </tr>`;
-      });
-
-      html += '</tbody></table></div>';
-      main.innerHTML = html;
-
-      // Row click — navigate to lookup
-      main.querySelectorAll('tr[data-name]').forEach(row => {
-        row.addEventListener('click', () => {
-          window.location.href = `lookup.html?name=${encodeURIComponent(row.dataset.name)}`;
-        });
-      });
+      hasScores = allEntries.some(e => getTotal(e) > 0);
+      renderTable(sortEntries(allEntries));
 
     } catch(err) {
       document.getElementById('lbMain').innerHTML =
