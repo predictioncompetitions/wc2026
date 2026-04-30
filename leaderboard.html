@@ -221,7 +221,7 @@
 
   function renderTable(entries) {
     const total = entries.length;
-    const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+    const medals = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣'];
 
     let html = '';
 
@@ -284,7 +284,7 @@
       const r = getRank(e, i);
       const isPrize = isPrizePosition(r, total);
       const prizeClass = r <= 5 ? 'prize-row-top' : isPrize ? 'prize-row-10' : '';
-      const rbClass = r === 1 ? 'rb-1' : r === 2 ? 'rb-2' : r === 3 ? 'rb-3' : 'rb-n';
+      const rbClass = 'rb-n';
       const payStr = String(getPayment(e)).toUpperCase();
       const payBadge = payStr === 'PAID'
         ? '<span class="badge-paid">Paid</span>'
