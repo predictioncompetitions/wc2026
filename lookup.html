@@ -262,7 +262,7 @@ function renderEntryList(entries, filter) {
     <div class="entry-list-item" data-id="${esc(e.entryId)}">
       <div>
         <div class="entry-list-name">${esc(e.displayName)} ${payBadge(e.paymentStatus)}</div>
-        <div class="entry-list-rank" style="margin-top:2px;">Rank #${e.rank} · ${e.exactScoreCount} exact score${e.exactScoreCount!==1?'s':''}</div>
+        <div class="entry-list-rank" style="margin-top:2px;">Rank #${e.rank}</div>
       </div>
       <div class="entry-list-score">${e.totalPoints} pts</div>
     </div>`).join('');
@@ -321,7 +321,6 @@ function renderDetail(d) {
           <div class="detail-meta">
             <span>Rank #${d.rank}</span>
             <span>🏆 ${esc(d.predictedChampion||'—')}</span>
-            <span>${d.exactScoreCount} exact score${d.exactScoreCount!==1?'s':''}</span>
           </div>
           <div class="detail-payment">
             <span class="detail-payment-label">Payment status:</span>
