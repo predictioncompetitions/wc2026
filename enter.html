@@ -1625,10 +1625,10 @@ function showWelcomeDeadline(deadline) {
   const dateEl = $('welcomeDeadlineDate');
   if (!banner || !dateEl) return;
   banner.style.display = 'flex';
-  dateEl.textContent = deadline.toLocaleString('en-IE', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
-  });
+deadline.toLocaleString('en-IE', {
+  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  hour: '2-digit', minute: '2-digit', timeZone: 'UTC'
+})
 }
 
 	
