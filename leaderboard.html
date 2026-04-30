@@ -86,6 +86,9 @@
       position: relative;
     }
     table.lb-table th.num { text-align: right; }
+    table.lb-table th.ctr { text-align: center; }
+    table.lb-table td.lb-score { text-align: center; }
+    table.lb-table td.lb-num   { text-align: center; }
     table.lb-table th .sort-arrow { margin-left: 3px; opacity: .4; font-size: 9px; }
     table.lb-table th.sorted .sort-arrow { opacity: 1; color: var(--gold); }
 
@@ -289,7 +292,7 @@
       const payBadge = payStr === 'PAID'
         ? '<span class="badge-paid">Paid</span>'
         : '<span class="badge-due">Due</span>';
-    const prizeLabel = r === 1 ? '1st place prize' : r === 2 ? '2nd place prize' : r === 3 ? '3rd place prize' : r === 4 ? '4th place prize' : r === 5 ? '5th place prize' : `€20 prize`;
+          const prizeLabel = r === 1 ? '1st place prize' : r === 2 ? '2nd place prize' : r === 3 ? '3rd place prize' : r === 4 ? '4th place prize' : r === 5 ? '5th place prize' : `€20 prize`;
       
       html += `
         <tr class="${prizeClass}" data-name="${esc(getName(e))}" style="cursor:pointer;">
@@ -301,7 +304,7 @@
           <td class="lb-num">${hasScores ? getProg(e) : '—'}</td>
           <td class="lb-num">${hasScores ? getMatch(e) : '—'}</td>
           <td class="lb-num">${hasScores ? getExact(e) : '—'}</td>
-          <td>${payBadge}</td>
+          <td style="text-align:center;">${payBadge}</td>
           <td><a class="lb-view-btn" href="lookup.html?name=${encodeURIComponent(getName(e))}">View →</a></td>
         </tr>`;
     });
