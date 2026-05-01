@@ -30,12 +30,14 @@
     .section-head p { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; }
 
     /* Group consensus grid */
-    .group-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .group-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow-sm); }
-    .group-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .group-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .group-card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--pitch); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+    .group-card-head { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
     .group-card-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--ink); }
 
-    .pos-label { font-size: 10px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; margin: 8px 0 4px; }
+    .pos-label { font-size: 10px; font-weight: 700; color: #fff; background: var(--pitch); text-transform: uppercase; letter-spacing: .5px; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 14px 0 6px; }
+    .pos-label:first-of-type { margin-top: 0; }
+    .pos-label.qualify { background: #1a8a4a; }
     .pos-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; }
     .pos-row-team { flex: 1; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pos-row-team.lead { font-weight: 600; color: var(--ink); }
@@ -203,7 +205,7 @@
           </div>
           <div class="pos-label">Predicted winner</div>
           ${firsts || '<div style="font-size:12px;color:var(--ink-3);font-style:italic;">No picks</div>'}
-          <div class="pos-label">Predicted to qualify</div>
+          <div class="pos-label qualify">Predicted to qualify</div>
           ${qualify || '<div style="font-size:12px;color:var(--ink-3);font-style:italic;">No picks</div>'}
         </div>`;
     }).join('');
