@@ -354,7 +354,7 @@
     const ids = ['amt-1','amt-2','amt-3','amt-4','amt-5'];
     TOP5_PCTS.forEach((pct, i) => {
       const el = document.getElementById(ids[i]);
-      if (el) el.textContent = top5Pot > 0 ? '≈€' + Math.round(top5Pot * pct) : '';
+      if (el) el.textContent = top5Pot > 0 ? '€' + Math.round(top5Pot * pct) : '';
     });
 
     // 10th place note
