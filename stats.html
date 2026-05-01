@@ -28,11 +28,6 @@
     .group-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow-sm); }
     .group-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     .group-card-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--ink); }
-    .group-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding: 3px 7px; border-radius: 4px; }
-    .group-tag.lock { background: #0d5c2e; color: #fff; }
-    .group-tag.strong { background: #1a8a4a; color: #fff; }
-    .group-tag.leaning { background: #d4a843; color: #1a1f2e; }
-    .group-tag.open { background: #be123c; color: #fff; }
 
     .pos-label { font-size: 10px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; margin: 8px 0 4px; }
     .pos-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; }
@@ -40,7 +35,7 @@
     .pos-row-team.lead { font-weight: 600; color: var(--ink); }
     .pos-row-bar { width: 60px; height: 6px; background: var(--surface-3); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
     .pos-row-bar-fill { height: 100%; background: var(--pitch); }
-    .pos-row-bar-fill.second { background: #5a8c6a; }
+    .pos-row-bar-fill.qualify { background: #1a8a4a; }
     .pos-row-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; }
 
     /* Bracket heatmap */
@@ -56,20 +51,6 @@
     .bracket-pick.heat-4 { background: #f5b840; border-color: #b8902f; color: #1a1f2e; }
     .bracket-pick.heat-5 { background: #d4a843; border-color: #8a6920; color: #1a1f2e; font-weight: 700; }
 
-    /* Zero-pick + bravery */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .ghost-list { display: flex; flex-direction: column; gap: 8px; }
-    .ghost-row { display: flex; gap: 10px; align-items: baseline; padding: 8px 10px; background: var(--surface-2); border-radius: 6px; }
-    .ghost-row-round { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; min-width: 64px; }
-    .ghost-row-teams { font-size: 13px; color: var(--ink-2); flex: 1; }
-    .ghost-row-empty { font-size: 12px; color: var(--ink-3); font-style: italic; }
-
-    .bravery-list { display: flex; flex-direction: column; gap: 6px; }
-    .bravery-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 6px; }
-    .bravery-rank { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink-3); width: 20px; }
-    .bravery-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--ink); }
-    .bravery-score { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--pitch); }
-
     .loading-state { text-align: center; padding: 32px; color: var(--ink-3); font-size: 14px; }
 
     @media (max-width: 800px) {
@@ -77,7 +58,6 @@
       .group-grid { grid-template-columns: 1fr 1fr; }
       .bracket { grid-template-columns: repeat(3, 1fr); gap: 6px; }
       .bracket-col { gap: 4px; }
-      .two-col { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
       .group-grid { grid-template-columns: 1fr; }
@@ -154,13 +134,6 @@
     return 'heat-1';
   }
 
-  function tagClass(label) {
-    if (label === 'Lock') return 'lock';
-    if (label === 'Strong favourite') return 'strong';
-    if (label === 'Leaning') return 'leaning';
-    return 'open';
-  }
-
   function renderHeadline(data) {
     const scoreline = data.mostCommonScoreline
       ? `${data.mostCommonScoreline} (${data.scorelineShare}%)`
@@ -197,28 +170,27 @@
           <div class="pos-row-bar"><div class="pos-row-bar-fill" style="width:${p.pct}%"></div></div>
           <span class="pos-row-pct">${p.pct}%</span>
         </div>`).join('');
-      const seconds = g.topSecond.map(p => `
+      const qualify = (g.qualify || []).map(p => `
         <div class="pos-row">
           <span class="pos-row-team">${esc(p.team)}</span>
-          <div class="pos-row-bar"><div class="pos-row-bar-fill second" style="width:${p.pct}%"></div></div>
+          <div class="pos-row-bar"><div class="pos-row-bar-fill qualify" style="width:${p.pct}%"></div></div>
           <span class="pos-row-pct">${p.pct}%</span>
         </div>`).join('');
       return `
         <div class="group-card">
           <div class="group-card-head">
             <span class="group-card-title">Group ${esc(g.group)}</span>
-            <span class="group-tag ${tagClass(g.consensus)}">${esc(g.consensus)}</span>
           </div>
           <div class="pos-label">Predicted winner</div>
-          ${firsts || '<div class="ghost-row-empty">No picks</div>'}
-          <div class="pos-label">Predicted runner-up</div>
-          ${seconds || '<div class="ghost-row-empty">No picks</div>'}
+          ${firsts || '<div style="font-size:12px;color:var(--ink-3);font-style:italic;">No picks</div>'}
+          <div class="pos-label">Predicted to qualify</div>
+          ${qualify || '<div style="font-size:12px;color:var(--ink-3);font-style:italic;">No picks</div>'}
         </div>`;
     }).join('');
     return `
       <div class="section-head">
         <h2>Group consensus</h2>
-        <p>How the field has called each group. Tag based on the share of the top winner pick.</p>
+        <p>Top picks for group winner, and how likely the field thinks each team is to qualify (top 2 plus best third-place ranking).</p>
       </div>
       <div class="group-grid">${cards}</div>`;
   }
@@ -243,73 +215,15 @@
       return `
         <div class="bracket-col">
           <div class="bracket-col-head">${esc(r.label)}</div>
-          ${items || '<div class="ghost-row-empty" style="text-align:center;font-size:12px;">No picks</div>'}
+          ${items || '<div style="text-align:center;font-size:12px;color:var(--ink-3);font-style:italic;">No picks</div>'}
         </div>`;
     }).join('');
     return `
       <div class="section-head">
-        <h2>Crowd bracket</h2>
+        <h2>Knockout stages</h2>
         <p>Most-picked teams to reach each round. Darker shading means more entrants picked them.</p>
       </div>
       <div class="bracket">${cols}</div>`;
-  }
-
-  function renderZeroPicks(zeroPicks) {
-    if (!zeroPicks) return '';
-    const rounds = [
-      { key: 'R16', label: 'Round of 16' },
-      { key: 'QF', label: 'Quarter-finals' },
-      { key: 'SF', label: 'Semi-finals' },
-      { key: 'FINAL', label: 'Final' },
-      { key: 'CHAMPION', label: 'Champion' }
-    ];
-    const rows = rounds.map(r => {
-      const teams = zeroPicks[r.key] || [];
-      const inner = teams.length
-        ? esc(teams.join(', '))
-        : '<span class="ghost-row-empty">Every team got at least one pick</span>';
-      return `
-        <div class="ghost-row">
-          <span class="ghost-row-round">${esc(r.label)}</span>
-          <span class="ghost-row-teams">${inner}</span>
-        </div>`;
-    }).join('');
-    return `
-      <div class="card">
-        <div class="card-head">
-          <span class="card-head-icon">👻</span>
-          <div><h2>Nobody picked them</h2></div>
-        </div>
-        <div class="card-body">
-          <div class="ghost-list">${rows}</div>
-        </div>
-      </div>`;
-  }
-
-  function renderBravery(data) {
-    if (!data.bravest || !data.bravest.length) return '';
-    const list = (arr, colour) => arr.map((b, i) => `
-      <div class="bravery-row">
-        <span class="bravery-rank">${i + 1}</span>
-        <span class="bravery-name">${esc(b.display)}</span>
-        <span class="bravery-score" style="color:${colour}">${b.score}</span>
-      </div>`).join('');
-    return `
-      <div class="card">
-        <div class="card-head">
-          <span class="card-head-icon">🎲</span>
-          <div>
-            <h2>Brave and chalky</h2>
-            <p style="font-size:12px;color:var(--ink-3);margin:2px 0 0;">Score from 0 (with the crowd) to 100 (way out on a limb). Based on champion, group winners and finalists.</p>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="pos-label">Bravest picks</div>
-          <div class="bravery-list" style="margin-bottom:14px;">${list(data.bravest, '#be123c')}</div>
-          <div class="pos-label">Most chalky picks</div>
-          <div class="bravery-list">${list(data.chalkiest, '#0d5c2e')}</div>
-        </div>
-      </div>`;
   }
 
   async function loadStats() {
@@ -327,15 +241,7 @@
       main.innerHTML = `
         ${renderHeadline(data)}
         ${renderGroupConsensus(data.groupConsensus)}
-        ${renderBracket(data.roundReach)}
-        <div class="section-head">
-          <h2>Outliers and ghosts</h2>
-          <p>Who went against the field, and which teams got written off entirely.</p>
-        </div>
-        <div class="two-col">
-          ${renderBravery(data)}
-          ${renderZeroPicks(data.zeroPicks)}
-        </div>`;
+        ${renderBracket(data.roundReach)}`;
     } catch(e) {
       main.innerHTML = `<div class="status-msg status-error">Could not load stats. Please try again shortly.</div>`;
     }
