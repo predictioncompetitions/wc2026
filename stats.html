@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Entry Stats Mick's World Cup Predictor 2026</title>
+  <title>Entry stats Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,27 +11,77 @@
   <style>
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    .stats-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; text-align: center; box-shadow: var(--shadow-sm); }
-    .stat-box-value { font-family: var(--font-head); font-size: 36px; font-weight: 900; color: var(--pitch); line-height: 1; margin-bottom: 4px; }
-    .stat-box-label { font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .3px; text-transform: uppercase; }
+    /* Headline strip */
+    .headline-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+    .headline-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; box-shadow: var(--shadow-sm); }
+    .headline-value { font-family: var(--font-head); font-size: 32px; font-weight: 800; color: var(--pitch); line-height: 1; margin-bottom: 4px; }
+    .headline-label { font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .3px; text-transform: uppercase; }
+    .headline-sub { font-size: 11px; color: var(--ink-3); margin-top: 6px; }
 
-    .bar-list { display: flex; flex-direction: column; gap: 8px; }
-    .bar-row { display: flex; align-items: center; gap: 10px; }
-    .bar-label { width: 130px; flex-shrink: 0; font-size: 13px; font-weight: 600; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bar-track { flex: 1; height: 10px; background: var(--surface-3); border-radius: 5px; overflow: hidden; }
-    .bar-fill { height: 100%; background: var(--pitch); border-radius: 5px; transition: width .6s ease; }
-    .bar-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; }
-    .bar-count { width: 24px; text-align: right; font-size: 12px; color: var(--ink-3); flex-shrink: 0; }
+    /* Section heading */
+    .section-head { margin: 28px 0 12px; }
+    .section-head h2 { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--ink); margin: 0; }
+    .section-head p { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; }
 
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    /* Group consensus grid */
+    .group-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .group-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow-sm); }
+    .group-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .group-card-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--ink); }
+    .group-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding: 3px 7px; border-radius: 4px; }
+    .group-tag.lock { background: #0d5c2e; color: #fff; }
+    .group-tag.strong { background: #1a8a4a; color: #fff; }
+    .group-tag.leaning { background: #d4a843; color: #1a1f2e; }
+    .group-tag.open { background: #be123c; color: #fff; }
+
+    .pos-label { font-size: 10px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; margin: 8px 0 4px; }
+    .pos-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; }
+    .pos-row-team { flex: 1; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pos-row-team.lead { font-weight: 600; color: var(--ink); }
+    .pos-row-bar { width: 60px; height: 6px; background: var(--surface-3); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+    .pos-row-bar-fill { height: 100%; background: var(--pitch); }
+    .pos-row-bar-fill.second { background: #5a8c6a; }
+    .pos-row-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; }
+
+    /* Bracket heatmap */
+    .bracket { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .bracket-col { display: flex; flex-direction: column; gap: 6px; }
+    .bracket-col-head { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; text-align: center; padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+    .bracket-pick { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; }
+    .bracket-pick-team { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bracket-pick-pct { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+    .bracket-pick.heat-1 { background: #fff7e6; border-color: #f0d28a; }
+    .bracket-pick.heat-2 { background: #ffe8b8; border-color: #e6b85c; }
+    .bracket-pick.heat-3 { background: #ffd17a; border-color: #d4a843; }
+    .bracket-pick.heat-4 { background: #f5b840; border-color: #b8902f; color: #1a1f2e; }
+    .bracket-pick.heat-5 { background: #d4a843; border-color: #8a6920; color: #1a1f2e; font-weight: 700; }
+
+    /* Zero-pick + bravery */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .ghost-list { display: flex; flex-direction: column; gap: 8px; }
+    .ghost-row { display: flex; gap: 10px; align-items: baseline; padding: 8px 10px; background: var(--surface-2); border-radius: 6px; }
+    .ghost-row-round { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; min-width: 64px; }
+    .ghost-row-teams { font-size: 13px; color: var(--ink-2); flex: 1; }
+    .ghost-row-empty { font-size: 12px; color: var(--ink-3); font-style: italic; }
+
+    .bravery-list { display: flex; flex-direction: column; gap: 6px; }
+    .bravery-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 6px; }
+    .bravery-rank { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink-3); width: 20px; }
+    .bravery-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--ink); }
+    .bravery-score { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--pitch); }
+
     .loading-state { text-align: center; padding: 32px; color: var(--ink-3); font-size: 14px; }
 
-    @media (max-width: 600px) {
-      .stats-summary { grid-template-columns: 1fr 1fr; }
-      .stats-summary .stat-box:last-child { grid-column: 1 / -1; }
-      .stats-grid { grid-template-columns: 1fr; }
-      .bar-label { width: 110px; }
+    @media (max-width: 800px) {
+      .headline-strip { grid-template-columns: 1fr 1fr; }
+      .group-grid { grid-template-columns: 1fr 1fr; }
+      .bracket { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .bracket-col { gap: 4px; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .group-grid { grid-template-columns: 1fr; }
+      .bracket { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -69,8 +119,8 @@
 <div class="page-hero">
   <div class="page-hero-inner">
     <div class="page-hero-eyebrow">Entry statistics</div>
-    <h1>Who's <span>picking</span> who?</h1>
-    <p class="page-hero-sub">See how the field is shaping up — which teams are most popular, and who everyone thinks will lift the trophy.</p>
+    <h1>What does the <span>field</span> think?</h1>
+    <p class="page-hero-sub">Where the consensus lies, where the splits are, and who's gone against the grain.</p>
   </div>
   <div class="page-hero-rainbow"></div>
 </div>
@@ -96,31 +146,168 @@
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function renderBar(team, count, total, colour) {
-    const p = total ? Math.round((count / total) * 100) : 0;
+  function heatClass(pct) {
+    if (pct >= 60) return 'heat-5';
+    if (pct >= 40) return 'heat-4';
+    if (pct >= 25) return 'heat-3';
+    if (pct >= 12) return 'heat-2';
+    return 'heat-1';
+  }
+
+  function tagClass(label) {
+    if (label === 'Lock') return 'lock';
+    if (label === 'Strong favourite') return 'strong';
+    if (label === 'Leaning') return 'leaning';
+    return 'open';
+  }
+
+  function renderHeadline(data) {
+    const scoreline = data.mostCommonScoreline
+      ? `${data.mostCommonScoreline} (${data.scorelineShare}%)`
+      : '—';
     return `
-      <div class="bar-row">
-        <span class="bar-label" title="${esc(team)}">${esc(team)}</span>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${p}%;background:${colour || 'var(--pitch)'}"></div>
+      <div class="headline-strip">
+        <div class="headline-box">
+          <div class="headline-value">${data.entryCount}</div>
+          <div class="headline-label">Entries</div>
         </div>
-        <span class="bar-pct">${p}%</span>
-        <span class="bar-count">${count}</span>
+        <div class="headline-box">
+          <div class="headline-value">€${(data.prizePot || 0).toLocaleString()}</div>
+          <div class="headline-label">Prize pot</div>
+        </div>
+        <div class="headline-box">
+          <div class="headline-value">${data.avgGoalsPerMatch || '—'}</div>
+          <div class="headline-label">Avg goals per knockout</div>
+          <div class="headline-sub">Across all predicted knockout scorelines</div>
+        </div>
+        <div class="headline-box">
+          <div class="headline-value">${esc(scoreline)}</div>
+          <div class="headline-label">Most common scoreline</div>
+          <div class="headline-sub">Treating 2-1 and 1-2 as the same</div>
+        </div>
       </div>`;
   }
 
-  function renderSection(title, icon, items, total, colour) {
-    if (!items || !items.length) return '';
+  function renderGroupConsensus(groups) {
+    if (!groups || !groups.length) return '';
+    const cards = groups.map(g => {
+      const firsts = g.topFirst.map((p, i) => `
+        <div class="pos-row">
+          <span class="pos-row-team ${i === 0 ? 'lead' : ''}">${esc(p.team)}</span>
+          <div class="pos-row-bar"><div class="pos-row-bar-fill" style="width:${p.pct}%"></div></div>
+          <span class="pos-row-pct">${p.pct}%</span>
+        </div>`).join('');
+      const seconds = g.topSecond.map(p => `
+        <div class="pos-row">
+          <span class="pos-row-team">${esc(p.team)}</span>
+          <div class="pos-row-bar"><div class="pos-row-bar-fill second" style="width:${p.pct}%"></div></div>
+          <span class="pos-row-pct">${p.pct}%</span>
+        </div>`).join('');
+      return `
+        <div class="group-card">
+          <div class="group-card-head">
+            <span class="group-card-title">Group ${esc(g.group)}</span>
+            <span class="group-tag ${tagClass(g.consensus)}">${esc(g.consensus)}</span>
+          </div>
+          <div class="pos-label">Predicted winner</div>
+          ${firsts || '<div class="ghost-row-empty">No picks</div>'}
+          <div class="pos-label">Predicted runner-up</div>
+          ${seconds || '<div class="ghost-row-empty">No picks</div>'}
+        </div>`;
+    }).join('');
+    return `
+      <div class="section-head">
+        <h2>Group consensus</h2>
+        <p>How the field has called each group. Tag based on the share of the top winner pick.</p>
+      </div>
+      <div class="group-grid">${cards}</div>`;
+  }
+
+  function renderBracket(roundReach) {
+    if (!roundReach) return '';
+    const rounds = [
+      { key: 'R32', label: 'Round of 32', take: 16 },
+      { key: 'R16', label: 'Round of 16', take: 8 },
+      { key: 'QF', label: 'Quarter-finals', take: 6 },
+      { key: 'SF', label: 'Semi-finals', take: 4 },
+      { key: 'FINAL', label: 'Final', take: 3 },
+      { key: 'CHAMPION', label: 'Champion', take: 3 }
+    ];
+    const cols = rounds.map(r => {
+      const teams = (roundReach[r.key] || []).slice(0, r.take);
+      const items = teams.map(t => `
+        <div class="bracket-pick ${heatClass(t.pct)}">
+          <div class="bracket-pick-team">${esc(t.team)}</div>
+          <div class="bracket-pick-pct">${t.pct}%</div>
+        </div>`).join('');
+      return `
+        <div class="bracket-col">
+          <div class="bracket-col-head">${esc(r.label)}</div>
+          ${items || '<div class="ghost-row-empty" style="text-align:center;font-size:12px;">No picks</div>'}
+        </div>`;
+    }).join('');
+    return `
+      <div class="section-head">
+        <h2>Crowd bracket</h2>
+        <p>Most-picked teams to reach each round. Darker shading means more entrants picked them.</p>
+      </div>
+      <div class="bracket">${cols}</div>`;
+  }
+
+  function renderZeroPicks(zeroPicks) {
+    if (!zeroPicks) return '';
+    const rounds = [
+      { key: 'R16', label: 'Round of 16' },
+      { key: 'QF', label: 'Quarter-finals' },
+      { key: 'SF', label: 'Semi-finals' },
+      { key: 'FINAL', label: 'Final' },
+      { key: 'CHAMPION', label: 'Champion' }
+    ];
+    const rows = rounds.map(r => {
+      const teams = zeroPicks[r.key] || [];
+      const inner = teams.length
+        ? esc(teams.join(', '))
+        : '<span class="ghost-row-empty">Every team got at least one pick</span>';
+      return `
+        <div class="ghost-row">
+          <span class="ghost-row-round">${esc(r.label)}</span>
+          <span class="ghost-row-teams">${inner}</span>
+        </div>`;
+    }).join('');
     return `
       <div class="card">
         <div class="card-head">
-          <span class="card-head-icon">${icon}</span>
-          <div><h2>${esc(title)}</h2></div>
+          <span class="card-head-icon">👻</span>
+          <div><h2>Nobody picked them</h2></div>
         </div>
         <div class="card-body">
-          <div class="bar-list">
-            ${items.slice(0, 10).map(([team, count]) => renderBar(team, count, total, colour)).join('')}
+          <div class="ghost-list">${rows}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderBravery(data) {
+    if (!data.bravest || !data.bravest.length) return '';
+    const list = (arr, colour) => arr.map((b, i) => `
+      <div class="bravery-row">
+        <span class="bravery-rank">${i + 1}</span>
+        <span class="bravery-name">${esc(b.display)}</span>
+        <span class="bravery-score" style="color:${colour}">${b.score}</span>
+      </div>`).join('');
+    return `
+      <div class="card">
+        <div class="card-head">
+          <span class="card-head-icon">🎲</span>
+          <div>
+            <h2>Brave and chalky</h2>
+            <p style="font-size:12px;color:var(--ink-3);margin:2px 0 0;">Score from 0 (with the crowd) to 100 (way out on a limb). Based on champion, group winners and finalists.</p>
           </div>
+        </div>
+        <div class="card-body">
+          <div class="pos-label">Bravest picks</div>
+          <div class="bravery-list" style="margin-bottom:14px;">${list(data.bravest, '#be123c')}</div>
+          <div class="pos-label">Most chalky picks</div>
+          <div class="bravery-list">${list(data.chalkiest, '#0d5c2e')}</div>
         </div>
       </div>`;
   }
@@ -133,27 +320,21 @@
         main.innerHTML = `<div class="status-msg status-warn">Stats are not available yet — check back once entries have closed.</div>`;
         return;
       }
-      const n = data.entryCount || 0;
+      if (!data.entryCount) {
+        main.innerHTML = `<div class="status-msg status-warn">No locked entries yet.</div>`;
+        return;
+      }
       main.innerHTML = `
-        <div class="stats-summary">
-          <div class="stat-box">
-            <div class="stat-box-value">${n}</div>
-            <div class="stat-box-label">Total entries</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-box-value">€${(n * 10).toLocaleString()}</div>
-            <div class="stat-box-label">Prize pot</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-box-value">${data.uniqueChampions || 0}</div>
-            <div class="stat-box-label">Different champion picks</div>
-          </div>
+        ${renderHeadline(data)}
+        ${renderGroupConsensus(data.groupConsensus)}
+        ${renderBracket(data.roundReach)}
+        <div class="section-head">
+          <h2>Outliers and ghosts</h2>
+          <p>Who went against the field, and which teams got written off entirely.</p>
         </div>
-        <div class="stats-grid">
-          ${renderSection('Most picked champions', '🏆', data.championPicks, n, '#d4a843')}
-          ${renderSection('Most picked group winners', '🥇', data.groupWinnerPicks, n, '#1a56db')}
-          ${renderSection('Most picked to qualify (top 8 thirds)', '✅', data.thirdQualifierPicks, n, '#7c3aed')}
-          ${renderSection('Most picked finalists', '🎯', data.finalistPicks, n, '#be123c')}
+        <div class="two-col">
+          ${renderBravery(data)}
+          ${renderZeroPicks(data.zeroPicks)}
         </div>`;
     } catch(e) {
       main.innerHTML = `<div class="status-msg status-error">Could not load stats. Please try again shortly.</div>`;
