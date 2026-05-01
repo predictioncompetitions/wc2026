@@ -46,72 +46,26 @@
     .headline-box.scorelines .headline-label { margin-bottom: 8px; }
     .pos-row-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; cursor: help; }
 
-    /* Bracket heatmap */
+    /* Bracket */
     .bracket { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
     .bracket-col { display: flex; flex-direction: column; gap: 6px; }
-    .bracket-col-head { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; text-align: center; padding-bottom: 4px; border-bottom: 2px solid var(--border); margin-bottom: 4px; }
-    .bracket-pick { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; cursor: help; }
+    .bracket-col-head { font-family: var(--font-head); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; text-align: center; padding-bottom: 6px; border-bottom: 2px solid var(--border); margin-bottom: 4px; color: var(--ink-3); }
+    .bracket-pick { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; cursor: help; border-left-width: 3px; }
     .bracket-pick-team { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bracket-pick-pct { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
 
-    /* Round of 32 — slate */
-    .bracket-col[data-round="R32"] .bracket-col-head { border-bottom-color: #94a3b8; color: #475569; }
-    .bracket-col[data-round="R32"] .bracket-pick.heat-1 { background: #f1f5f9; border-color: #cbd5e1; }
-    .bracket-col[data-round="R32"] .bracket-pick.heat-2 { background: #e2e8f0; border-color: #94a3b8; }
-    .bracket-col[data-round="R32"] .bracket-pick.heat-3 { background: #cbd5e1; border-color: #64748b; }
-    .bracket-col[data-round="R32"] .bracket-pick.heat-4 { background: #94a3b8; border-color: #475569; color: #fff; }
-    .bracket-col[data-round="R32"] .bracket-pick.heat-5 { background: #475569; border-color: #1e293b; color: #fff; font-weight: 700; }
-    .bracket-col[data-round="R32"] .bracket-pick.heat-4 .bracket-pick-pct,
-    .bracket-col[data-round="R32"] .bracket-pick.heat-5 .bracket-pick-pct { color: #e2e8f0; }
-
-    /* Round of 16 — blue */
-    .bracket-col[data-round="R16"] .bracket-col-head { border-bottom-color: #60a5fa; color: #1e40af; }
-    .bracket-col[data-round="R16"] .bracket-pick.heat-1 { background: #eff6ff; border-color: #bfdbfe; }
-    .bracket-col[data-round="R16"] .bracket-pick.heat-2 { background: #dbeafe; border-color: #93c5fd; }
-    .bracket-col[data-round="R16"] .bracket-pick.heat-3 { background: #bfdbfe; border-color: #60a5fa; }
-    .bracket-col[data-round="R16"] .bracket-pick.heat-4 { background: #3b82f6; border-color: #1d4ed8; color: #fff; }
-    .bracket-col[data-round="R16"] .bracket-pick.heat-5 { background: #1e40af; border-color: #1e3a8a; color: #fff; font-weight: 700; }
-    .bracket-col[data-round="R16"] .bracket-pick.heat-4 .bracket-pick-pct,
-    .bracket-col[data-round="R16"] .bracket-pick.heat-5 .bracket-pick-pct { color: #dbeafe; }
-
-    /* Quarter-finals — purple */
-    .bracket-col[data-round="QF"] .bracket-col-head { border-bottom-color: #a78bfa; color: #6d28d9; }
-    .bracket-col[data-round="QF"] .bracket-pick.heat-1 { background: #f5f3ff; border-color: #ddd6fe; }
-    .bracket-col[data-round="QF"] .bracket-pick.heat-2 { background: #ede9fe; border-color: #c4b5fd; }
-    .bracket-col[data-round="QF"] .bracket-pick.heat-3 { background: #ddd6fe; border-color: #a78bfa; }
-    .bracket-col[data-round="QF"] .bracket-pick.heat-4 { background: #8b5cf6; border-color: #6d28d9; color: #fff; }
-    .bracket-col[data-round="QF"] .bracket-pick.heat-5 { background: #6d28d9; border-color: #5b21b6; color: #fff; font-weight: 700; }
-    .bracket-col[data-round="QF"] .bracket-pick.heat-4 .bracket-pick-pct,
-    .bracket-col[data-round="QF"] .bracket-pick.heat-5 .bracket-pick-pct { color: #ede9fe; }
-
-    /* Semi-finals — pink */
-    .bracket-col[data-round="SF"] .bracket-col-head { border-bottom-color: #f472b6; color: #be185d; }
-    .bracket-col[data-round="SF"] .bracket-pick.heat-1 { background: #fdf2f8; border-color: #fbcfe8; }
-    .bracket-col[data-round="SF"] .bracket-pick.heat-2 { background: #fce7f3; border-color: #f9a8d4; }
-    .bracket-col[data-round="SF"] .bracket-pick.heat-3 { background: #fbcfe8; border-color: #f472b6; }
-    .bracket-col[data-round="SF"] .bracket-pick.heat-4 { background: #ec4899; border-color: #be185d; color: #fff; }
-    .bracket-col[data-round="SF"] .bracket-pick.heat-5 { background: #be185d; border-color: #9d174d; color: #fff; font-weight: 700; }
-    .bracket-col[data-round="SF"] .bracket-pick.heat-4 .bracket-pick-pct,
-    .bracket-col[data-round="SF"] .bracket-pick.heat-5 .bracket-pick-pct { color: #fce7f3; }
-
-    /* Final — pitch green */
-    .bracket-col[data-round="FINAL"] .bracket-col-head { border-bottom-color: #1a8a4a; color: #0d5c2e; }
-    .bracket-col[data-round="FINAL"] .bracket-pick.heat-1 { background: #f0fdf4; border-color: #bbf7d0; }
-    .bracket-col[data-round="FINAL"] .bracket-pick.heat-2 { background: #dcfce7; border-color: #86efac; }
-    .bracket-col[data-round="FINAL"] .bracket-pick.heat-3 { background: #bbf7d0; border-color: #4ade80; }
-    .bracket-col[data-round="FINAL"] .bracket-pick.heat-4 { background: #1a8a4a; border-color: #0d5c2e; color: #fff; }
-    .bracket-col[data-round="FINAL"] .bracket-pick.heat-5 { background: #0d5c2e; border-color: #064020; color: #fff; font-weight: 700; }
-    .bracket-col[data-round="FINAL"] .bracket-pick.heat-4 .bracket-pick-pct,
-    .bracket-col[data-round="FINAL"] .bracket-pick.heat-5 .bracket-pick-pct { color: #dcfce7; }
-
-    /* Champion — gold */
-    .bracket-col[data-round="CHAMPION"] .bracket-col-head { border-bottom-color: #d4a843; color: #8a6920; }
-    .bracket-col[data-round="CHAMPION"] .bracket-pick.heat-1 { background: #fffbeb; border-color: #fde68a; }
-    .bracket-col[data-round="CHAMPION"] .bracket-pick.heat-2 { background: #fef3c7; border-color: #fcd34d; }
-    .bracket-col[data-round="CHAMPION"] .bracket-pick.heat-3 { background: #fde68a; border-color: #f59e0b; }
-    .bracket-col[data-round="CHAMPION"] .bracket-pick.heat-4 { background: #d4a843; border-color: #8a6920; color: #1a1f2e; }
-    .bracket-col[data-round="CHAMPION"] .bracket-pick.heat-5 { background: #b8902f; border-color: #6b5418; color: #fff; font-weight: 700; }
-    .bracket-col[data-round="CHAMPION"] .bracket-pick.heat-5 .bracket-pick-pct { color: #fef3c7; }
+    .bracket-col[data-round="R32"]      .bracket-col-head { color: #475569; border-bottom-color: #94a3b8; }
+    .bracket-col[data-round="R32"]      .bracket-pick     { border-left-color: #94a3b8; }
+    .bracket-col[data-round="R16"]      .bracket-col-head { color: #1e40af; border-bottom-color: #60a5fa; }
+    .bracket-col[data-round="R16"]      .bracket-pick     { border-left-color: #60a5fa; }
+    .bracket-col[data-round="QF"]       .bracket-col-head { color: #6d28d9; border-bottom-color: #a78bfa; }
+    .bracket-col[data-round="QF"]       .bracket-pick     { border-left-color: #a78bfa; }
+    .bracket-col[data-round="SF"]       .bracket-col-head { color: #be185d; border-bottom-color: #f472b6; }
+    .bracket-col[data-round="SF"]       .bracket-pick     { border-left-color: #f472b6; }
+    .bracket-col[data-round="FINAL"]    .bracket-col-head { color: #0d5c2e; border-bottom-color: #1a8a4a; }
+    .bracket-col[data-round="FINAL"]    .bracket-pick     { border-left-color: #1a8a4a; }
+    .bracket-col[data-round="CHAMPION"] .bracket-col-head { color: #8a6920; border-bottom-color: #d4a843; }
+    .bracket-col[data-round="CHAMPION"] .bracket-pick     { border-left-color: #d4a843; }
 
     .loading-state { text-align: center; padding: 32px; color: var(--ink-3); font-size: 14px; }
 
@@ -274,7 +228,7 @@
     const cols = rounds.map(r => {
       const teams = (roundReach[r.key] || []).slice(0, r.take);
       const items = teams.map(t => `
-        <div class="bracket-pick ${heatClass(t.pct)}" title="${t.count}/${entryCount} entrants">
+        <div class="bracket-pick" title="${t.count}/${entryCount} entrants">
           <div class="bracket-pick-team">${esc(t.team)}</div>
           <div class="bracket-pick-pct">${t.pct}%</div>
         </div>`).join('');
@@ -287,7 +241,7 @@
     return `
       <div class="section-head">
         <h2>Knockout stages</h2>
-        <p>Most-picked teams to reach each round. Darker shading means more entrants picked them. Hover for the entrant count.</p>
+        <p>Most-picked teams to reach each round, ranked. Hover for the entrant count.</p>
       </div>
       <div class="bracket">${cols}</div>`;
   }
