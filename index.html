@@ -269,8 +269,8 @@
     <div class="prize-10th-box">
       <div class="prize-10th-amount">€20</div>
       <div class="prize-10th-desc">
-        <strong>Every 10th place wins €20 flat.</strong><br>
-        10th, 20th, 30th, 40th and so on — fixed regardless of the total pot size.
+        <strong>Every 10th place wins</strong><br>
+        10th, 20th, 30th, 40th and so on, this is fixed, regardless of the total pot size.
         <span id="tenthPlacesNote"></span>
       </div>
     </div>
@@ -368,7 +368,7 @@
     // Prize note
     const prizeNote = document.getElementById('prizeNote');
     if (prizeNote && tenthCount > 0) {
-      prizeNote.textContent = tenthCount + ' fixed €' + PRIZE_10TH + ' prize' + (tenthCount > 1 ? 's' : '') +
+      prizeNote.textContent ="Currently there are" + tenthCount + ' fixed €' + PRIZE_10TH + ' prize' + (tenthCount > 1 ? 's' : '') +
         ' (€' + fixedTotal + ') set aside first, leaving €' + top5Pot +
         ' for the top 5. Confirmed amounts appear on the leaderboard once entries close.';
     }
