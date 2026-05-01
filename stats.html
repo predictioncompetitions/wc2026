@@ -50,7 +50,7 @@
     .bracket { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
     .bracket-col { display: flex; flex-direction: column; gap: 6px; }
     .bracket-col-head { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; text-align: center; padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
-    .bracket-pick { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; }
+    .bracket-pick { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; cursor: help; }
     .bracket-pick-team { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bracket-pick-pct { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
     .bracket-pick.heat-1 { background: #fff7e6; border-color: #f0d28a; }
@@ -207,7 +207,7 @@
       <div class="group-grid">${cards}</div>`;
   }
 
-  function renderBracket(roundReach) {
+  function renderBracket(roundReach, entryCount) {
     if (!roundReach) return '';
     const rounds = [
       { key: 'R32', label: 'Round of 32', take: 16 },
@@ -220,7 +220,7 @@
     const cols = rounds.map(r => {
       const teams = (roundReach[r.key] || []).slice(0, r.take);
       const items = teams.map(t => `
-        <div class="bracket-pick ${heatClass(t.pct)}">
+        <div class="bracket-pick ${heatClass(t.pct)}" title="${t.count}/${entryCount} entrants">
           <div class="bracket-pick-team">${esc(t.team)}</div>
           <div class="bracket-pick-pct">${t.pct}%</div>
         </div>`).join('');
@@ -233,7 +233,7 @@
     return `
       <div class="section-head">
         <h2>Knockout stages</h2>
-        <p>Most-picked teams to reach each round. Darker shading means more entrants picked them.</p>
+        <p>Most-picked teams to reach each round. Darker shading means more entrants picked them. Hover for the entrant count.</p>
       </div>
       <div class="bracket">${cols}</div>`;
   }
@@ -253,7 +253,7 @@
       main.innerHTML = `
         ${renderHeadline(data)}
         ${renderGroupConsensus(data.groupConsensus, data.entryCount)}
-        ${renderBracket(data.roundReach)}`;
+        ${renderBracket(data.roundReach, data.entryCount)}`;
     } catch(e) {
       main.innerHTML = `<div class="status-msg status-error">Could not load stats. Please try again shortly.</div>`;
     }
