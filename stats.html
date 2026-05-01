@@ -18,6 +18,12 @@
     .headline-label { font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .3px; text-transform: uppercase; }
     .headline-sub { font-size: 11px; color: var(--ink-3); margin-top: 6px; }
 
+    .scoreline-list { display: flex; flex-direction: column; gap: 4px; }
+    .scoreline-row { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
+    .scoreline-rank { font-family: var(--font-head); font-weight: 700; color: var(--ink-3); width: 14px; }
+    .scoreline-score { font-family: var(--font-head); font-weight: 700; color: var(--ink); flex: 1; }
+    .scoreline-pct { font-size: 12px; font-weight: 700; color: var(--pitch); }
+
     /* Section heading */
     .section-head { margin: 28px 0 12px; }
     .section-head h2 { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--ink); margin: 0; }
@@ -36,7 +42,9 @@
     .pos-row-bar { width: 60px; height: 6px; background: var(--surface-3); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
     .pos-row-bar-fill { height: 100%; background: var(--pitch); }
     .pos-row-bar-fill.qualify { background: #1a8a4a; }
-    .pos-row-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; }
+    .headline-box.scorelines { padding: 12px 16px; }
+    .headline-box.scorelines .headline-label { margin-bottom: 8px; }
+    .pos-row-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; cursor: help; }
 
     /* Bracket heatmap */
     .bracket { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
@@ -135,9 +143,14 @@
   }
 
   function renderHeadline(data) {
-    const scoreline = data.mostCommonScoreline
-      ? `${data.mostCommonScoreline} (${data.scorelineShare}%)`
-      : '—';
+    const scorelines = (data.topScorelines && data.topScorelines.length)
+      ? `<div class="scoreline-list">${data.topScorelines.map((s, i) => `
+          <div class="scoreline-row">
+            <span class="scoreline-rank">${i + 1}</span>
+            <span class="scoreline-score">${esc(s.scoreline)}</span>
+            <span class="scoreline-pct">${s.pct}%</span>
+          </div>`).join('')}</div>`
+      : '<div style="font-size:12px;color:var(--ink-3);font-style:italic;">No knockout scores yet</div>';
     return `
       <div class="headline-strip">
         <div class="headline-box">
@@ -153,28 +166,27 @@
           <div class="headline-label">Avg goals per knockout</div>
           <div class="headline-sub">Across all predicted knockout scorelines</div>
         </div>
-        <div class="headline-box">
-          <div class="headline-value">${esc(scoreline)}</div>
-          <div class="headline-label">Most common scoreline</div>
-          <div class="headline-sub">Treating 2-1 and 1-2 as the same</div>
+        <div class="headline-box scorelines">
+          <div class="headline-label">Top knockout scorelines</div>
+          ${scorelines}
         </div>
       </div>`;
   }
 
-  function renderGroupConsensus(groups) {
+  function renderGroupConsensus(groups, entryCount) {
     if (!groups || !groups.length) return '';
     const cards = groups.map(g => {
       const firsts = g.topFirst.map((p, i) => `
         <div class="pos-row">
           <span class="pos-row-team ${i === 0 ? 'lead' : ''}">${esc(p.team)}</span>
           <div class="pos-row-bar"><div class="pos-row-bar-fill" style="width:${p.pct}%"></div></div>
-          <span class="pos-row-pct">${p.pct}%</span>
+          <span class="pos-row-pct" title="${p.count}/${entryCount} entrants">${p.pct}%</span>
         </div>`).join('');
       const qualify = (g.qualify || []).map(p => `
         <div class="pos-row">
           <span class="pos-row-team">${esc(p.team)}</span>
           <div class="pos-row-bar"><div class="pos-row-bar-fill qualify" style="width:${p.pct}%"></div></div>
-          <span class="pos-row-pct">${p.pct}%</span>
+          <span class="pos-row-pct" title="${p.count}/${entryCount} entrants">${p.pct}%</span>
         </div>`).join('');
       return `
         <div class="group-card">
@@ -190,7 +202,7 @@
     return `
       <div class="section-head">
         <h2>Group consensus</h2>
-        <p>Top picks for group winner, and how likely the field thinks each team is to qualify (top 2 plus best third-place ranking).</p>
+        <p>Top picks for group winner, and how likely the field thinks each team is to qualify (top 2 plus best third-place ranking). Hover a percentage to see the entrant count.</p>
       </div>
       <div class="group-grid">${cards}</div>`;
   }
@@ -240,7 +252,7 @@
       }
       main.innerHTML = `
         ${renderHeadline(data)}
-        ${renderGroupConsensus(data.groupConsensus)}
+        ${renderGroupConsensus(data.groupConsensus, data.entryCount)}
         ${renderBracket(data.roundReach)}`;
     } catch(e) {
       main.innerHTML = `<div class="status-msg status-error">Could not load stats. Please try again shortly.</div>`;
