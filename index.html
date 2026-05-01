@@ -121,9 +121,9 @@
   .prize-strip-right { text-align: center; }
   .prize-detail-grid { grid-template-columns: 1fr; }
 }
-    .hero-deadline-banner {
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.15);
+.hero-deadline-banner {
+  background: linear-gradient(135deg, rgba(212,168,67,.15) 0%, rgba(212,168,67,.05) 100%);
+  border: 1.5px solid var(--gold);
   border-radius: var(--radius-lg);
   padding: 16px 20px;
   margin-bottom: 24px;
@@ -134,16 +134,17 @@
 }
 .hero-deadline-label {
   font-family: var(--font-head);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .5px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--gold);
   flex-shrink: 0;
 }
 .hero-deadline-date {
-  font-size: 14px;
-  color: rgba(255,255,255,.8);
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
   flex-shrink: 0;
 }
 .hero-deadline-countdown {
@@ -226,19 +227,19 @@
     <h1>Mick's World Cup<br><span>Predictor</span></h1>
     <p class="hero-home-sub">Pick your group winners, rank the third-placed teams, and predict every knockout score from the Round of 32 to the Final.</p>
 
-    <div class="hero-deadline-banner" id="heroDeadlineBanner" style="display:none;">
-      <div class="hero-deadline-label">⏰ Entries close</div>
-      <div class="hero-deadline-date" id="heroDeadlineDate"></div>
-      <div class="hero-deadline-countdown" id="heroDeadlineCountdown">
-        <span class="hdc-unit"><span class="hdc-num" id="hdc-days">--</span><span class="hdc-label">Days</span></span>
-        <span class="hdc-sep">:</span>
-        <span class="hdc-unit"><span class="hdc-num" id="hdc-hours">--</span><span class="hdc-label">Hrs</span></span>
-        <span class="hdc-sep">:</span>
-        <span class="hdc-unit"><span class="hdc-num" id="hdc-mins">--</span><span class="hdc-label">Min</span></span>
-        <span class="hdc-sep">:</span>
-        <span class="hdc-unit"><span class="hdc-num" id="hdc-secs">--</span><span class="hdc-label">Sec</span></span>
-      </div>
-    </div>
+   <div class="hero-deadline-banner" id="heroDeadlineBanner">
+  <div class="hero-deadline-label">⏰ Entries close</div>
+  <div class="hero-deadline-date" id="heroDeadlineDate">Thursday 11 June 2026 at 12:00</div>
+  <div class="hero-deadline-countdown" id="heroDeadlineCountdown">
+    <span class="hdc-unit"><span class="hdc-num" id="hdc-days">--</span><span class="hdc-label">Days</span></span>
+    <span class="hdc-sep">:</span>
+    <span class="hdc-unit"><span class="hdc-num" id="hdc-hours">--</span><span class="hdc-label">Hrs</span></span>
+    <span class="hdc-sep">:</span>
+    <span class="hdc-unit"><span class="hdc-num" id="hdc-mins">--</span><span class="hdc-label">Min</span></span>
+    <span class="hdc-sep">:</span>
+    <span class="hdc-unit"><span class="hdc-num" id="hdc-secs">--</span><span class="hdc-label">Sec</span></span>
+  </div>
+</div>
 
     <div class="hero-home-actions">
       <a href="enter.html" class="btn btn-gold" style="font-size:15px;min-height:48px;padding:0 28px;">✏️ Enter the competition</a>
