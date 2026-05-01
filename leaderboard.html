@@ -9,6 +9,71 @@
   <style>
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+    /* ── Prize breakdown panel ── */
+    .prize-panel {
+      background: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #92400e;
+    }
+    .prize-panel-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .prize-panel-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 12px;
+    }
+    .prize-pool-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.05);
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .prize-pool-row span { font-size: 12px; color: rgba(255,255,255,.6); }
+    .prize-pool-row strong { font-family: var(--font-head); font-size: 22px; font-weight: 900; color: var(--gold); }
+    .prize-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .prize-card {
+      background: rgba(255,255,255,.06);
+      border-radius: 8px;
+      padding: 8px 6px;
+      text-align: center;
+      border-top: 2px solid transparent;
+    }
+    .prize-card.p-1 { border-top-color: var(--gold); }
+    .prize-card.p-2 { border-top-color: #94a3b8; }
+    .prize-card.p-3 { border-top-color: #cd7c4a; }
+    .prize-card.p-4, .prize-card.p-5 { border-top-color: rgba(255,255,255,.15); }
+    .prize-card-pos  { font-size: 10px; color: rgba(255,255,255,.4); margin-bottom: 2px; }
+    .prize-card-amt  { font-family: var(--font-head); font-size: 18px; font-weight: 900; color: var(--gold); line-height: 1; }
+    .prize-card-amt.tba { font-size: 13px; color: rgba(255,255,255,.3); }
+    .prize-card-pct  { font-size: 9px; color: rgba(255,255,255,.3); margin-top: 2px; }
+    .prize-10th-note {
+      font-size: 11px;
+      color: rgba(255,255,255,.5);
+      padding: 8px 12px;
+      background: rgba(255,255,255,.04);
+      border-radius: 6px;
+      border-left: 3px solid #166534;
+    }
+    .prize-10th-note strong { color: #4ade80; }
+
     /* ── Top 5 podium ── */
     .top5-section {
       background: var(--ink);
@@ -45,6 +110,8 @@
     .top5-name   { font-family: var(--font-head); font-size: 13px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
     .top5-pts    { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--gold); line-height: 1; }
     .top5-ptslbl { font-size: 9px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .3px; }
+    .top5-prize  { font-size: 11px; font-weight: 700; color: #4ade80; margin-top: 4px; }
+    .top5-prize.tba { color: rgba(255,255,255,.3); font-size: 10px; }
 
     /* ── Meta bar ── */
     .lb-meta {
@@ -128,16 +195,28 @@
     .badge-paid { background: #dcfce7; color: #166534; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
     .badge-due  { background: #fee2e2; color: #991b1b; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
 
+    /* Prize chip in table */
+    .prize-chip {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .prize-chip-top { background: #fef3c7; color: #92400e; }
+    .prize-chip-10  { background: #dcfce7; color: #166534; }
+    .prize-chip-tba { background: #f1f5f9; color: #475569; font-style: italic; }
+
     .lb-view-btn { font-size: 11px; color: var(--pitch); font-weight: 600; text-decoration: none; }
     .lb-view-btn:hover { text-decoration: underline; }
 
-    /* Prize cup column */
-    .prize-cup { text-align: center; font-size: 13px; }
-
     @media (max-width: 640px) {
-      .top5-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
-      .top5-name { font-size: 11px; }
-      .top5-pts  { font-size: 16px; }
+      .top5-grid  { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+      .prize-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+      .top5-name  { font-size: 11px; }
+      .top5-pts   { font-size: 16px; }
+      .prize-card-amt { font-size: 14px; }
       table.lb-table td, table.lb-table th { padding: 6px 7px; }
       .lb-name { max-width: 100px; }
     }
@@ -202,61 +281,110 @@
 
 <script src="site.js"></script>
 <script>
+  // ── Prize structure ──
+  const ENTRY_FEE       = 10;
+  const TOP5_PCTS       = [0.40, 0.25, 0.15, 0.12, 0.08];
+  const TOP5_LABELS     = ['1st', '2nd', '3rd', '4th', '5th'];
+  const PRIZE_10TH      = 20;
+
+  function calcPrizes(paidCount, prizesConfirmed) {
+    const totalPot    = paidCount * ENTRY_FEE;
+    const tenthCount  = Math.floor(paidCount / 10);
+    const fixedTotal  = tenthCount * PRIZE_10TH;
+    const top5Pot     = Math.max(0, totalPot - fixedTotal);
+    const top5Amounts = TOP5_PCTS.map(p => Math.round(top5Pot * p));
+    // Tenths: 10, 20, 30... up to paidCount
+    const tenthPlaces = [];
+    for (let i = 1; i <= tenthCount; i++) tenthPlaces.push(i * 10);
+    return { totalPot, fixedTotal, top5Pot, top5Amounts, tenthPlaces, tenthCount };
+  }
+
   function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // ── Field accessors ──
-  function getName(e)    { return e.displayName || e.DISPLAY_NAME || e.display_name || '—'; }
-  function getTotal(e)   { return +(e.totalPoints || e.TOTAL_POINTS || e.total_points || 0); }
-  function getGroup(e)   { return +(e.groupTotal || e.GROUP_TOTAL || e.group_total || 0); }
-  function getProg(e)    { return +(e.progressionTotal || e.PROGRESSION_TOTAL || e.progression_total || 0); }
-  function getMatch(e)   { return +(e.matchTotal || e.MATCH_TOTAL || e.match_total || 0); }
-  function getExact(e)   { return +(e.exactScoreCount || e.EXACT_SCORE_COUNT || e.exact_score_count || 0); }
-  function getChamp(e)   { return e.predictedChampion || e.PREDICTED_CHAMPION || '—'; }
+  function getName(e)    { return e.displayName || e.DISPLAY_NAME || '—'; }
+  function getTotal(e)   { return +(e.totalPoints || e.TOTAL_POINTS || 0); }
+  function getGroup(e)   { return +(e.groupTotal || e.GROUP_TOTAL || 0); }
+  function getProg(e)    { return +(e.progressionTotal || e.PROGRESSION_TOTAL || 0); }
+  function getMatch(e)   { return +(e.matchTotal || e.MATCH_TOTAL || 0); }
+  function getExact(e)   { return +(e.exactScoreCount || e.EXACT_SCORE_COUNT || 0); }
   function getRank(e, i) { return +(e.rank || e.RANK || (i + 1)); }
-  function getPayment(e) { return e.paymentStatus || e.PAYMENT_STATUS || e.payment_status || ''; }
-  function getEntryId(e) { return e.entryId || e.ENTRY_ID || e.entry_id || ''; }
+  function getPayment(e) { return e.paymentStatus || e.PAYMENT_STATUS || ''; }
+  function getEntryId(e) { return e.entryId || e.ENTRY_ID || ''; }
 
-  // Sort state
-  let sortCol = 'rank';
-  let sortAsc = true;
+  let sortCol    = 'rank';
+  let sortAsc    = true;
   let allEntries = [];
-  let hasScores = false;
+  let hasScores  = false;
 
-  function isPrizePosition(rank, total) {
-    return rank <= 5 || (rank % 10 === 0 && rank <= total);
-  }
-
-  function renderTable(entries) {
-    const total = entries.length;
-    const medals = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣'];
+  function renderTable(entries, paidCount, prizesConfirmed) {
+    const prizes   = calcPrizes(paidCount, prizesConfirmed);
+    const total    = entries.length;
+    const medals   = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣'];
+    const tenthSet = new Set(prizes.tenthPlaces);
 
     let html = '';
 
-    // ── Top 5 ──
+    // ── Prize breakdown panel ──
+    html += '<div class="prize-panel">';
+    html += '<div class="prize-panel-label">💰 Prize pool</div>';
+    html += `<div class="prize-panel-sub">${paidCount} paid entr${paidCount === 1 ? 'y' : 'ies'} × €${ENTRY_FEE} entry fee</div>`;
+    html += `
+      <div class="prize-pool-row">
+        <span>Total pot</span>
+        <strong>€${prizes.totalPot}</strong>
+      </div>`;
+    html += '<div class="prize-grid">';
+    TOP5_LABELS.forEach((lbl, i) => {
+      const amt = prizesConfirmed
+        ? `€${prizes.top5Amounts[i]}`
+        : 'TBA';
+      const pct = `${Math.round(TOP5_PCTS[i] * 100)}%`;
+      html += `
+        <div class="prize-card p-${i+1}">
+          <div class="prize-card-pos">${lbl} place</div>
+          <div class="prize-card-amt${prizesConfirmed ? '' : ' tba'}">${amt}</div>
+          ${prizesConfirmed ? `<div class="prize-card-pct">${pct} of top-5 pot</div>` : `<div class="prize-card-pct">${pct} of €${prizes.top5Pot}</div>`}
+        </div>`;
+    });
+    html += '</div>';
+    if (prizes.tenthCount > 0) {
+      const places = prizes.tenthPlaces.map(p => `${p}th`).join(', ');
+      html += `<div class="prize-10th-note">Every 10th place wins a flat <strong>€${PRIZE_10TH}</strong> — positions: ${places}</div>`;
+    } else {
+      html += `<div class="prize-10th-note">Every 10th place (10th, 20th, 30th…) wins a flat <strong>€${PRIZE_10TH}</strong> — prizes unlock as entries grow</div>`;
+    }
+    if (!prizesConfirmed) {
+      html += `<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:8px;">Top-5 amounts confirmed after entries close.</div>`;
+    }
+    html += '</div>';
+
+    // ── Top 5 podium ──
     const top5 = entries.slice().sort((a,b) => getRank(a,0) - getRank(b,0)).slice(0,5);
     if (top5.length) {
       html += '<div class="top5-section">';
       html += '<div class="top5-label">🏆 Top 5</div>';
       html += '<div class="top5-grid">';
       top5.forEach((e, i) => {
+        const prizeAmt = prizesConfirmed ? `€${prizes.top5Amounts[i]}` : 'Prize TBA';
+        const prizeClass = prizesConfirmed ? '' : ' tba';
         html += `
           <div class="top5-card p-${i+1}">
             <div class="top5-medal">${medals[i]}</div>
             <div class="top5-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
             <div class="top5-pts">${hasScores ? getTotal(e) : '—'}</div>
             <div class="top5-ptslbl">pts</div>
+            <div class="top5-prize${prizeClass}">${prizeAmt}</div>
           </div>`;
       });
       html += '</div></div>';
     }
 
     // ── Meta ──
-    const paid = entries.filter(e => String(getPayment(e)).toUpperCase() === 'PAID').length;
     html += `
       <div class="lb-meta">
-        <span><strong>${total}</strong> entr${total === 1 ? 'y' : 'ies'} &middot; <strong>${paid}</strong> paid</span>
+        <span><strong>${total}</strong> entr${total === 1 ? 'y' : 'ies'} &middot; <strong>${paidCount}</strong> paid</span>
         <a href="lookup.html" class="btn btn-outline" style="min-height:32px;font-size:12px;">🔍 Look up my scores</a>
       </div>`;
 
@@ -268,43 +396,53 @@
 
     // ── Table ──
     const cols = [
-      { key: 'rank',   label: '#',         cls: '' },
-      { key: 'prize',  label: '',           cls: '', noSort: true },
-      { key: 'name',   label: 'Entrant',    cls: '' },
-      { key: 'total',  label: 'Total',      cls: 'num' },
-      { key: 'group',  label: 'Groups',     cls: 'num' },
-      { key: 'prog',   label: 'Prog.',      cls: 'num' },
-      { key: 'match',  label: 'KO',         cls: 'num' },
-      { key: 'exact',  label: 'Exact',      cls: 'num' },
-      { key: 'pay',    label: 'Payment',    cls: '' },
-      { key: 'action', label: '',           cls: '', noSort: true },
+      { key: 'rank',   label: '#',       cls: '' },
+      { key: 'prize',  label: 'Prize',   cls: 'ctr', noSort: true },
+      { key: 'name',   label: 'Entrant', cls: '' },
+      { key: 'total',  label: 'Total',   cls: 'num' },
+      { key: 'group',  label: 'Groups',  cls: 'num' },
+      { key: 'prog',   label: 'Prog.',   cls: 'num' },
+      { key: 'match',  label: 'KO',      cls: 'num' },
+      { key: 'exact',  label: 'Exact',   cls: 'num' },
+      { key: 'pay',    label: 'Payment', cls: '' },
+      { key: 'action', label: '',        cls: '', noSort: true },
     ];
 
     html += '<div class="lb-table-wrap"><table class="lb-table"><thead><tr>';
     cols.forEach(c => {
-      if (c.noSort) { html += `<th class="${c.cls}"></th>`; return; }
+      if (c.noSort) { html += `<th class="${c.cls}">${c.label}</th>`; return; }
       const sorted = sortCol === c.key ? 'sorted' : '';
-      const arrow = sortCol === c.key ? (sortAsc ? '▲' : '▼') : '▲';
+      const arrow  = sortCol === c.key ? (sortAsc ? '▲' : '▼') : '▲';
       html += `<th class="${c.cls} ${sorted}" data-col="${c.key}">${c.label}<span class="sort-arrow">${arrow}</span></th>`;
     });
     html += '</tr></thead><tbody>';
 
     entries.forEach((e, i) => {
-      const r = getRank(e, i);
-      const isPrize = isPrizePosition(r, total);
-      const prizeClass = r <= 5 ? 'prize-row-top' : isPrize ? 'prize-row-10' : '';
-      const rbClass = 'rb-n';
-      const payStr = String(getPayment(e)).toUpperCase();
-      const payBadge = payStr === 'PAID'
+      const r         = getRank(e, i);
+      const isTop5    = r <= 5;
+      const is10th    = tenthSet.has(r);
+      const prizeClass = isTop5 ? 'prize-row-top' : is10th ? 'prize-row-10' : '';
+      const rbClass   = r === 1 ? 'rb-1' : r === 2 ? 'rb-2' : r === 3 ? 'rb-3' : 'rb-n';
+      const payStr    = String(getPayment(e)).toUpperCase();
+      const payBadge  = payStr === 'PAID'
         ? '<span class="badge-paid">Paid</span>'
         : '<span class="badge-due">Due</span>';
-      const prizeLabel = r === 1 ? '1st place prize' : r === 2 ? '2nd place prize' : r === 3 ? '3rd place prize' : r === 4 ? '4th place prize' : r === 5 ? '5th place prize' : `€20 prize`;
-      const cupCell = isPrize ? `<span title="${prizeLabel}" style="cursor:default;">🏆</span>` : '';
-      
+
+      let prizeChip = '';
+      if (isTop5) {
+        if (prizesConfirmed) {
+          prizeChip = `<span class="prize-chip prize-chip-top">€${prizes.top5Amounts[r-1]}</span>`;
+        } else {
+          prizeChip = `<span class="prize-chip prize-chip-tba">Prize TBA</span>`;
+        }
+      } else if (is10th) {
+        prizeChip = `<span class="prize-chip prize-chip-10">€${PRIZE_10TH}</span>`;
+      }
+
       html += `
         <tr class="${prizeClass}" data-name="${esc(getName(e))}" style="cursor:pointer;">
           <td><div class="rank-badge ${rbClass}">${r}</div></td>
-          <td class="prize-cup">${cupCell}</td>
+          <td style="text-align:center;">${prizeChip}</td>
           <td><div class="lb-name" title="${esc(getName(e))}">${esc(getName(e))}</div></td>
           <td class="lb-score">${hasScores ? getTotal(e) : '—'}</td>
           <td class="lb-num">${hasScores ? getGroup(e) : '—'}</td>
@@ -319,17 +457,15 @@
     html += '</tbody></table></div>';
     document.getElementById('lbMain').innerHTML = html;
 
-    // Sort click handlers
     document.querySelectorAll('table.lb-table th[data-col]').forEach(th => {
       th.addEventListener('click', () => {
         const col = th.dataset.col;
         if (sortCol === col) { sortAsc = !sortAsc; }
         else { sortCol = col; sortAsc = col === 'rank' || col === 'name'; }
-        renderTable(sortEntries(allEntries));
+        renderTable(sortEntries(allEntries), paidCount, prizesConfirmed);
       });
     });
 
-    // Row click
     document.querySelectorAll('tr[data-name]').forEach(row => {
       row.addEventListener('click', e => {
         if (e.target.tagName === 'A') return;
@@ -386,8 +522,11 @@
         return;
       }
 
+      const paidCount      = data.paidCount || 0;
+      const prizesConfirmed = !!data.prizesConfirmed;
+
       hasScores = allEntries.some(e => getTotal(e) > 0);
-      renderTable(sortEntries(allEntries));
+      renderTable(sortEntries(allEntries), paidCount, prizesConfirmed);
 
     } catch(err) {
       document.getElementById('lbMain').innerHTML =
