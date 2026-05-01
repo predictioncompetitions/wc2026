@@ -191,6 +191,11 @@
 
 <script src="site.js"></script>
 <script>
+
+  function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+  
 const FIXTURE_DESC = {
   73:'Runner-up Group A vs Runner-up Group B',
   74:'Winner Group E vs Best 3rd-place team',
