@@ -474,6 +474,18 @@
     .match-info-btn.tip-down .match-tooltip { bottom: auto; top: calc(100% + 6px); }
     .match-info-btn.tip-down .match-tooltip::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: var(--ink); }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  
+	  @media (max-width: 600px) {
+  .ps-item { font-size: 10px; padding: 0 6px; gap: 4px; }
+  .ps-dot { width: 15px; height: 15px; font-size: 8px; }
+  .card-header { padding: 12px; }
+  .card-body { padding: 0 12px 14px; }
+  .autosave-note { font-size: 12px; line-height: 1.4; padding: 8px 10px; gap: 6px; align-items: flex-start; }
+  .autosave-note svg { flex-shrink: 0; margin-top: 2px; }
+  .group-card { padding: 10px; }
+  .hero { padding: 16px 12px 20px; }
+}
+  
   </style>
 </head>
 <body>
