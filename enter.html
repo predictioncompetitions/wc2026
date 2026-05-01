@@ -49,8 +49,8 @@
       --final-bg: #fef3c7; --final-border: #fcd34d; --final-text: #92400e;
     }
 .welcome-deadline {
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(135deg, rgba(212,168,67,.15) 0%, rgba(212,168,67,.05) 100%);
+  border: 1.5px solid var(--gold);
   border-radius: var(--radius);
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -61,16 +61,18 @@
 }
 .welcome-deadline-label {
   font-family: var(--font-head);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .5px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--gold);
   flex-shrink: 0;
 }
 .welcome-deadline-date {
-  font-size: 13px;
-  color: rgba(255,255,255,.75);
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
 }
 
 	  
@@ -570,10 +572,10 @@
         <div class="welcome-step"><div class="ws-num">5</div><div class="ws-icon">🏆</div><div class="ws-content"><div class="ws-label">Submit</div><div class="ws-desc">You'll get a confirmation email with a PDF of your picks.</div></div></div>
       </div>
 	
-		<div class="welcome-deadline" id="welcomeDeadline" style="display:none;">
-        <div class="welcome-deadline-label">⏰ Entries close</div>
-        <div class="welcome-deadline-date" id="welcomeDeadlineDate"></div>
-      </div>
+	<div class="welcome-deadline" id="welcomeDeadline">
+	  <div class="welcome-deadline-label">⏰ Entries close</div>
+	  <div class="welcome-deadline-date" id="welcomeDeadlineDate">Thursday 11 June 2026 at 12:00</div>
+	</div>
 
       <div class="welcome-actions">
 		
