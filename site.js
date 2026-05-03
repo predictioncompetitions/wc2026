@@ -1,5 +1,6 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 var SCRIPT_URL = 'https://api.micksworldcup2026.com';
+
 // ── NAV ───────────────────────────────────────────────────────────────────────
 async function initNav() {
   const toggle = document.getElementById('navToggle');
@@ -39,6 +40,7 @@ async function initNav() {
     document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = 'none');
   }
 }
+
 // ── API ───────────────────────────────────────────────────────────────────────
 async function apiFetch(action, params = {}) {
   const url = new URL(SCRIPT_URL);
@@ -48,15 +50,18 @@ async function apiFetch(action, params = {}) {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
+
 // ── FORMAT HELPERS ────────────────────────────────────────────────────────────
 function escSite(str) {
   return String(str || '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
 function pct(n, total) {
   if (!total) return '0%';
   return Math.round((n / total) * 100) + '%';
 }
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', initNav);
