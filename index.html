@@ -438,10 +438,10 @@ async function loadHomeData() {
     if (!data) return;
 
     if (data.tournamentStarted === true) {
-      document.querySelectorAll('[data-phase="live"]').forEach(el => {
-        el.style.display = '';
-      });
-    }
+        document.querySelectorAll('[data-phase="live"]').forEach(el => {
+          el.style.display = 'block';
+        });
+            }
 
     if (data.entryStatus !== 'OPEN') {
       document.getElementById('entriesClosedBanner').style.display = 'block';
