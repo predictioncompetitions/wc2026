@@ -523,4 +523,4 @@ table.data-table tr:hover td { background: var(--surface-2); }
   .card-body { padding: 16px; }
   .card-head { padding: 14px 16px; }
 }
-[data-phase="live"] { display: none; }
+
