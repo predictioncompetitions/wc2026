@@ -172,8 +172,7 @@
       .hero-deadline-countdown { margin-left: 0; }
     }
   </style>
-  <style>[data-phase="live"] { display: none; }</style>
-</head>
+<style>[data-phase="live"] { display: none; } [data-phase="pre"] { display: none; }</style></head>
 <body>
 
 <nav class="nav">
@@ -433,32 +432,38 @@
     setInterval(tick, 1000);
   }
 
-  async function loadHomeData() {
-    try {
-      const data = await apiFetch('getInitialData');
-      if (!data) return;
+async function loadHomeData() {
+  try {
+    const data = await apiFetch('getInitialData');
+    if (!data) return;
 
-      if (data.entryStatus !== 'OPEN') {
-        document.getElementById('entriesClosedBanner').style.display = 'block';
-        document.getElementById('heroActions').style.display = 'none';
-        document.getElementById('heroMeta').style.display = 'none';
-        document.getElementById('heroDeadlineBanner').style.display = 'none';
-        return;
-      }
+    if (data.tournamentStarted === true) {
+      document.querySelectorAll('[data-phase="live"]').forEach(el => {
+        el.style.display = '';
+      });
+    }
 
-      if (data.entryDeadline) {
-        const deadline = new Date(data.entryDeadline);
-        if (!isNaN(deadline.getTime())) {
-          const dateEl = document.getElementById('heroDeadlineDate');
-          if (dateEl) dateEl.textContent = deadline.toLocaleString('en-IE', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-            hour: '2-digit', minute: '2-digit'
-          });
-          startHeroCountdown(deadline);
-        }
+    if (data.entryStatus !== 'OPEN') {
+      document.getElementById('entriesClosedBanner').style.display = 'block';
+      document.getElementById('heroActions').style.display = 'none';
+      document.getElementById('heroMeta').style.display = 'none';
+      document.getElementById('heroDeadlineBanner').style.display = 'none';
+      return;
+    }
+
+    if (data.entryDeadline) {
+      const deadline = new Date(data.entryDeadline);
+      if (!isNaN(deadline.getTime())) {
+        const dateEl = document.getElementById('heroDeadlineDate');
+        if (dateEl) dateEl.textContent = deadline.toLocaleString('en-IE', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+        startHeroCountdown(deadline);
       }
-    } catch(e) {}
-  }
+    }
+  } catch(e) {}
+}
 
   // Start countdown immediately with fallback date, API will override if entries still open
   startHeroCountdown(new Date('2026-06-11T12:00:00'));
