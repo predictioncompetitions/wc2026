@@ -139,6 +139,29 @@
     .hdc-label { font-size: 9px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: 2px; }
     .hdc-sep   { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: rgba(255,255,255,.3); margin-bottom: 10px; }
 
+    /* ── Entries closed banner ── */
+    .entries-closed-banner {
+      display: none;
+      background: rgba(255,255,255,.08);
+      border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .entries-closed-banner-title {
+      font-family: var(--font-head);
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .entries-closed-banner-body {
+      font-size: 14px;
+      color: rgba(255,255,255,.7);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
     @media (max-width: 600px) {
       .nav-grid             { grid-template-columns: 1fr; }
       .prize-strip          { flex-direction: column; text-align: center; }
@@ -190,6 +213,14 @@
     <h1>Mick's World Cup<br><span>Predictor</span></h1>
     <p class="hero-home-sub">Pick your group winners, rank the third-placed teams, and predict every knockout score from the Round of 32 to the Final.</p>
 
+    <!-- Entries closed banner — shown when entryStatus !== 'OPEN' -->
+    <div class="entries-closed-banner" id="entriesClosedBanner">
+      <div class="entries-closed-banner-title">Entries are closed</div>
+      <div class="entries-closed-banner-body">The deadline has passed. Check the leaderboard to see how everyone's getting on.</div>
+      <a href="leaderboard.html" class="btn btn-gold" style="font-size:14px; min-height:40px; padding:0 20px;">🏆 View the leaderboard</a>
+    </div>
+
+    <!-- Deadline countdown — shown when entries are open -->
     <div class="hero-deadline-banner" id="heroDeadlineBanner">
       <div class="hero-deadline-label">⏰ Entries close</div>
       <div class="hero-deadline-date" id="heroDeadlineDate">Thursday 11 June 2026 at 12:00</div>
@@ -204,11 +235,12 @@
       </div>
     </div>
 
-    <div class="hero-home-actions">
+    <!-- CTA buttons — hidden when entries are closed -->
+    <div class="hero-home-actions" id="heroActions">
       <a href="enter.html" class="btn btn-gold" style="font-size:15px;min-height:48px;padding:0 28px;">✏️ Enter the competition</a>
       <a href="rules.html" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.25);font-size:15px;min-height:48px;">📋 See the rules</a>
     </div>
-    <div class="hero-home-meta">
+    <div class="hero-home-meta" id="heroMeta">
       <span class="hero-meta-pill"><span class="dot"></span> Entries open</span>
       <span class="hero-meta-pill">⚽ First game at 8pm on Thursday 11 June 2026</span>
       <span class="hero-meta-pill">💰 €10 entry — all to prizes</span>
@@ -280,7 +312,7 @@
       The €20 prizes are set aside first. The remaining pot is split between the top 5 by the percentages above.
     </p>
     <p class="prize-note" style="margin-top:8px;">
-      💡 Finish in 10th, 20th, 30th or any multiple of 10 and you've at least doubled your money, guaranteed!.
+      💡 Finish in 10th, 20th, 30th or any multiple of 10 and you've at least doubled your money, guaranteed!
     </p>
   </div>
 
@@ -335,9 +367,9 @@
 
 <script src="site.js"></script>
 <script>
-  const ENTRY_FEE   = 10;
-  const TOP5_PCTS   = [0.40, 0.25, 0.15, 0.12, 0.08];
-  const PRIZE_10TH  = 20;
+  const ENTRY_FEE  = 10;
+  const TOP5_PCTS  = [0.40, 0.25, 0.15, 0.12, 0.08];
+  const PRIZE_10TH = 20;
 
   function updatePrizeDisplay(paidCount) {
     const totalPot   = paidCount * ENTRY_FEE;
@@ -345,20 +377,17 @@
     const fixedTotal = tenthCount * PRIZE_10TH;
     const top5Pot    = Math.max(0, totalPot - fixedTotal);
 
-    // Prize strip
-    const amtEl   = document.getElementById('prizeAmount');
-    const lblEl   = document.getElementById('prizeAmountLabel');
+    const amtEl = document.getElementById('prizeAmount');
+    const lblEl = document.getElementById('prizeAmountLabel');
     if (amtEl) amtEl.textContent = '€' + totalPot.toLocaleString();
     if (lblEl) lblEl.textContent = paidCount + ' paid entr' + (paidCount === 1 ? 'y' : 'ies') + ' × €' + ENTRY_FEE;
 
-    // Top-5 amounts
     const ids = ['amt-1','amt-2','amt-3','amt-4','amt-5'];
     TOP5_PCTS.forEach((pct, i) => {
       const el = document.getElementById(ids[i]);
       if (el) el.textContent = top5Pot > 0 ? '€' + Math.round(top5Pot * pct) : '';
     });
 
-    // 10th place note
     if (tenthCount > 0) {
       const places = [];
       for (let i = 1; i <= tenthCount; i++) places.push(i * 10 + 'th');
@@ -366,10 +395,9 @@
       if (noteEl) noteEl.textContent = ' Current prize positions: ' + places.join(', ') + '.';
     }
 
-    // Prize note
     const prizeNote = document.getElementById('prizeNote');
     if (prizeNote && tenthCount > 0) {
-      prizeNote.textContent ="Currently there are " + tenthCount + ' fixed €' + PRIZE_10TH + ' prize' + (tenthCount > 1 ? 's' : '') +
+      prizeNote.textContent = 'Currently there are ' + tenthCount + ' fixed €' + PRIZE_10TH + ' prize' + (tenthCount > 1 ? 's' : '') +
         ' (€' + fixedTotal + ') set aside first, this leaves €' + top5Pot +
         ' for the top 5. This prize pot will grow as we get more entries and the confirmed prize amounts will show on the leaderboard once entries close.';
     }
@@ -384,10 +412,41 @@
     } catch(e) {}
   }
 
+  function startHeroCountdown(deadline) {
+    function tick() {
+      const diff = deadline - Date.now();
+      if (diff <= 0) {
+        ['hdc-days','hdc-hours','hdc-mins','hdc-secs'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = '00';
+        });
+        return;
+      }
+      const s = Math.floor(diff / 1000);
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val).padStart(2, '0'); };
+      set('hdc-days',  Math.floor(s / 86400));
+      set('hdc-hours', Math.floor((s % 86400) / 3600));
+      set('hdc-mins',  Math.floor((s % 3600) / 60));
+      set('hdc-secs',  s % 60);
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
   async function loadHomeData() {
     try {
       const data = await apiFetch('getInitialData');
-      if (data && data.entryDeadline && data.entryStatus === 'OPEN') {
+      if (!data) return;
+
+      if (data.entryStatus !== 'OPEN') {
+        document.getElementById('entriesClosedBanner').style.display = 'block';
+        document.getElementById('heroActions').style.display = 'none';
+        document.getElementById('heroMeta').style.display = 'none';
+        document.getElementById('heroDeadlineBanner').style.display = 'none';
+        return;
+      }
+
+      if (data.entryDeadline) {
         const deadline = new Date(data.entryDeadline);
         if (!isNaN(deadline.getTime())) {
           const dateEl = document.getElementById('heroDeadlineDate');
@@ -401,27 +460,8 @@
     } catch(e) {}
   }
 
-  function startHeroCountdown(deadline) {
-    function tick() {
-      const diff = deadline - Date.now();
-      if (diff <= 0) {
-        ['hdc-days','hdc-hours','hdc-mins','hdc-secs'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.textContent = '00';
-        });
-        return;
-      }
-      const s   = Math.floor(diff / 1000);
-      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val).padStart(2,'0'); };
-      set('hdc-days',  Math.floor(s / 86400));
-      set('hdc-hours', Math.floor((s % 86400) / 3600));
-      set('hdc-mins',  Math.floor((s % 3600) / 60));
-      set('hdc-secs',  s % 60);
-    }
-    tick();
-    setInterval(tick, 1000);
-  }
-
+  // Start countdown immediately with fallback date, API will override if entries still open
+  startHeroCountdown(new Date('2026-06-11T12:00:00'));
   loadEntryCount();
   loadHomeData();
 </script>
