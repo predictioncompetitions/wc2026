@@ -34,7 +34,7 @@ async function initNav() {
     if (!isLive) {
       document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = 'none');
     } else {
-      document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = '');
+      document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = 'block');
     }
   } catch(e) {
     document.querySelectorAll('[data-phase="live"]').forEach(el => el.style.display = 'none');
