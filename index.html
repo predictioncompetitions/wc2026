@@ -437,12 +437,6 @@ async function loadHomeData() {
     const data = await apiFetch('getInitialData');
     if (!data) return;
 
-    if (data.tournamentStarted === true) {
-        document.querySelectorAll('[data-phase="live"]').forEach(el => {
-          el.style.display = 'block';
-        });
-            }
-
     if (data.entryStatus !== 'OPEN') {
       document.getElementById('entriesClosedBanner').style.display = 'block';
       document.getElementById('heroActions').style.display = 'none';
@@ -464,7 +458,6 @@ async function loadHomeData() {
     }
   } catch(e) {}
 }
-
   // Start countdown immediately with fallback date, API will override if entries still open
   startHeroCountdown(new Date('2026-06-11T12:00:00'));
   loadEntryCount();
