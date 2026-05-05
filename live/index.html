@@ -1,0 +1,206 @@
+<!-- FILE: live/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mick's World Cup Predictor 2026</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="icon" href="../soccerball.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    @keyframes spin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(.85)} }
+
+    .hero-home {
+      background: var(--ink);
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 48px 24px;
+    }
+    .hero-home::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 55% 70% at 80% 40%, rgba(212,168,67,.13), transparent),
+        radial-gradient(ellipse 45% 65% at 5% 80%, rgba(13,92,46,.25), transparent);
+      pointer-events: none;
+    }
+    .hero-home-rainbow { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #1a56db 0%, #0ea5e9 20%, #7c3aed 40%, #be123c 60%, #f59e0b 80%, #14532d 100%); }
+    .hero-home-inner    { position: relative; max-width: 900px; margin: 0 auto; width: 100%; }
+    .hero-home-eyebrow  { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .hero-home h1       { font-family: var(--font-head); font-size: clamp(36px, 7vw, 68px); font-weight: 900; color: #fff; line-height: 1.0; letter-spacing: -.5px; margin-bottom: 16px; }
+    .hero-home h1 span  { color: var(--gold); }
+    .hero-home-sub      { font-size: 17px; color: rgba(255,255,255,.7); max-width: 480px; line-height: 1.55; margin-bottom: 28px; }
+    .hero-home-actions  { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .hero-home-meta     { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+    .hero-meta-pill     { display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); font-size: 13px; color: rgba(255,255,255,.7); }
+    .hero-meta-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: pulse 2s ease infinite; }
+
+    .nav-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 28px; }
+    .nav-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 8px; transition: all var(--trans); box-shadow: var(--shadow-sm); border-top: 3px solid var(--pitch); }
+    .nav-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-top-color: var(--gold); }
+    .nav-card-icon  { font-size: 28px; line-height: 1; }
+    .nav-card h3    { font-family: var(--font-head); font-size: 19px; font-weight: 800; color: var(--ink); letter-spacing: -.1px; }
+    .nav-card p     { font-size: 13px; color: var(--ink-3); line-height: 1.4; }
+    .nav-card-arrow { margin-top: auto; font-size: 13px; color: var(--pitch); font-weight: 600; }
+
+    .prize-strip { background: var(--pitch); border-radius: var(--radius-lg); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+    .prize-strip-left h3  { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .prize-strip-left p   { font-size: 13px; color: rgba(255,255,255,.65); line-height: 1.4; }
+    .prize-strip-right    { text-align: right; flex-shrink: 0; }
+    .prize-strip-amount   { font-family: var(--font-head); font-size: 36px; font-weight: 900; color: var(--gold); line-height: 1; }
+    .prize-strip-label    { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 2px; }
+
+    .tournament-status-card {
+      background: linear-gradient(135deg, #14532d, #166534);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      color: #fff;
+    }
+    .tournament-status-card h2 { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .tournament-status-card p  { font-size: 14px; color: rgba(255,255,255,.7); line-height: 1.5; }
+    .tournament-status-card .status-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+    @media (max-width: 600px) {
+      .nav-grid { grid-template-columns: 1fr; }
+      .prize-strip { flex-direction: column; text-align: center; }
+      .prize-strip-right { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <span class="nav-brand-icon">
+      <img src="../soccerball.png" width="28" height="28" alt="" style="display:block;" />
+    </span>
+    <span class="nav-brand-text">Mick's <span>WC26</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="rules.html"><span class="nav-icon">📋</span> Rules</a></li>
+    <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
+    <li><a href="results.html"><span class="nav-icon">📰</span> Results</a></li>
+    <li><a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</nav>
+
+<nav class="nav-mobile" id="navMobile">
+  <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules & scoring</a>
+  <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
+  <a href="results.html"><span class="nav-icon">📰</span> Results</a>
+  <a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a>
+  <a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a>
+</nav>
+
+<div class="hero-home">
+  <div class="hero-home-inner">
+    <div class="hero-home-eyebrow">FIFA World Cup 2026</div>
+    <h1>Mick's World Cup<br><span>Predictor</span></h1>
+    <p class="hero-home-sub">The tournament is underway. Check the leaderboard, look up your scores, and watch the results come in.</p>
+    <div class="hero-home-actions">
+      <a href="leaderboard.html" class="btn btn-gold" style="font-size:15px;min-height:48px;padding:0 28px;">🏆 View the leaderboard</a>
+      <a href="lookup.html" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.25);font-size:15px;min-height:48px;">🔍 Look up my scores</a>
+    </div>
+    <div class="hero-home-meta">
+      <span class="hero-meta-pill"><span class="dot"></span> Tournament underway</span>
+      <span class="hero-meta-pill">⚽ 11 June – 19 July 2026</span>
+      <span class="hero-meta-pill">💰 €10 entry — all to prizes</span>
+    </div>
+  </div>
+  <div class="hero-home-rainbow"></div>
+</div>
+
+<div class="main">
+
+  <div class="prize-strip">
+    <div class="prize-strip-left">
+      <h3>100% prize pot</h3>
+      <p>Every cent of every entry fee goes directly to the prize winners.</p>
+    </div>
+    <div class="prize-strip-right">
+      <div class="prize-strip-amount" id="prizeAmount">€—</div>
+      <div class="prize-strip-label" id="prizeAmountLabel">Loading…</div>
+    </div>
+  </div>
+
+  <div class="nav-grid">
+    <a class="nav-card" href="leaderboard.html">
+      <div class="nav-card-icon">🏆</div>
+      <h3>Leaderboard</h3>
+      <p>The live standings — updated after every matchday.</p>
+      <div class="nav-card-arrow">View leaderboard →</div>
+    </a>
+    <a class="nav-card" href="lookup.html">
+      <div class="nav-card-icon">🔍</div>
+      <h3>My scores</h3>
+      <p>Look up your entry and see how you've scored on each match.</p>
+      <div class="nav-card-arrow">Look up scores →</div>
+    </a>
+    <a class="nav-card" href="results.html">
+      <div class="nav-card-icon">📰</div>
+      <h3>Results</h3>
+      <p>Every match result as the tournament plays out.</p>
+      <div class="nav-card-arrow">View results →</div>
+    </a>
+    <a class="nav-card" href="stats.html">
+      <div class="nav-card-icon">📊</div>
+      <h3>Entry stats</h3>
+      <p>See which teams were most picked to win groups, qualify, and lift the trophy.</p>
+      <div class="nav-card-arrow">View stats →</div>
+    </a>
+    <a class="nav-card" href="rules.html">
+      <div class="nav-card-icon">📋</div>
+      <h3>Rules & scoring</h3>
+      <p>See exactly how points are awarded for group picks, progression, and knockout scores.</p>
+      <div class="nav-card-arrow">View rules →</div>
+    </a>
+  </div>
+
+  <div style="text-align:center;padding:20px 0;font-size:14px;color:var(--ink-3);">
+    Questions? <a href="mailto:predictioncompetitionworldcup@gmail.com" style="color:var(--pitch);font-weight:600;">predictioncompetitionworldcup@gmail.com</a>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-logo">Mick's <span>World Cup Predictor</span> 2026</div>
+    <p>A friendly competition between friends. 100% of entry fees go to the prize pool.</p>
+    <p style="margin-top:8px;">⚽ FIFA World Cup 2026 · 11 June – 19 July</p>
+    <p style="margin-top:8px;"><a href="mailto:predictioncompetitionworldcup@gmail.com" style="color:rgba(255,255,255,.5);text-decoration:none;">predictioncompetitionworldcup@gmail.com</a></p>
+  </div>
+</footer>
+
+<script src="../site.js"></script>
+<script>
+  const ENTRY_FEE = 10;
+
+  async function loadPrizeStrip() {
+    try {
+      const data = await apiFetch('getStats');
+      if (data && typeof data.entryCount === 'number') {
+        const pot = data.entryCount * ENTRY_FEE;
+        const amtEl = document.getElementById('prizeAmount');
+        const lblEl = document.getElementById('prizeAmountLabel');
+        if (amtEl) amtEl.textContent = '€' + pot.toLocaleString();
+        if (lblEl) lblEl.textContent = data.entryCount + ' paid entr' + (data.entryCount === 1 ? 'y' : 'ies') + ' × €' + ENTRY_FEE;
+      }
+    } catch(e) {}
+  }
+
+  loadPrizeStrip();
+</script>
+</body>
+</html>
