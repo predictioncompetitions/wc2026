@@ -277,8 +277,8 @@
         prizeChip = prizesConfirmed
           ? `<span class="prize-chip prize-chip-top">€${prizes.top5Amounts[r-1]}</span>`
           : `<span class="prize-chip prize-chip-tba">Prize TBA</span>`;
-      } else if (is10th) {
-        prizeChip = `<span class="prize-chip prize-chip-10">€${PRIZE_10TH}</span>`;
+          } else if (is10th) {
+        prizeChip = `<span class="prize-chip prize-chip-10" title="€${PRIZE_10TH} prize">💰</span>`;
       }
 
       html += `
