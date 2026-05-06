@@ -203,7 +203,11 @@
     let html = '';
 
     html += '<div class="prize-panel">';
-    html += '<div class="prize-panel-label">💰 Prize pool</div>';
+    html += `<div class="prize-panel-toggle" id="prizePanelToggle" onclick="togglePrizePanel()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;">
+      <div class="prize-panel-label" style="margin-bottom:0;">💰 Prize pool</div>
+      <span id="prizePanelChevron" style="font-size:13px;color:var(--pitch);font-weight:700;">▲ Hide</span>
+    </div>`;
+    html += '<div id="prizePanelBody">';
     html += `<div class="prize-panel-sub">${paidCount} paid entr${paidCount === 1 ? 'y' : 'ies'} × €${ENTRY_FEE} entry fee</div>`;
     html += `<div class="prize-pool-row"><span>Total pot</span><strong>€${prizes.totalPot}</strong></div>`;
     html += '<div class="prize-grid">';
@@ -217,8 +221,7 @@
           <div class="prize-card-pct">${pct} of €${prizes.top5Pot}</div>
         </div>`;
     });
-    html += '</div>';
-    if (prizes.tenthCount > 0) {
+    html += '</div></div>'; // closes prizePanelBody and prize-panel    if (prizes.tenthCount > 0) {
       const places = prizes.tenthPlaces.map(p => `${p}th`).join(', ');
       html += `<div class="prize-10th-note">Every 10th place wins a flat <strong>€${PRIZE_10TH}</strong> — positions: ${places}</div>`;
     } else {
@@ -389,6 +392,15 @@
   }
 
   loadLeaderboard();
+  
+function togglePrizePanel() {
+  const body = document.getElementById('prizePanelBody');
+  const chevron = document.getElementById('prizePanelChevron');
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? 'block' : 'none';
+  chevron.textContent = hidden ? '▲ Hide' : '▼ Show';
+}
+  
 </script>
 </body>
 </html>
