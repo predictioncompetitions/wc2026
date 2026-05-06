@@ -221,13 +221,14 @@
           <div class="prize-card-pct">${pct} of €${prizes.top5Pot}</div>
         </div>`;
     });
-    html += '</div></div>'; // closes prizePanelBody and prize-panel    if (prizes.tenthCount > 0) {
-      const places = prizes.tenthPlaces.map(p => `${p}th`).join(', ');
-      html += `<div class="prize-10th-note">Every 10th place wins a flat <strong>€${PRIZE_10TH}</strong> — positions: ${places}</div>`;
-    } else {
-      html += `<div class="prize-10th-note">Every 10th place (10th, 20th, 30th…) wins a flat <strong>€${PRIZE_10TH}</strong></div>`;
-    }
-    html += '</div>';
+   html += '</div></div>';
+if (prizes.tenthCount > 0) {
+  const places = prizes.tenthPlaces.map(p => `${p}th`).join(', ');
+  html += `<div class="prize-10th-note">Every 10th place wins a flat <strong>€${PRIZE_10TH}</strong> — positions: ${places}</div>`;
+} else {
+  html += `<div class="prize-10th-note">Every 10th place (10th, 20th, 30th…) wins a flat <strong>€${PRIZE_10TH}</strong></div>`;
+}
+html += '</div>';
 
     const top5 = entries.slice().sort((a,b) => getRank(a,0) - getRank(b,0)).slice(0,5);
     if (top5.length) {
