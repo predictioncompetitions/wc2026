@@ -172,8 +172,7 @@
     const fixedTotal  = tenthCount * PRIZE_10TH;
     const top5Pot     = Math.max(0, totalPot - fixedTotal);
     const top5Amounts = TOP5_PCTS.map(p => Math.round(top5Pot * p));
-    const tenthPlaces = [];
-    for (let i = 1; i <= tenthCount; i++) tenthPlaces.push(i * 10);
+const tenthPlaces = Array.from({length: 50}, (_, i) => (i + 1) * 10);
     return { totalPot, fixedTotal, top5Pot, top5Amounts, tenthPlaces, tenthCount };
   }
 
