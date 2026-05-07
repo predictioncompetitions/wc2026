@@ -345,6 +345,14 @@
   </span>
 </div>
 
+  <div id="loadingScreen" style="min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <svg class="ball-spinner" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;animation:spin 1s linear infinite;">
+    <circle cx="18" cy="18" r="15" stroke="#e4e8ee" stroke-width="4"/>
+    <path d="M18 3 A15 15 0 0 1 33 18" stroke="#0d5c2e" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+  <div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--ink-3);">Loading…</div>
+</div>
+  
 <div id="closedScreen">
   <div class="closed-rainbow"></div>
   <div class="closed-inner">
@@ -387,9 +395,30 @@
         <button type="button" class="btn-welcome-go" id="welcomeGoBtn">
           Let's go <img src="../soccerball.png" width="24" height="24" alt="" style="display:inline-block;vertical-align:middle;" />
         </button>
-        <div class="welcome-draft-note hidden" id="welcomeDraftNote">
-          You have a saved draft — <button type="button" id="welcomeContinueBtn">continue where you left off</button>
-        </div>
+       <div class="welcome-draft-note hidden" id="welcomeDraftNote" style="
+  background: linear-gradient(135deg, rgba(212,168,67,.18) 0%, rgba(212,168,67,.08) 100%);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:22px;">💾</span>
+    <div>
+      <div style="font-family:var(--font-head);font-size:15px;font-weight:800;color:var(--gold);letter-spacing:.3px;">Saved draft found</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:1px;">Pick up where you left off</div>
+    </div>
+  </div>
+  <button type="button" id="welcomeContinueBtn" style="
+    background:var(--gold);color:var(--ink);border:none;border-radius:var(--radius);
+    padding:10px 18px;font-family:var(--font-head);font-size:15px;font-weight:800;
+    cursor:pointer;white-space:nowrap;flex-shrink:0;
+  ">Continue draft →</button>
+</div>
       </div>
       <div class="welcome-fee-note"><strong>€10</strong> entry fee · <strong>100%</strong> goes to the prize pool · Auto-saves as you go</div>
     </div>
@@ -1026,16 +1055,17 @@
       if(!data||!data.ok){$('closedScreen').querySelector('.closed-body').textContent=data&&data.message?data.message:'Unable to load the predictor. Please try again.';$('closedScreen').style.display='block';return;}
       const isOpen=String(data.entryStatus||'').toUpperCase()==='OPEN';
       let deadline=null;if(data.entryDeadline){deadline=new Date(data.entryDeadline);if(isNaN(deadline.getTime()))deadline=null;}
-      if(!isOpen){showClosedScreen(deadline);return;}
+      if(!isOpen){$('loadingScreen').style.display='none';showClosedScreen(deadline);return;}      
       GROUPS=data.groups||{};GROUP_LETTERS=Object.keys(GROUPS).sort();FORM_VERSION=data.formVersion||'V1';
-      if(!GROUP_LETTERS.length){$('closedScreen').querySelector('.closed-body').textContent='No group data found. Please contact the organiser.';$('closedScreen').style.display='block';return;}
+      if(!GROUP_LETTERS.length){$('loadingScreen').style.display='none';$('closedScreen').querySelector('.closed-body').textContent='No group data found. Please contact the organiser.';$('closedScreen').style.display='block';return;}
       GROUP_LETTERS.forEach(g=>{groupSelections[g]={'1ST':'','2ND':'','3RD':''};});
+      $('loadingScreen').style.display = 'none';
       $('mainFormWrap').classList.remove('hidden');
       if(deadline&&deadline>new Date())startCountdown(deadline);
       if(deadline)showWelcomeDeadline(deadline);
       buildGroupCards();initExpandableNote();formReady=true;
       updateProgressBar();updateGroupsProgress();showWelcomeScreen();
-    }catch(err){$('closedScreen').querySelector('.closed-body').textContent='Something went wrong loading the form. Please refresh and try again.';$('closedScreen').style.display='block';}
+  }catch(err){$('loadingScreen').style.display='none';$('closedScreen').querySelector('.closed-body').textContent='Something went wrong loading the form. Please refresh and try again.';$('closedScreen').style.display='block';}
   }
 
   initForm();
