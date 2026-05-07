@@ -69,14 +69,14 @@
     table.lb-table tr:last-child td { border-bottom: none; }
     table.lb-table tr:hover td { background: var(--surface-2); cursor: pointer; }
     table.lb-table tr.prize-row-top td  { background: #fffbeb; }
-    table.lb-table tr.prize-row-10  td  { background: #f0fdf4; }
+    table.lb-table tr.prize-row-10  td  { background: #fffbeb; }
     table.lb-table tr.prize-row-top:hover td { background: #fef3c7; }
-    table.lb-table tr.prize-row-10:hover  td { background: #dcfce7; }
+    table.lb-table tr.prize-row-10:hover  td { background: #fef3c7; }
 
     .rank-badge { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 12px; font-weight: 800; }
-    .rb-1 { background: #fef3c7; color: #92400e; }
-    .rb-2 { background: #f1f5f9; color: #475569; }
-    .rb-3 { background: #ffedd5; color: #9a3412; }
+    .rb-1 { background: var(--surface-2); color: var(--ink-3); }
+    .rb-2 { background: var(--surface-2); color: var(--ink-3); }
+    .rb-3 { background: var(--surface-2); color: var(--ink-3); }
     .rb-n { background: var(--surface-2); color: var(--ink-3); font-size: 11px; }
 
     .lb-name  { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
@@ -278,7 +278,7 @@
           ? `<span class="prize-chip prize-chip-top">€${prizes.top5Amounts[r-1]}</span>`
           : `<span class="prize-chip prize-chip-tba">Prize TBA</span>`;
           } else if (is10th) {
-        prizeChip = `<span class="prize-chip prize-chip-10" title="€${PRIZE_10TH} prize">💰</span>`;
+        prizeChip = `<span class="prize-chip prize-chip-10">€${PRIZE_10TH}</span>`;
       }
 
       html += `
