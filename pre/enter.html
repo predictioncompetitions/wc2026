@@ -248,7 +248,6 @@
     .round-body { padding: 4px; background: rgba(0,0,0,.05); }
     .round-wrap.collapsed .round-body { display: none; }
     .matches-list { display: flex; flex-direction: column; gap: 3px; }
-    /* Compact match row */
     .match-card { border-radius: 5px; padding: 3px 8px 3px; background: #fff; border: 1.5px solid #d1d5db; border-left: 4px solid #9ca3af; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
     .match-card.round-r32   { background: #f0fdf4; border-color: #86efac; border-left-color: #22c55e; }
     .match-card.round-r16   { background: #eff6ff; border-color: #93c5fd; border-left-color: #3b82f6; }
@@ -380,7 +379,7 @@
       <div class="welcome-steps">
         <div class="welcome-step"><div class="ws-num">1</div><div class="ws-icon">📝</div><div class="ws-content"><div class="ws-label">Your details</div><div class="ws-desc">Name and email address.</div></div></div>
         <div class="welcome-step"><div class="ws-num">2</div><div class="ws-icon">🌍</div><div class="ws-content"><div class="ws-label">Group predictions</div><div class="ws-desc">Tap teams to set 1st, 2nd and 3rd for each of the 12 groups.</div></div></div>
-        <div class="welcome-step"><div class="ws-num">3</div><div class="ws-icon">🔢</div><div class="ws-content"><div class="ws-label">Rank the third-placed teams</div><div class="ws-desc">Drag to rank all 12. Top 8 qualify for the knockout stage.</div></div></div>
+        <div class="welcome-step"><div class="ws-num">3</div><div class="ws-icon">🔢</div><div class="ws-content"><div class="ws-label">Rank the third-placed teams</div><div class="ws-desc">Predict which 8 of the 12 third-placed teams advance. Drag to rank them — your top 8 qualify, bottom 4 go out.</div></div></div>
         <div class="welcome-step"><div class="ws-num">4</div><div class="ws-icon">⚔️</div><div class="ws-content"><div class="ws-label">Knockout scores</div><div class="ws-desc">Predict every score from Round of 32 to the Final. No draws, penalty wins count as a 1-goal win. Scores are positional: Team 1 and Team 2 refer to bracket positions, not the actual team names.</div></div></div>
         <div class="welcome-step"><div class="ws-num">5</div><div class="ws-icon">🏆</div><div class="ws-content"><div class="ws-label">Submit</div><div class="ws-desc">You'll get a confirmation email with a PDF of your picks.</div></div></div>
       </div>
@@ -491,15 +490,24 @@
             <div class="card-number">3</div>
             <div class="card-title-wrap">
               <h2>Third-place ranking</h2>
-            <p style="margin-top:4px; font-size:13px; color:var(--ink-3); line-height:1.5;">Top 8 qualify. Drag or use arrows to reorder.</p>
+              <p style="margin-top:4px; font-size:13px; color:var(--ink-3); line-height:1.5;">Rank all 12 in the order you think they'll finish. Your top 8 go through — your bottom 4 are out.</p>
             </div>
             <div class="section-complete-badge" id="badge-third">✓ Complete</div>
             <div class="collapse-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           </div>
           <div class="card-body">
             <div id="thirdRankLocked" class="third-rank-locked">Complete all 12 groups above and your 3rd-place ranking will appear here automatically.</div>
+
+            <!-- Splash screen shown after groups are complete, before ranking is revealed -->
+            <div id="thirdRankSplash" class="hidden" style="text-align:center;padding:20px 16px 24px;background:linear-gradient(135deg,rgba(13,92,46,.06) 0%,rgba(13,92,46,.02) 100%);border:1.5px solid #bbf7d0;border-radius:var(--radius);margin-bottom:4px;">
+              <div style="font-size:36px;margin-bottom:12px;">🔢</div>
+              <div style="font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--pitch);margin-bottom:8px;">Next: rank the third-placed teams</div>
+              <p style="font-size:14px;color:var(--ink-2);line-height:1.5;max-width:380px;margin:0 auto 18px;">Each group has a third-placed team — 12 in total. Only the best 8 advance to the knockout stage. Drag them into the order you think they'll finish. Your top 8 qualify, your bottom 4 go out.</p>
+              <button type="button" id="thirdSplashProceedBtn" class="btn btn-primary" style="min-width:160px;">Got it — let me rank them</button>
+            </div>
+
             <div id="thirdRankSection" class="hidden">
-              <div class="qualification-note" style="margin-bottom:10px;">Only the top 8 third-placed teams qualify. Teams ranked 9–12 are eliminated.</div>
+              <div class="qualification-note" style="margin-bottom:10px;">Rank all 12 in the order you think they'll finish. Your top 8 advance to the knockout stage — your bottom 4 go out.</div>
               <div class="rank-list" id="thirdRankList"></div>
             </div>
             <div class="section-error" id="thirdRankError"></div>
@@ -683,7 +691,11 @@
     try{
       if(d.details){$('fullName').value=d.details.fullName||'';$('email').value=d.details.email||'';validateDetailsField('fullName');validateDetailsField('email');}
       if(d.groupSelections){GROUP_LETTERS.forEach(g=>{const gs=d.groupSelections[g]||{};groupSelections[g]={'1ST':gs['1ST']||'','2ND':gs['2ND']||'','3RD':gs['3RD']||''};});GROUP_LETTERS.forEach(renderGroupCard);updateGroupsProgress();const gc=isGroupsComplete();updateSectionBadge('badge-groups',gc);if(gc)autoBuildThirdRank();}
-      if(d.thirdRankVisible&&Array.isArray(d.thirdRankTeams)&&d.thirdRankTeams.length===12){const valid=getThirdPlacedTeams().filter(Boolean).sort();if(JSON.stringify([...d.thirdRankTeams].sort())===JSON.stringify(valid)){thirdRankTeams=[...d.thirdRankTeams];renderThirdRankList();$('thirdRankSection').classList.remove('hidden');$('thirdRankLocked').classList.add('hidden');}}
+      if(d.thirdRankVisible&&Array.isArray(d.thirdRankTeams)&&d.thirdRankTeams.length===12){const valid=getThirdPlacedTeams().filter(Boolean).sort();if(JSON.stringify([...d.thirdRankTeams].sort())===JSON.stringify(valid)){thirdRankTeams=[...d.thirdRankTeams];renderThirdRankList();
+        // Skip the splash for draft restores — go straight to the ranking
+        $('thirdRankSplash').classList.add('hidden');
+        $('thirdRankSection').classList.remove('hidden');
+        $('thirdRankLocked').classList.add('hidden');}}
       if(d.generatedBracket&&Array.isArray(d.roundOf32Matches)&&d.roundOf32Matches.length){
         generatedBracket=d.generatedBracket;$('bracketSection').classList.remove('hidden');
         roundOf32Matches=d.roundOf32Matches||[];roundOf16Matches=d.roundOf16Matches||[];quarterFinalMatches=d.quarterFinalMatches||[];semiFinalMatches=d.semiFinalMatches||[];finalMatch=d.finalMatch||null;predictedChampion=d.predictedChampion||null;
@@ -752,8 +764,32 @@
   function validateGroups(){const errEl=$('groupsError');let valid=true;GROUP_LETTERS.forEach(g=>{const e=$(g+'_ERROR');if(e)e.textContent='';const sel=groupSelections[g]||{},vals=[sel['1ST'],sel['2ND'],sel['3RD']];if(vals.some(v=>!v)){if(e)e.textContent='Please complete all 3 positions.';valid=false;}else if(new Set(vals).size!==3){if(e)e.textContent='Each team can only be used once.';valid=false;}});if(!valid){errEl.textContent='Please fix the highlighted group issues.';errEl.classList.add('visible');}else{errEl.classList.remove('visible');}return valid;}
 
   function getThirdPlacedTeams(){return GROUP_LETTERS.map(g=>(groupSelections[g]&&groupSelections[g]['3RD'])||'');}
-  function hideThirdRank(){$('thirdRankSection').classList.add('hidden');$('thirdRankLocked').classList.remove('hidden');thirdRankTeams=[];$('thirdRankError').classList.remove('visible');updateSectionBadge('badge-third',false);}
-  function autoBuildThirdRank(){if(!isGroupsComplete()){hideThirdRank();return;}const thirds=getThirdPlacedTeams();if(thirds.some(t=>!t)){hideThirdRank();return;}const existing=thirdRankTeams.filter(t=>thirds.includes(t)),newcomers=thirds.filter(t=>!existing.includes(t));thirdRankTeams=[...existing,...newcomers];if(thirdRankTeams.length!==12||new Set(thirdRankTeams).size!==12)thirdRankTeams=[...thirds];renderThirdRankList();$('thirdRankSection').classList.remove('hidden');$('thirdRankLocked').classList.add('hidden');$('thirdRankError').classList.remove('visible');updateSectionBadge('badge-third',isThirdRankComplete());updateProgressBar();scheduleDraftSave();}
+  function hideThirdRank(){
+    $('thirdRankSection').classList.add('hidden');
+    $('thirdRankSplash').classList.add('hidden');
+    $('thirdRankLocked').classList.remove('hidden');
+    thirdRankTeams=[];
+    $('thirdRankError').classList.remove('visible');
+    updateSectionBadge('badge-third',false);
+  }
+  function autoBuildThirdRank(){if(!isGroupsComplete()){hideThirdRank();return;}const thirds=getThirdPlacedTeams();if(thirds.some(t=>!t)){hideThirdRank();return;}const existing=thirdRankTeams.filter(t=>thirds.includes(t)),newcomers=thirds.filter(t=>!existing.includes(t));thirdRankTeams=[...existing,...newcomers];if(thirdRankTeams.length!==12||new Set(thirdRankTeams).size!==12)thirdRankTeams=[...thirds];renderThirdRankList();
+    // Show splash first — entrant must click through before seeing the ranking
+    $('thirdRankSplash').classList.remove('hidden');
+    $('thirdRankSection').classList.add('hidden');
+    $('thirdRankLocked').classList.add('hidden');
+    $('thirdRankError').classList.remove('visible');updateSectionBadge('badge-third',isThirdRankComplete());updateProgressBar();scheduleDraftSave();}
+
+  // Splash proceed button
+  document.addEventListener('click', e => {
+    if (e.target && e.target.id === 'thirdSplashProceedBtn') {
+      $('thirdRankSplash').classList.add('hidden');
+      $('thirdRankSection').classList.remove('hidden');
+      setTimeout(() => {
+        const el = $('card-third');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+  });
 
   function renderThirdRankList(){
     const list=$('thirdRankList');list.innerHTML='';
@@ -798,10 +834,8 @@
   function renderGeneratedBracket(bracket){generatedBracket=bracket;initRoundOf32(bracket.roundOf32||[]);$('bracketSection').classList.remove('hidden');setRoundCollapsed('roundOf32Wrap',false);scheduleDraftSave();}
   function initRoundOf32(fixtures){roundOf32Matches=fixtures.map(f=>({matchNo:f.matchNo,round:f.round,date:f.date,kickOffGMT:f.kickOffGMT||'',team1:f.team1,team2:f.team2,score1:'',score2:'',winner:''}));renderRound(roundOf32Matches,$('roundOf32Container'),'R32');updateProgression();}
 
-  /* ── CHANGED: splitMatchMeta uses M-prefix, no round label ── */
   function splitMatchMeta(m){const num=`M${m.matchNo}`,parts=[];if(m.date)parts.push(m.date);if(m.kickOffGMT)parts.push(m.kickOffGMT);return{num,rest:parts.join(' · ')};}
 
-  /* ── CHANGED: renderRound — compact single-row layout, all rounds ── */
   function renderRound(matches,container,rk){
     container.innerHTML='';
 
@@ -885,7 +919,6 @@
   function normaliseScoreInput(inp){let v=String(inp.value||'').replace(/[^0-9]/g,'');if(v.length>1)v=v.slice(0,1);inp.value=v;}
   function handleScoreBlur(matches,i,rk){const e=$(`${rk}_${i}_ERROR`);if(!e)return;const m=matches[i];if(m.score1===''||m.score2===''){e.textContent='';return;}const n1=Number(m.score1),n2=Number(m.score2);e.textContent=n1===n2?'Draws not allowed. Use a 1-goal win for penalties.':'';updateProgression();}
 
-  /* ── CHANGED: updateTeamColours uses TL/TR ids ── */
   function updateTeamColours(matches,i,rk){
     const tl=$(`${rk}_${i}_TL`),tr=$(`${rk}_${i}_TR`);
     [tl,tr].forEach(el=>{if(el)el.classList.remove('winner','loser');});
