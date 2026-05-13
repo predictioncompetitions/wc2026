@@ -355,7 +355,7 @@
     <span class="closed-icon">⚽</span>
     <div class="closed-eyebrow">Entries are closed</div>
     <h1 class="closed-title">The wait is almost <span>over</span></h1>
-    <p class="closed-body">Entries are now closed. Every pick is locked in — the only thing left to do is watch the football. The tournament kicks off 11 June 2026.</p>
+    <p class="closed-body">Entries are now closed. Every pick is locked in,  the only thing left to do is watch the football. The tournament kicks off 11 June 2026.</p>
     <div class="closed-countdown" id="closedCountdown">
       <div class="closed-cd-unit"><span class="closed-cd-num" id="cc-days">--</span><span class="closed-cd-label">Days</span></div>
       <div class="closed-cd-sep">:</div>
@@ -379,7 +379,7 @@
       <div class="welcome-steps">
         <div class="welcome-step"><div class="ws-num">1</div><div class="ws-icon">📝</div><div class="ws-content"><div class="ws-label">Your details</div><div class="ws-desc">Name and email address.</div></div></div>
         <div class="welcome-step"><div class="ws-num">2</div><div class="ws-icon">🌍</div><div class="ws-content"><div class="ws-label">Group predictions</div><div class="ws-desc">Tap teams to set 1st, 2nd and 3rd for each of the 12 groups.</div></div></div>
-        <div class="welcome-step"><div class="ws-num">3</div><div class="ws-icon">🔢</div><div class="ws-content"><div class="ws-label">Rank the third-placed teams</div><div class="ws-desc">Predict which 8 of the 12 third-placed teams advance. Drag to rank them — your top 8 qualify, bottom 4 go out.</div></div></div>
+        <div class="welcome-step"><div class="ws-num">3</div><div class="ws-icon">🔢</div><div class="ws-content"><div class="ws-label">Rank the third-placed teams</div><div class="ws-desc">Predict which 8 of the 12 third-placed teams advance. Drag to rank them, your top 8 qualify, bottom 4 go out.</div></div></div>
         <div class="welcome-step"><div class="ws-num">4</div><div class="ws-icon">⚔️</div><div class="ws-content"><div class="ws-label">Knockout scores</div><div class="ws-desc">Predict every score from Round of 32 to the Final. No draws, penalty wins count as a 1-goal win. Scores are positional: Team 1 and Team 2 refer to bracket positions, not the actual team names.</div></div></div>
         <div class="welcome-step"><div class="ws-num">5</div><div class="ws-icon">🏆</div><div class="ws-content"><div class="ws-label">Submit</div><div class="ws-desc">You'll get a confirmation email with a PDF of your picks.</div></div></div>
       </div>
@@ -490,7 +490,7 @@
             <div class="card-number">3</div>
             <div class="card-title-wrap">
               <h2>Third-place ranking</h2>
-              <p style="margin-top:4px; font-size:13px; color:var(--ink-3); line-height:1.5;">Rank all 12 in the order you think they'll finish. Your top 8 go through — your bottom 4 are out.</p>
+              <p style="margin-top:4px; font-size:13px; color:var(--ink-3); line-height:1.5;">Rank all 12 in the order you think they'll finish. Your top 8 go through, your bottom 4 are out.</p>
             </div>
             <div class="section-complete-badge" id="badge-third">✓ Complete</div>
             <div class="collapse-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -502,12 +502,12 @@
             <div id="thirdRankSplash" class="hidden" style="text-align:center;padding:20px 16px 24px;background:linear-gradient(135deg,rgba(13,92,46,.06) 0%,rgba(13,92,46,.02) 100%);border:1.5px solid #bbf7d0;border-radius:var(--radius);margin-bottom:4px;">
               <div style="font-size:36px;margin-bottom:12px;">🔢</div>
               <div style="font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--pitch);margin-bottom:8px;">Next: rank the third-placed teams</div>
-              <p style="font-size:14px;color:var(--ink-2);line-height:1.5;max-width:380px;margin:0 auto 18px;">Each group has a third-placed team — 12 in total. Only the best 8 advance to the knockout stage. Drag them into the order you think they'll finish. Your top 8 qualify, your bottom 4 go out.</p>
-              <button type="button" id="thirdSplashProceedBtn" class="btn btn-primary" style="min-width:160px;">Got it — let me rank them</button>
+              <p style="font-size:14px;color:var(--ink-2);line-height:1.5;max-width:380px;margin:0 auto 18px;">Each group has a third-placed team, so there's 12 in total. Only the best 8 advance to the knockout stage. Drag them into the order you think they'll finish on the 'best third place table'. Your top 8 qualify, your bottom 4 go out.</p>
+              <button type="button" id="thirdSplashProceedBtn" class="btn btn-primary" style="min-width:160px;">Got it! Let me rank them</button>
             </div>
 
             <div id="thirdRankSection" class="hidden">
-              <div class="qualification-note" style="margin-bottom:10px;">Rank all 12 in the order you think they'll finish. Your top 8 advance to the knockout stage — your bottom 4 go out.</div>
+              <div class="qualification-note" style="margin-bottom:10px;">ONLY the top 8 best ranked third placed teams go through.</div>
               <div class="rank-list" id="thirdRankList"></div>
             </div>
             <div class="section-error" id="thirdRankError"></div>
@@ -517,7 +517,7 @@
         <div class="card" id="card-bracket">
           <div class="card-header">
             <div class="card-number">4</div>
-            <div class="card-title-wrap"><h2>Knockout stages</h2><p>Generate your knockout fixtures, then predict every score. No draws — penalty wins count as a 1-goal win.</p></div>
+            <div class="card-title-wrap"><h2>Knockout stages</h2><p>Generate your knockout fixtures, then predict every score. No draws, penalty wins count as a 1-goal win.</p></div>
             <div class="section-complete-badge" id="badge-bracket">✓ Complete</div>
           </div>
           <div class="card-body">
