@@ -871,22 +871,7 @@ if (e.target && e.target.id === 'thirdSplashProceedBtn') {
 
   function showBracketStatus(msg,type){const el=$('bracketStatus');el.textContent=msg;el.className='status-msg visible '+type;}
   function hideStatus(id){const el=$(id);el.className='status-msg';el.textContent='';}
-  function renderGeneratedBracket(bracket){
-	  generatedBracket = bracket;
-
-	  initRoundOf32(bracket.roundOf32 || []);
-
-	  $('bracketSection').classList.remove('hidden');
-
-	  // Keep Round of 32 open, later rounds closed/hidden as normal
-	  setRoundCollapsed('roundOf32Wrap', false);
-
-	  // Collapse Section 3 and scroll Section 4 into view
-	  scrollToKnockoutCard();
-
-	  scheduleDraftSave();
-	}
-
+  function renderGeneratedBracket(bracket){generatedBracket=bracket;initRoundOf32(bracket.roundOf32||[]);$('bracketSection').classList.remove('hidden');setRoundCollapsed('roundOf32Wrap',false);scrollToKnockoutCard();setTimeout(()=>{const f=$('R32_0_S1');if(f){f.focus();f.select();}},450);scheduleDraftSave();}
   function initRoundOf32(fixtures){roundOf32Matches=fixtures.map(f=>({matchNo:f.matchNo,round:f.round,date:f.date,kickOffGMT:f.kickOffGMT||'',team1:f.team1,team2:f.team2,score1:'',score2:'',winner:''}));renderRound(roundOf32Matches,$('roundOf32Container'),'R32');updateProgression();}
 
   function splitMatchMeta(m){const num=`M${m.matchNo}`,parts=[];if(m.date)parts.push(m.date);if(m.kickOffGMT)parts.push(m.kickOffGMT);return{num,rest:parts.join(' · ')};}
