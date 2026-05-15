@@ -835,7 +835,7 @@ if (e.target && e.target.id === 'thirdSplashProceedBtn') {
 
   function showBracketStatus(msg,type){const el=$('bracketStatus');el.textContent=msg;el.className='status-msg visible '+type;}
   function hideStatus(id){const el=$(id);el.className='status-msg';el.textContent='';}
-  function renderGeneratedBracket(bracket){generatedBracket=bracket;initRoundOf32(bracket.roundOf32||[]);$('bracketSection').classList.remove('hidden');setRoundCollapsed('roundOf32Wrap',false);scheduleDraftSave();}
+  function renderGeneratedBracket(bracket){generatedBracket=bracket;initRoundOf32(bracket.roundOf32||[]);$('bracketSection').classList.remove('hidden');setRoundCollapsed('roundOf32Wrap',false);setCardCollapsed('card-third',true);scheduleDraftSave();}
   function initRoundOf32(fixtures){roundOf32Matches=fixtures.map(f=>({matchNo:f.matchNo,round:f.round,date:f.date,kickOffGMT:f.kickOffGMT||'',team1:f.team1,team2:f.team2,score1:'',score2:'',winner:''}));renderRound(roundOf32Matches,$('roundOf32Container'),'R32');updateProgression();}
 
   function splitMatchMeta(m){const num=`M${m.matchNo}`,parts=[];if(m.date)parts.push(m.date);if(m.kickOffGMT)parts.push(m.kickOffGMT);return{num,rest:parts.join(' · ')};}
@@ -939,20 +939,24 @@ if (e.target && e.target.id === 'thirdSplashProceedBtn') {
   function updateRoundChip(id,matches){const el=$(id);if(!el)return;const done=matches.filter(m=>m.winner).length,total=matches.length;el.textContent=`${done} / ${total}`;el.classList.toggle('complete',done===total&&total>0);}
   function validateRoundComplete(matches){return matches.length>0&&matches.every(m=>m.team1&&m.team2&&m.score1!==''&&m.score2!==''&&m.winner&&m.winner===(Number(m.score1)>Number(m.score2)?m.team1:m.team2)&&Number(m.score1)!==Number(m.score2));}
 
-  function updateProgression(){
+function updateProgression(){
     updateRoundChip('r32Chip',roundOf32Matches);
     if(!validateRoundComplete(roundOf32Matches)){setRoundCollapsed('roundOf32Wrap',false);resetFrom('R16');return;}
+    const r16wasEmpty=roundOf16Matches.length===0;
     buildR16();updateRoundChip('r16Chip',roundOf16Matches);setRoundCollapsed('roundOf32Wrap',true);setRoundCollapsed('roundOf16Wrap',false);
-    setTimeout(()=>{const el=$('roundOf16Wrap');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
+    if(r16wasEmpty){setTimeout(()=>{const el=$('roundOf16Wrap');if(el){const top=el.getBoundingClientRect().top+window.scrollY-110;window.scrollTo({top,behavior:'smooth'});}},300);}
     if(!validateRoundComplete(roundOf16Matches)){resetFrom('QF');return;}
+    const qfWasEmpty=quarterFinalMatches.length===0;
     buildQF();updateRoundChip('qfChip',quarterFinalMatches);setRoundCollapsed('roundOf16Wrap',true);setRoundCollapsed('quarterFinalsWrap',false);
-    setTimeout(()=>{const el=$('quarterFinalsWrap');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
+    if(qfWasEmpty){setTimeout(()=>{const el=$('quarterFinalsWrap');if(el){const top=el.getBoundingClientRect().top+window.scrollY-110;window.scrollTo({top,behavior:'smooth'});}},300);}
     if(!validateRoundComplete(quarterFinalMatches)){resetFrom('SF');return;}
+    const sfWasEmpty=semiFinalMatches.length===0;
     buildSF();updateRoundChip('sfChip',semiFinalMatches);setRoundCollapsed('quarterFinalsWrap',true);setRoundCollapsed('semiFinalsWrap',false);
-    setTimeout(()=>{const el=$('semiFinalsWrap');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
+    if(sfWasEmpty){setTimeout(()=>{const el=$('semiFinalsWrap');if(el){const top=el.getBoundingClientRect().top+window.scrollY-110;window.scrollTo({top,behavior:'smooth'});}},300);}
     if(!validateRoundComplete(semiFinalMatches)){resetFrom('FINAL');return;}
+    const finalWasEmpty=!finalMatch;
     buildFinal();updateRoundChip('finalChip',finalMatch?[finalMatch]:[]);setRoundCollapsed('semiFinalsWrap',true);setRoundCollapsed('finalWrap',false);
-    setTimeout(()=>{const el=$('finalWrap');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
+    if(finalWasEmpty){setTimeout(()=>{const el=$('finalWrap');if(el){const top=el.getBoundingClientRect().top+window.scrollY-110;window.scrollTo({top,behavior:'smooth'});}},300);}
     if(!finalMatch||!validateRoundComplete([finalMatch])){predictedChampion=null;$('championWrap').classList.add('hidden');updateSectionBadge('badge-bracket',false);updateProgressBar();return;}
     predictedChampion=finalMatch.winner;
     $('championWrap').classList.remove('hidden');
