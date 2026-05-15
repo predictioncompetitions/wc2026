@@ -726,6 +726,22 @@
 
   function setCardCollapsed(id,v){const el=$(id);if(el)el.classList.toggle('collapsed',!!v);}
   function setRoundCollapsed(id,v){const el=$(id);if(el)el.classList.toggle('collapsed',!!v);}
+  function scrollToKnockoutCard(){
+	  const el = $('card-bracket');
+	  if (!el) return;
+
+	  // Collapse section 3 so the knockout section sits nicely at the top
+	  setCardCollapsed('card-third', true);
+
+	  // Make sure section 4 is visible/open
+	  $('card-bracket').classList.remove('hidden');
+
+	  setTimeout(() => {
+		const offset = 96; // accounts for sticky progress/nav area
+		const top = el.getBoundingClientRect().top + window.scrollY - offset;
+		window.scrollTo({ top, behavior: 'smooth' });
+	  }, 180);
+	}
 
   function buildGroupCards(){
     const gc=$('groupsContainer');gc.innerHTML='';
@@ -835,7 +851,22 @@ if (e.target && e.target.id === 'thirdSplashProceedBtn') {
 
   function showBracketStatus(msg,type){const el=$('bracketStatus');el.textContent=msg;el.className='status-msg visible '+type;}
   function hideStatus(id){const el=$(id);el.className='status-msg';el.textContent='';}
-  function renderGeneratedBracket(bracket){generatedBracket=bracket;initRoundOf32(bracket.roundOf32||[]);$('bracketSection').classList.remove('hidden');setRoundCollapsed('roundOf32Wrap',false);setCardCollapsed('card-third',true);scheduleDraftSave();}
+  function renderGeneratedBracket(bracket){
+	  generatedBracket = bracket;
+
+	  initRoundOf32(bracket.roundOf32 || []);
+
+	  $('bracketSection').classList.remove('hidden');
+
+	  // Keep Round of 32 open, later rounds closed/hidden as normal
+	  setRoundCollapsed('roundOf32Wrap', false);
+
+	  // Collapse Section 3 and scroll Section 4 into view
+	  scrollToKnockoutCard();
+
+	  scheduleDraftSave();
+	}
+
   function initRoundOf32(fixtures){roundOf32Matches=fixtures.map(f=>({matchNo:f.matchNo,round:f.round,date:f.date,kickOffGMT:f.kickOffGMT||'',team1:f.team1,team2:f.team2,score1:'',score2:'',winner:''}));renderRound(roundOf32Matches,$('roundOf32Container'),'R32');updateProgression();}
 
   function splitMatchMeta(m){const num=`M${m.matchNo}`,parts=[];if(m.date)parts.push(m.date);if(m.kickOffGMT)parts.push(m.kickOffGMT);return{num,rest:parts.join(' · ')};}
