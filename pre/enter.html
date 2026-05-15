@@ -870,6 +870,13 @@ if (e.target && e.target.id === 'thirdSplashProceedBtn') {
   });
 
   function showBracketStatus(msg,type){const el=$('bracketStatus');el.textContent=msg;el.className='status-msg visible '+type;}
+  function checkForDraws(){
+    const allMatches=[...roundOf32Matches,...roundOf16Matches,...quarterFinalMatches,...semiFinalMatches,...(finalMatch?[finalMatch]:[])];
+    const hasDraws=allMatches.some(m=>m.score1!==''&&m.score2!==''&&Number(m.score1)===Number(m.score2));
+    if(hasDraws){showBracketStatus('⚠️ You have one or more draws — draws are not allowed. Use a 1-goal win for penalty shootouts.','error');}
+    else{hideStatus('bracketStatus');}
+  }
+  
   function hideStatus(id){const el=$(id);el.className='status-msg';el.textContent='';}
   function renderGeneratedBracket(bracket){generatedBracket=bracket;initRoundOf32(bracket.roundOf32||[]);$('bracketSection').classList.remove('hidden');setRoundCollapsed('roundOf32Wrap',false);scrollToKnockoutCard();setTimeout(()=>{const f=$('R32_0_S1');if(f){f.focus();f.select();}},450);scheduleDraftSave();}
   function initRoundOf32(fixtures){roundOf32Matches=fixtures.map(f=>({matchNo:f.matchNo,round:f.round,date:f.date,kickOffGMT:f.kickOffGMT||'',team1:f.team1,team2:f.team2,score1:'',score2:'',winner:''}));renderRound(roundOf32Matches,$('roundOf32Container'),'R32');updateProgression();}
@@ -934,7 +941,15 @@ if (e.target && e.target.id === 'thirdSplashProceedBtn') {
           const n1=Number(matches[i].score1),n2=Number(matches[i].score2);
           if(matches[i].score1!==''&&matches[i].score2!==''&&Number.isInteger(n1)&&Number.isInteger(n2)&&n1>=0&&n2>=0&&n1!==n2){matches[i].winner=n1>n2?matches[i].team1:matches[i].team2;}
           updateTeamColours(matches,i,rk);
-          const errEl=$(`${rk}_${i}_ERROR`);if(errEl)errEl.textContent='';
+          const errEl=$(`${rk}_${i}_ERROR`);
+          if(errEl){
+            if(matches[i].score1!==''&&matches[i].score2!==''&&Number(matches[i].score1)===Number(matches[i].score2)){
+              errEl.textContent='Draws not allowed. Use a 1-goal win for penalties.';
+			} else {
+              errEl.textContent='';
+            }
+          }
+          checkForDraws();
           const chipInfo=getChipInfo(rk);if(chipInfo)updateRoundChip(chipInfo.chipId,chipInfo.arr);
           updateProgression();scheduleDraftSave();
           if(!/^[0-9]$/.test(e.target.value))return;
