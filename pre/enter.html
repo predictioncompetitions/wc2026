@@ -943,12 +943,16 @@ if (e.target && e.target.id === 'thirdSplashProceedBtn') {
     updateRoundChip('r32Chip',roundOf32Matches);
     if(!validateRoundComplete(roundOf32Matches)){setRoundCollapsed('roundOf32Wrap',false);resetFrom('R16');return;}
     buildR16();updateRoundChip('r16Chip',roundOf16Matches);setRoundCollapsed('roundOf32Wrap',true);setRoundCollapsed('roundOf16Wrap',false);
+    setTimeout(()=>{const el=$('roundOf16Wrap');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
     if(!validateRoundComplete(roundOf16Matches)){resetFrom('QF');return;}
     buildQF();updateRoundChip('qfChip',quarterFinalMatches);setRoundCollapsed('roundOf16Wrap',true);setRoundCollapsed('quarterFinalsWrap',false);
+    setTimeout(()=>{const el=$('quarterFinalsWrap');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
     if(!validateRoundComplete(quarterFinalMatches)){resetFrom('SF');return;}
     buildSF();updateRoundChip('sfChip',semiFinalMatches);setRoundCollapsed('quarterFinalsWrap',true);setRoundCollapsed('semiFinalsWrap',false);
+    setTimeout(()=>{const el=$('semiFinalsWrap');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
     if(!validateRoundComplete(semiFinalMatches)){resetFrom('FINAL');return;}
     buildFinal();updateRoundChip('finalChip',finalMatch?[finalMatch]:[]);setRoundCollapsed('semiFinalsWrap',true);setRoundCollapsed('finalWrap',false);
+    setTimeout(()=>{const el=$('finalWrap');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
     if(!finalMatch||!validateRoundComplete([finalMatch])){predictedChampion=null;$('championWrap').classList.add('hidden');updateSectionBadge('badge-bracket',false);updateProgressBar();return;}
     predictedChampion=finalMatch.winner;
     $('championWrap').classList.remove('hidden');
