@@ -1093,7 +1093,7 @@ function updateProgression(){
       const res=await apiPost('submitEntry',buildPayload());
       $('submitBtn').disabled=false;
       if(!res||!res.ok){showMsg($('submitStatus'),res&&res.message?res.message:'Submission failed.','error');return;}
-      clearDraft(false);resetFormState();setDraftBanner('Draft cleared after submission');
+      clearDraft(false);setDraftBanner('Draft cleared after submission');
       $('submitLocked').classList.add('hidden');
       const entryId=res.entryId||'';
       const revolutLink='https://revolut.me/mickeybo';
@@ -1109,8 +1109,9 @@ function updateProgression(){
     $('groupsError').classList.remove('visible');$('thirdRankError').classList.remove('visible');
     thirdRankTeams=[];draggedIndex=null;clearGeneratedBracket();
     setCardCollapsed('card-groups',false);setCardCollapsed('card-third',false);
-    ['badge-details','badge-groups','badge-third','badge-bracket'].forEach(id=>{const el=$(id);if(el)el.classList.remove('visible');});
-    updateProgressBar();updateGroupsProgress();
+	 ['badge-details','badge-groups','badge-third','badge-bracket'].forEach(id=>{const el=$(id);if(el)el.classList.remove('visible');});
+	['card-details','card-groups','card-third','card-bracket'].forEach(id=>{const el=$(id);if(el)el.classList.remove('is-complete');});
+	updateProgressBar();updateGroupsProgress();
   }
 
   $('clearDraftBtn').addEventListener('click',()=>{if(!window.confirm('Clear the saved draft on this device?'))return;clearDraft();suppressAutoSave=true;resetFormState();suppressAutoSave=false;});
