@@ -514,7 +514,7 @@
           </div>
         </div>
 
-        <div class="card" id="card-bracket">
+	<div class="card hidden" id="card-bracket">
           <div class="card-header">
             <div class="card-number">4</div>
             <div class="card-title-wrap"><h2>Knockout stages</h2><p>Generate your knockout fixtures, then predict every score. No draws, penalty wins count as a 1-goal win.</p></div>
@@ -562,7 +562,7 @@
           </div>
         </div>
 
-        <div class="card submit-card" id="card-submit">
+		<div class="card submit-card hidden" id="card-submit">
           <div class="card-header">
             <div class="card-number" style="background:var(--gold);color:var(--ink);">5</div>
             <div class="card-title-wrap"><h2>Submit your entry</h2><p>Complete all steps above, then submit.</p></div>
@@ -666,6 +666,9 @@
     let highestActive=0;
     steps.forEach((id,i)=>{const el=$(id);if(done[i]){el.classList.add('done');el.classList.remove('active');highestActive=i+1;}else{el.classList.remove('done');}});
     steps.forEach((id,i)=>{const el=$(id);if(i===highestActive&&!done[i])el.classList.add('active');else if(!done[i])el.classList.remove('active');});
+	const step3done = isThirdRankComplete();
+    $('card-bracket').classList.toggle('hidden', !step3done);
+    $('card-submit').classList.toggle('hidden', !step3done);
     updateSubmitVisibility();
   }
 
@@ -781,9 +784,10 @@
 
   // Splash proceed button
   document.addEventListener('click', e => {
-    if (e.target && e.target.id === 'thirdSplashProceedBtn') {
+if (e.target && e.target.id === 'thirdSplashProceedBtn') {
       $('thirdRankSplash').classList.add('hidden');
       $('thirdRankSection').classList.remove('hidden');
+      updateProgressBar();
       setTimeout(() => {
         const el = $('card-third');
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
