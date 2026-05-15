@@ -114,7 +114,10 @@
     .container { max-width: 980px; margin: 0 auto; padding: 20px 12px 60px; }
     .autosave-note { display: flex; align-items: center; gap: 7px; padding: 9px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius); font-size: 13px; color: #1e40af; margin-bottom: 16px; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 14px; scroll-margin-top: 110px; overflow: hidden; }
-    .card-header { display: flex; align-items: flex-start; gap: 12px; padding: 18px 16px; }
+    .card.is-complete{background:linear-gradient(135deg,#ecfdf5 0%,#fff 70%);border-color:#86efac;box-shadow:0 3px 12px rgba(22,101,52,.10);}
+	.card.is-complete .card-number{background:var(--success);color:#fff;}
+	.card.is-complete .card-title-wrap h2{color:var(--success);}
+	.card-header { display: flex; align-items: flex-start; gap: 12px; padding: 18px 16px; }
     .card-header.collapsable { cursor: pointer; user-select: none; }
     .card-header.collapsable:hover { background: var(--surface-2); }
     .card-body { padding: 0 16px 20px; }
@@ -673,7 +676,24 @@
   }
 
   function updateSubmitVisibility(){const all=isDetailsComplete()&&isGroupsComplete()&&isThirdRankComplete()&&isKnockoutComplete();$('submitLocked').classList.toggle('hidden',all);$('submitReady').classList.toggle('hidden',!all);}
-  function updateSectionBadge(id,complete){const el=$(id);if(!el)return;el.classList.toggle('visible',complete);}
+function updateSectionBadge(id, complete) {
+  const el = $(id);
+  if (!el) return;
+
+  el.classList.toggle('visible', complete);
+
+  const cardMap = {
+    'badge-details': 'card-details',
+    'badge-groups': 'card-groups',
+    'badge-third': 'card-third',
+    'badge-bracket': 'card-bracket'
+  };
+
+  const cardId = cardMap[id];
+  if (cardId && $(cardId)) {
+    $(cardId).classList.toggle('is-complete', complete);
+  }
+}
   function isDetailsComplete(){const n=$('fullName').value.trim(),e=$('email').value.trim();return n.length>0&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
   function isGroupsComplete(){if(!GROUP_LETTERS.length)return false;return GROUP_LETTERS.every(g=>{const s=groupSelections[g]||{};return s['1ST']&&s['2ND']&&s['3RD']&&new Set([s['1ST'],s['2ND'],s['3RD']]).size===3;});}
   function isThirdRankComplete(){return !$('thirdRankSection').classList.contains('hidden')&&Array.isArray(thirdRankTeams)&&thirdRankTeams.length===12&&new Set(thirdRankTeams).size===12;}
