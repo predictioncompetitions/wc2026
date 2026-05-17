@@ -208,7 +208,7 @@
 
     <div class="hero-deadline-banner" id="heroDeadlineBanner">
       <div class="hero-deadline-label">⏰ Entries close</div>
-      <div class="hero-deadline-date" id="heroDeadlineDate">Thursday 11 June 2026 at 12:00</div>
+      <div class="hero-deadline-date" id="heroDeadlineDate">Thursday 11 June 2026 at 14:00</div>
       <div class="hero-deadline-countdown" id="heroDeadlineCountdown">
         <span class="hdc-unit"><span class="hdc-num" id="hdc-days">--</span><span class="hdc-label">Days</span></span>
         <span class="hdc-sep">:</span>
@@ -406,17 +406,18 @@
         const deadline = new Date(data.entryDeadline);
         if (!isNaN(deadline.getTime())) {
           const dateEl = document.getElementById('heroDeadlineDate');
-          if (dateEl) dateEl.textContent = deadline.toLocaleString('en-IE', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-            hour: '2-digit', minute: '2-digit'
-          });
+        if (dateEl) dateEl.textContent = deadline.toLocaleString('en-IE', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+        timeZone: 'Europe/Dublin'
+      });
           startHeroCountdown(deadline);
         }
       }
     } catch(e) {}
   }
 
-  startHeroCountdown(new Date('2026-06-11T12:00:00'));
+  startHeroCountdown(new Date('2026-06-11T13:00:00Z'));
   loadEntryCount();
   loadHomeData();
 </script>
