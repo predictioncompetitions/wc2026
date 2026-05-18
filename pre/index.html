@@ -337,7 +337,7 @@
     const amtEl = document.getElementById('prizeAmount');
     const lblEl = document.getElementById('prizeAmountLabel');
     if (amtEl) amtEl.textContent = '€' + totalPot.toLocaleString();
-    if (lblEl) lblEl.textContent = paidCount + ' paid · ' + totalEntries + ' entered · €' + ENTRY_FEE + ' each';
+    if (lblEl) lblEl.textContent = totalEntries + ' entered · ' + paidCount + ' paid · €' + ENTRY_FEE + ' each';
 
     const ids = ['amt-1','amt-2','amt-3','amt-4','amt-5'];
     TOP5_PCTS.forEach((pct, i) => {
