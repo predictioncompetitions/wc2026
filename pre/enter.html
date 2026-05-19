@@ -1115,8 +1115,9 @@ function updateProgression(){
       const res=await apiPost('submitEntry',buildPayload());
       $('submitBtn').disabled=false;
       if(!res||!res.ok){showMsg($('submitStatus'),res&&res.message?res.message:'Submission failed.','error');return;}
-      clearDraft(false);setDraftBanner('Draft cleared after submission');
-      $('submitLocked').classList.add('hidden');
+		clearDraft(false);setDraftBanner('Draft cleared after submission');
+		$('submitLocked').classList.add('hidden');
+		$('submitReady').classList.add('hidden');
       const entryId=res.entryId||'';
       const revolutLink='https://revolut.me/mickeybo';
       $('submitStatus').className='status-msg visible success';
