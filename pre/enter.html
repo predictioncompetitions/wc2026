@@ -375,7 +375,20 @@
     <div class="closed-actions"><a href="rules.html" class="closed-btn">📋 Rules &amp; scoring</a></div>
   </div>
 </div>
-
+	
+<div id="errorScreen" style="display:none; min-height:100vh; background:var(--ink); position:relative; overflow:hidden;">
+  <div class="closed-rainbow"></div>
+  <div class="closed-inner">
+    <span class="closed-icon">⚠️</span>
+    <div class="closed-eyebrow">Connection problem</div>
+    <h1 class="closed-title" style="font-size:clamp(28px,5vw,42px);">Couldn't load the predictor</h1>
+    <p class="closed-body" id="errorMsg">If you're on a work or school network, it may be blocking this site. Try on mobile data or a personal device.</p>
+    <div class="closed-actions">
+      <a href="javascript:location.reload()" class="closed-btn">🔄 Try again</a>
+      <a href="rules.html" class="closed-btn">📋 Rules &amp; scoring</a>
+    </div>
+  </div>
+</div>
 <div id="mainFormWrap" class="hidden">
   <div class="welcome-screen" id="welcomeScreen">
     <div class="welcome-rainbow"></div>
@@ -1153,8 +1166,8 @@ function updateProgression(){
     $('closedScreen').style.display='none';
     try{
       const data=await apiGet('getInitialData');
-      if(!data||!data.ok){$('closedScreen').querySelector('.closed-body').textContent=data&&data.message?data.message:'Unable to load the predictor. Please try again.';$('closedScreen').style.display='block';return;}
-      const isOpen=String(data.entryStatus||'').toUpperCase()==='OPEN';
+if(!data||!data.ok){$('errorMsg').textContent=data&&data.message?data.message:'Unable to load the predictor. Please try again.';$('errorScreen').style.display='block';return;}
+	const isOpen=String(data.entryStatus||'').toUpperCase()==='OPEN';
       let deadline=null;if(data.entryDeadline){deadline=new Date(data.entryDeadline);if(isNaN(deadline.getTime()))deadline=null;}
       if(!isOpen){$('loadingScreen').style.display='none';showClosedScreen(deadline);return;}      
       GROUPS=data.groups||{};GROUP_LETTERS=Object.keys(GROUPS).sort();FORM_VERSION=data.formVersion||'V1';
@@ -1165,7 +1178,7 @@ function updateProgression(){
       if(deadline&&deadline>new Date())startCountdown(deadline);
       buildGroupCards();initExpandableNote();formReady=true;
       updateProgressBar();updateGroupsProgress();showWelcomeScreen();
-  }catch(err){$('loadingScreen').style.display='none';$('closedScreen').querySelector('.closed-body').textContent='Couldn't connect to the competition server. If you're on a work or school network, try switching to mobile data or a personal device and try again.';$('closedScreen').style.display='block';}
+	}catch(err){$('loadingScreen').style.display='none';$('errorScreen').style.display='block';}
   }
 
   initForm();
