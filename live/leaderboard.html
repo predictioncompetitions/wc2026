@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leaderboard — Mick's World Cup Predictor 2026</title>
+  <title>Leaderboard Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="../style.css" />
   <link rel="icon" href="../soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -174,7 +174,7 @@
     const fixedTotal  = tenthCount * PRIZE_10TH;
     const top5Pot     = Math.max(0, totalPot - fixedTotal);
     const top5Amounts = TOP5_PCTS.map(p => Math.round(top5Pot * p));
-const tenthPlaces = Array.from({length: 50}, (_, i) => (i + 1) * 10);
+const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
     return { totalPot, fixedTotal, top5Pot, top5Amounts, tenthPlaces, tenthCount };
   }
 
