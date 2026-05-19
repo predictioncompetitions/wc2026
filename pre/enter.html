@@ -1165,7 +1165,7 @@ function updateProgression(){
       if(deadline&&deadline>new Date())startCountdown(deadline);
       buildGroupCards();initExpandableNote();formReady=true;
       updateProgressBar();updateGroupsProgress();showWelcomeScreen();
-  }catch(err){$('loadingScreen').style.display='none';$('closedScreen').querySelector('.closed-body').textContent='Something went wrong loading the form. Please refresh and try again.';$('closedScreen').style.display='block';}
+  }catch(err){$('loadingScreen').style.display='none';$('closedScreen').querySelector('.closed-body').textContent='Couldn't connect to the competition server. If you're on a work or school network, try switching to mobile data or a personal device and try again.';$('closedScreen').style.display='block';}
   }
 
   initForm();
