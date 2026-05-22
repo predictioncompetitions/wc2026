@@ -317,42 +317,48 @@
   <div class="admin-card-head"><h2>Scoring rebuild</h2></div>
   <div class="admin-card-body">
     <p class="rebuild-info">Run after saving results. Each button rescores all entries and updates the leaderboard.</p>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
 
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;border-right:1px solid var(--border);padding-right:12px;margin-right:4px;">
-        <button class="btn-sm primary" data-rebuild="groups" style="white-space:nowrap;">Update groups</button>
-        <span style="font-size:10px;color:var(--ink-3);white-space:nowrap;">Group scores + leaderboard</span>
-      </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,auto));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;">
 
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;">
-        <button class="btn-sm primary" data-rebuild="r32" style="white-space:nowrap;">Update R32</button>
-        <span style="font-size:10px;color:var(--ink-3);white-space:nowrap;">Matches + progression + leaderboard</span>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;">
-        <button class="btn-sm primary" data-rebuild="r16" style="white-space:nowrap;">Update R16</button>
-        <span style="font-size:10px;color:var(--ink-3);white-space:nowrap;">Matches + progression + leaderboard</span>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;">
-        <button class="btn-sm primary" data-rebuild="qf" style="white-space:nowrap;">Update QF</button>
-        <span style="font-size:10px;color:var(--ink-3);white-space:nowrap;">Matches + progression + leaderboard</span>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;">
-        <button class="btn-sm primary" data-rebuild="sf" style="white-space:nowrap;">Update SF</button>
-        <span style="font-size:10px;color:var(--ink-3);white-space:nowrap;">Matches + progression + leaderboard</span>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;border-right:1px solid var(--border);padding-right:12px;margin-right:4px;">
-        <button class="btn-sm primary" data-rebuild="final" style="white-space:nowrap;">Update Final</button>
-        <span style="font-size:10px;color:var(--ink-3);white-space:nowrap;">Matches + progression + leaderboard</span>
+      <div style="background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+        <button class="btn-sm primary" data-rebuild="groups" style="width:100%;">Update groups</button>
+        <span style="font-size:10px;color:var(--ink-3);">Group scores + leaderboard</span>
       </div>
 
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;">
-        <button class="btn-sm danger" data-rebuild="all" style="white-space:nowrap;">Update everything</button>
-        <span style="font-size:10px;color:var(--ink-3);white-space:nowrap;">All scores + progression + leaderboard</span>
+      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;border-left:2px solid var(--border);">
+        <button class="btn-sm primary" data-rebuild="r32" style="width:100%;">Update R32</button>
+        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+      </div>
+
+      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+        <button class="btn-sm primary" data-rebuild="r16" style="width:100%;">Update R16</button>
+        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+      </div>
+
+      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+        <button class="btn-sm primary" data-rebuild="qf" style="width:100%;">Update QF</button>
+        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+      </div>
+
+      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+        <button class="btn-sm primary" data-rebuild="sf" style="width:100%;">Update SF</button>
+        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+      </div>
+
+      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+        <button class="btn-sm primary" data-rebuild="final" style="width:100%;">Update Final</button>
+        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+      </div>
+
+      <div style="background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:5px;border-left:2px solid var(--border);">
+        <button class="btn-sm danger" data-rebuild="all" style="width:100%;">Update everything</button>
+        <span style="font-size:10px;color:var(--ink-3);">All scores + progression + leaderboard</span>
       </div>
 
     </div>
- <div id="rebuildStatus" style="font-size:13px;color:var(--ink-3);"></div>
+    <div id="rebuildStatus" style="font-size:13px;color:var(--ink-3);"></div>
   </div>
+</div>
 </div><!-- end scoring rebuild card -->
 
   </div><!-- end admin-grid -->
