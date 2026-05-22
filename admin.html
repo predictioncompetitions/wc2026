@@ -113,7 +113,6 @@
     .assignment-slot .slot-team { font-size:12px; font-weight:700; color:var(--ink); min-height:16px; }
     .assignment-slot.filled { border-color:var(--pitch); background:#f0faf4; }
 
-    /* Fixture description banner */
     .fixture-desc-banner {
       background:var(--surface-2); border:1px solid var(--border);
       border-radius:var(--radius); padding:10px 14px;
@@ -126,7 +125,6 @@
       margin-top:3px;
       transition:color .15s;
     }
-    /* Saved/completed fixture state */
     .fixture-desc-banner.saved {
       background:#f0faf4;
       border-color:var(--pitch);
@@ -150,7 +148,6 @@
     }
     .match-form-vs { font-family:var(--font-head); font-size:13px; font-weight:800; color:var(--ink-3); text-align:center; }
     .match-team-label { font-size:12px; font-weight:700; color:var(--ink); margin-bottom:4px; text-align:center; transition:color .15s; }
-    /* Saved state for match form */
     .match-form.saved input[type="number"] {
       border-color:var(--pitch);
       background:#f0faf4;
@@ -172,10 +169,6 @@
     .match-nav span { font-family:var(--font-head); font-size:14px; font-weight:700; color:var(--ink); transition:color .15s; }
     .match-nav button { padding:5px 12px; font-size:12px; font-weight:700; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--ink); cursor:pointer; }
     .match-nav button:disabled { opacity:.4; cursor:default; }
-
-    .live-checkbox-row { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
-    .live-checkbox-row input[type="checkbox"] { width:16px; height:16px; cursor:pointer; accent-color:#ef4444; }
-    .live-checkbox-row label { font-size:13px; font-weight:600; color:#ef4444; cursor:pointer; }
 
     .rebuild-info { font-size:13px; color:var(--ink-3); margin-bottom:16px; line-height:1.5; }
     .rebuild-info strong { color:var(--ink); }
@@ -274,7 +267,6 @@
           <button class="btn-sm neutral" id="nextMatchBtn">&#8594;</button>
         </div>
 
-        <!-- Fixture description banner -->
         <div class="fixture-desc-banner" id="fixtureBanner">
           <div id="fixtureDescText"></div>
           <div class="fixture-meta" id="fixtureMetaText"></div>
@@ -295,10 +287,6 @@
             <input type="number" id="koGoals2" min="0" max="20" placeholder="—" />
           </div>
         </div>
-        <div class="live-checkbox-row">
-          <input type="checkbox" id="koLive" />
-          <label for="koLive">Mark as live</label>
-        </div>
         <div style="display:flex;gap:8px;">
           <button class="btn-sm primary" id="saveKoBtn" style="flex:1">Save result</button>
         </div>
@@ -309,9 +297,17 @@
     <div class="admin-card full-width-card">
       <div class="admin-card-head"><h2>Scoring rebuild</h2></div>
       <div class="admin-card-body">
-        <p class="rebuild-info">Runs <strong>scoringRebuildAll()</strong> in Apps Script. Recalculates group, progression, and match scores for every entry, updates the leaderboard, and clears the cache. Run this after saving any result.</p>
-        <button class="btn-sm danger" id="rebuildBtn" style="min-width:200px;">Rebuild all scores</button>
-        <div id="rebuildStatus" style="margin-top:12px;font-size:13px;color:var(--ink-3);"></div>
+        <p class="rebuild-info">Run after saving results. Each button rescores all entries and updates the leaderboard.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+          <button class="btn-sm primary" data-rebuild="groups">Update groups</button>
+          <button class="btn-sm primary" data-rebuild="r32">Update R32</button>
+          <button class="btn-sm primary" data-rebuild="r16">Update R16</button>
+          <button class="btn-sm primary" data-rebuild="qf">Update QF</button>
+          <button class="btn-sm primary" data-rebuild="sf">Update SF</button>
+          <button class="btn-sm primary" data-rebuild="final">Update Final</button>
+          <button class="btn-sm danger"  data-rebuild="all">Update everything</button>
+        </div>
+        <div id="rebuildStatus" style="font-size:13px;color:var(--ink-3);"></div>
       </div>
     </div>
 
@@ -343,9 +339,8 @@ let activeGroup    = 'A';
 let activeRound    = 'r32';
 let activeMatchIdx = 0;
 let groupPositions = {};
-let actualGroups   = {}; // populated from getResults
+let actualGroups   = {};
 
-// Fixed R32 slots — mirrors getFixedRoundOf32Rules_() in Code.gs
 const FIXED_R32 = {
   73: { team1: { type:'RUNNER_UP', group:'A' }, team2: { type:'RUNNER_UP', group:'B' } },
   75: { team1: { type:'WINNER',    group:'F' }, team2: { type:'RUNNER_UP', group:'C' } },
@@ -357,7 +352,6 @@ const FIXED_R32 = {
   88: { team1: { type:'RUNNER_UP', group:'D' }, team2: { type:'RUNNER_UP', group:'G' } }
 };
 
-// Flexible R32 slots — Team 1 is always the group winner; Team 2 is a 3rd-place qualifier (manual)
 const FLEXIBLE_R32_TEAM1 = {
   74: { type:'WINNER', group:'E' },
   77: { type:'WINNER', group:'I' },
@@ -369,7 +363,6 @@ const FLEXIBLE_R32_TEAM1 = {
   87: { type:'WINNER', group:'K' }
 };
 
-// Progression map — mirrors getKnockoutProgression_() in Code.gs
 const PROGRESSION = {
   89:  { team1: 74, team2: 77 },
   90:  { team1: 73, team2: 75 },
@@ -410,7 +403,6 @@ function matchDependsOnGroup(matchNoNum, group) {
   return false;
 }
 
-/* ── Helpers ── */
 function toast(msg, type = 'info') {
   const el = document.getElementById('toast');
   el.textContent = msg;
@@ -681,12 +673,10 @@ function loadKoForm() {
   document.getElementById('prevMatchBtn').disabled = activeMatchIdx === 0;
   document.getElementById('nextMatchBtn').disabled = activeMatchIdx === total - 1;
 
-  // A match is considered "saved" when both scores exist
   const isSaved = saved &&
     saved.goals1 !== null && saved.goals1 !== undefined && saved.goals1 !== '' &&
     saved.goals2 !== null && saved.goals2 !== undefined && saved.goals2 !== '';
 
-  // Fixture description banner
   const descEl = document.getElementById('fixtureDescText');
   const metaEl = document.getElementById('fixtureMetaText');
   const banner = document.getElementById('fixtureBanner');
@@ -704,21 +694,17 @@ function loadKoForm() {
     banner.classList.remove('saved');
   }
 
-  // Match form (input boxes + team labels) green tint when saved
   const matchForm = document.getElementById('matchForm');
   if (matchForm) matchForm.classList.toggle('saved', isSaved);
 
-  // Match nav label green when saved
   document.getElementById('matchNavLabel').classList.toggle('match-nav-label-saved', isSaved);
 
-  // Team dropdowns
   const teamOptions = `<option value="">TBD</option>` +
     allTeams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
 
   document.getElementById('koTeam1').innerHTML = teamOptions;
   document.getElementById('koTeam2').innerHTML = teamOptions;
 
-  // Auto-fill teams from group results (fixed R32) or feeder match winners (R16+)
   let autoT1 = saved.team1 || '';
   let autoT2 = saved.team2 || '';
   if (matchNo) {
@@ -729,7 +715,6 @@ function loadKoForm() {
       if (!autoT2) autoT2 = resolveFixedSlot(rule.team2);
     } else if (activeRound === 'r32' && FLEXIBLE_R32_TEAM1[matchNoNum]) {
       if (!autoT1) autoT1 = resolveFixedSlot(FLEXIBLE_R32_TEAM1[matchNoNum]);
-      // Team 2 is a 3rd-place qualifier — stays manual
     } else if (PROGRESSION[matchNoNum]) {
       const prog = PROGRESSION[matchNoNum];
       if (!autoT1) autoT1 = resolveProgressionTeam(prog.team1);
@@ -744,8 +729,6 @@ function loadKoForm() {
     saved.goals1 !== null && saved.goals1 !== undefined ? saved.goals1 : '';
   document.getElementById('koGoals2').value =
     saved.goals2 !== null && saved.goals2 !== undefined ? saved.goals2 : '';
-
-  document.getElementById('koLive').checked = !!saved.live;
 
   updateTeamLabels();
 }
@@ -780,11 +763,10 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
     return;
   }
 
-  const t1     = document.getElementById('koTeam1').value;
-  const t2     = document.getElementById('koTeam2').value;
-  const g1Raw  = document.getElementById('koGoals1').value;
-  const g2Raw  = document.getElementById('koGoals2').value;
-  const live   = document.getElementById('koLive').checked;
+  const t1    = document.getElementById('koTeam1').value;
+  const t2    = document.getElementById('koTeam2').value;
+  const g1Raw = document.getElementById('koGoals1').value;
+  const g2Raw = document.getElementById('koGoals2').value;
 
   let winner = '';
   if (g1Raw !== '' && g2Raw !== '') {
@@ -801,8 +783,7 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
     team2:  t2,
     goals1: g1Raw !== '' ? parseInt(g1Raw, 10) : null,
     goals2: g2Raw !== '' ? parseInt(g2Raw, 10) : null,
-    winner,
-    live
+    winner
   };
 
   const btn = document.getElementById('saveKoBtn');
@@ -814,7 +795,7 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
     if (!res?.ok) throw new Error(res?.error || 'Save failed');
     koData[String(matchNo)] = { ...payload, ...(res.saved || {}) };
     toast(`Match ${matchNo} saved.`, 'success');
-    loadKoForm();  // re-render so green styling appears immediately
+    loadKoForm();
   } catch(err) {
     toast(err.message || 'Save failed.', 'error');
   } finally {
@@ -824,27 +805,67 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
 });
 
 /* ══ REBUILD ══ */
-document.getElementById('rebuildBtn').addEventListener('click', async () => {
-  const btn    = document.getElementById('rebuildBtn');
-  const status = document.getElementById('rebuildStatus');
+const REBUILD_ACTIONS = {
+  groups: 'rebuildGroups',
+  r32:    'rebuildRound',
+  r16:    'rebuildRound',
+  qf:     'rebuildRound',
+  sf:     'rebuildRound',
+  final:  'rebuildRound',
+  all:    'rebuildScores'
+};
 
-  btn.disabled = true;
-  btn.textContent = 'Rebuilding…';
-  status.textContent = 'Running scoringRebuildAll() — this may take 20–30 seconds…';
+const REBUILD_LABELS = {
+  groups: 'groups',
+  r32:    'R32',
+  r16:    'R16',
+  qf:     'QF',
+  sf:     'SF',
+  final:  'Final',
+  all:    'everything'
+};
 
-  try {
-    const res = await apiPost('rebuildScores', { clearCache: true });
-    if (!res?.ok) throw new Error(res?.error || 'Rebuild failed');
-    const dur = res.durationMs ? ` (${(res.durationMs / 1000).toFixed(1)}s)` : '';
-    status.textContent = `Done${dur}.`;
-    toast('Rebuild complete.', 'success');
-  } catch(err) {
-    status.textContent = `Error: ${err.message}`;
-    toast('Rebuild failed.', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Rebuild all scores';
-  }
+const REBUILD_DEFAULT_TEXT = {
+  groups: 'Update groups',
+  r32:    'Update R32',
+  r16:    'Update R16',
+  qf:     'Update QF',
+  sf:     'Update SF',
+  final:  'Update Final',
+  all:    'Update everything'
+};
+
+document.querySelectorAll('[data-rebuild]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const key     = btn.dataset.rebuild;
+    const status  = document.getElementById('rebuildStatus');
+    const allBtns = document.querySelectorAll('[data-rebuild]');
+
+    allBtns.forEach(b => b.disabled = true);
+    btn.textContent = 'Running…';
+    status.textContent = `Updating ${REBUILD_LABELS[key]}…`;
+
+    try {
+      const payload = key === 'all'
+        ? { clearCache: true }
+        : { round: key, clearCache: true };
+
+      const res = await apiPost(REBUILD_ACTIONS[key], payload);
+      if (!res?.ok) throw new Error(res?.error || 'Failed');
+
+      const dur = res.durationMs ? ` (${(res.durationMs / 1000).toFixed(1)}s)` : '';
+      status.textContent = `Done${dur}.`;
+      toast(`Updated ${REBUILD_LABELS[key]}.`, 'success');
+    } catch(err) {
+      status.textContent = `Error: ${err.message}`;
+      toast('Update failed.', 'error');
+    } finally {
+      allBtns.forEach(b => {
+        b.disabled = false;
+        b.textContent = REBUILD_DEFAULT_TEXT[b.dataset.rebuild];
+      });
+    }
+  });
 });
 
 /* ── Nav toggle ── */
