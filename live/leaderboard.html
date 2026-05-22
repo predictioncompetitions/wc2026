@@ -168,9 +168,9 @@
   const TOP5_LABELS = ['1st', '2nd', '3rd', '4th', '5th'];
   const PRIZE_10TH  = 20;
 
-  function calcPrizes(paidCount) {
+function calcPrizes(paidCount, totalCount) {
     const totalPot    = paidCount * ENTRY_FEE;
-    const tenthCount  = Math.floor(paidCount / 10);
+    const tenthCount  = Math.floor(totalCount / 10);
     const fixedTotal  = tenthCount * PRIZE_10TH;
     const top5Pot     = Math.max(0, totalPot - fixedTotal);
     const top5Amounts = TOP5_PCTS.map(p => Math.round(top5Pot * p));
@@ -197,7 +197,7 @@ const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
   let hasScores  = false;
 
   function renderTable(entries, paidCount, prizesConfirmed) {
-    const prizes   = calcPrizes(paidCount);
+    const prizes   = calcPrizes(paidCount, entries.length);
     const medals   = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣'];
     const tenthSet = new Set(prizes.tenthPlaces);
 
