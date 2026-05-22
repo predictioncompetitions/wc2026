@@ -677,11 +677,38 @@ document.getElementById('saveGroupBtn').addEventListener('click', async () => {
   const pos = [1,2,3,4].map(p =>
     Object.keys(groupPositions).find(t => groupPositions[t] === p) || ''
   );
-  if (pos.some(p => !p)) {
+ const finalStandings = document.getElementById('finalStandingsCheck').checked;
+  if (pos.some(p => !p) && finalStandings) {
     toast('Assign all 4 positions first.', 'error');
     return;
   }
-  const finalStandings = document.getElementById('finalStandingsCheck').checked;
+  if (pos.some(p => !p) && !finalStandings) {
+    // Unlocking — just save the lock state without requiring positions
+    const btn = document.getElementById('saveGroupBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      const res = await apiPost('saveGroupResult', {
+        group: activeGroup,
+        pos1: Object.keys(groupPositions).find(t => groupPositions[t] === 1) || '',
+        pos2: Object.keys(groupPositions).find(t => groupPositions[t] === 2) || '',
+        pos3: Object.keys(groupPositions).find(t => groupPositions[t] === 3) || '',
+        pos4: Object.keys(groupPositions).find(t => groupPositions[t] === 4) || '',
+        finalStandings: false
+      });
+      if (!res?.ok) throw new Error(res?.error || 'Unlock failed');
+      groupLocked[activeGroup] = false;
+      updateFinalStandingsUI(false);
+      refreshGroupTabStyles();
+      toast(`Group ${activeGroup} unlocked.`, 'info');
+    } catch(err) {
+      toast(err.message || 'Unlock failed.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save group';
+    }
+    return;
+  }
   const btn = document.getElementById('saveGroupBtn');
   btn.disabled = true;
   btn.textContent = 'Saving…';
