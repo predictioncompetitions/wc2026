@@ -87,8 +87,16 @@
     .admin-card-body { padding:16px; }
 
     .group-tab-bar { display:flex; flex-wrap:nowrap; gap:4px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px; }
-    .group-tab-btn { padding:5px 8px; font-size:12px; font-weight:700; border:1px solid var(--pitch); border-radius:20px; background:var(--surface); color:var(--pitch); cursor:pointer; transition:background .12s,color .12s; white-space:nowrap; flex-shrink:0; }
+    .group-tab-btn {
+      padding:5px 8px; font-size:12px; font-weight:700;
+      border:1px solid var(--pitch); border-radius:20px;
+      background:var(--surface); color:var(--pitch);
+      cursor:pointer; transition:background .12s,color .12s,border-color .12s;
+      white-space:nowrap; flex-shrink:0;
+    }
     .group-tab-btn.active { background:var(--pitch); color:#fff; }
+    .group-tab-btn.locked { border-color:#dc2626; color:#dc2626; }
+    .group-tab-btn.locked.active { background:#dc2626; color:#fff; border-color:#dc2626; }
 
     .group-team-picker { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
     .team-pick-btn {
@@ -113,6 +121,31 @@
     .assignment-slot .slot-team { font-size:12px; font-weight:700; color:var(--ink); min-height:16px; }
     .assignment-slot.filled { border-color:var(--pitch); background:#f0faf4; }
 
+    .final-standings-row {
+      display:flex; align-items:center; gap:10px;
+      margin:14px 0 10px;
+      padding:10px 12px;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      background:var(--surface-2);
+      transition:background .15s, border-color .15s;
+    }
+    .final-standings-row.locked-state {
+      background:#fff1f1;
+      border-color:#dc2626;
+    }
+    .final-standings-row input[type="checkbox"] {
+      width:16px; height:16px; cursor:pointer; accent-color:#dc2626; flex-shrink:0;
+    }
+    .final-standings-row label {
+      font-size:13px; font-weight:700; color:var(--ink); cursor:pointer;
+    }
+    .final-standings-row .lock-note {
+      font-size:11px; color:var(--ink-3); margin-left:auto;
+    }
+    .final-standings-row.locked-state label { color:#dc2626; }
+    .final-standings-row.locked-state .lock-note { color:#dc2626; }
+
     .fixture-desc-banner {
       background:var(--surface-2); border:1px solid var(--border);
       border-radius:var(--radius); padding:10px 14px;
@@ -122,21 +155,11 @@
     }
     .fixture-desc-banner .fixture-meta {
       font-size:11px; font-weight:600; color:var(--ink-3);
-      margin-top:3px;
-      transition:color .15s;
+      margin-top:3px; transition:color .15s;
     }
-    .fixture-desc-banner.saved {
-      background:#f0faf4;
-      border-color:var(--pitch);
-      color:var(--pitch);
-    }
-    .fixture-desc-banner.saved .fixture-meta {
-      color:#166534;
-    }
-    .match-nav-label-saved {
-      color:var(--pitch) !important;
-      font-weight:800 !important;
-    }
+    .fixture-desc-banner.saved { background:#f0faf4; border-color:var(--pitch); color:var(--pitch); }
+    .fixture-desc-banner.saved .fixture-meta { color:#166534; }
+    .match-nav-label-saved { color:var(--pitch) !important; font-weight:800 !important; }
 
     .match-form { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; margin-bottom:12px; }
     .match-form input[type="number"] {
@@ -148,14 +171,8 @@
     }
     .match-form-vs { font-family:var(--font-head); font-size:13px; font-weight:800; color:var(--ink-3); text-align:center; }
     .match-team-label { font-size:12px; font-weight:700; color:var(--ink); margin-bottom:4px; text-align:center; transition:color .15s; }
-    .match-form.saved input[type="number"] {
-      border-color:var(--pitch);
-      background:#f0faf4;
-      color:#14532d;
-    }
-    .match-form.saved .match-team-label {
-      color:var(--pitch);
-    }
+    .match-form.saved input[type="number"] { border-color:var(--pitch); background:#f0faf4; color:#14532d; }
+    .match-form.saved .match-team-label { color:var(--pitch); }
 
     .match-select-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
     .match-select-row label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-3); display:block; margin-bottom:4px; }
@@ -186,7 +203,6 @@
     .btn-sm.neutral { background:var(--surface-3); color:var(--ink); }
 
     .full-width-card { grid-column:1/-1; }
-
     .api-warning { background:#fef3c7; border:1px solid #fcd34d; border-radius:var(--radius); padding:10px 14px; font-size:12px; color:#92400e; margin-bottom:16px; display:none; }
   </style>
 </head>
@@ -249,7 +265,12 @@
         <div class="group-tab-bar" id="groupTabBar"></div>
         <div id="groupTeamPicker" class="group-team-picker"></div>
         <div id="groupAssignments" class="group-assignments"></div>
-        <div style="margin-top:12px;display:flex;gap:8px;">
+        <div class="final-standings-row" id="finalStandingsRow">
+          <input type="checkbox" id="finalStandingsCheck" />
+          <label for="finalStandingsCheck">🔒 Final standings</label>
+          <span class="lock-note" id="lockNote"></span>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
           <button class="btn-sm primary" id="saveGroupBtn" style="flex:1">Save group</button>
           <button class="btn-sm neutral" id="clearGroupBtn">Clear</button>
         </div>
@@ -266,12 +287,10 @@
           <span id="matchNavLabel">Match 1 of 1</span>
           <button class="btn-sm neutral" id="nextMatchBtn">&#8594;</button>
         </div>
-
         <div class="fixture-desc-banner" id="fixtureBanner">
           <div id="fixtureDescText"></div>
           <div class="fixture-meta" id="fixtureMetaText"></div>
         </div>
-
         <div class="match-select-row">
           <div><label>Team 1</label><select id="koTeam1"><option value="">TBD</option></select></div>
           <div><label>Team 2</label><select id="koTeam2"><option value="">TBD</option></select></div>
@@ -299,13 +318,34 @@
       <div class="admin-card-body">
         <p class="rebuild-info">Run after saving results. Each button rescores all entries and updates the leaderboard.</p>
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
-          <button class="btn-sm primary" data-rebuild="groups">Update groups</button>
-          <button class="btn-sm primary" data-rebuild="r32">Update R32</button>
-          <button class="btn-sm primary" data-rebuild="r16">Update R16</button>
-          <button class="btn-sm primary" data-rebuild="qf">Update QF</button>
-          <button class="btn-sm primary" data-rebuild="sf">Update SF</button>
-          <button class="btn-sm primary" data-rebuild="final">Update Final</button>
-          <button class="btn-sm danger"  data-rebuild="all">Update everything</button>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn-sm primary" data-rebuild="groups">Update groups</button>
+            <span style="font-size:11px;color:var(--ink-3);">Group scores + leaderboard</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn-sm primary" data-rebuild="r32">Update R32</button>
+            <span style="font-size:11px;color:var(--ink-3);">Match scores + progression + leaderboard</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn-sm primary" data-rebuild="r16">Update R16</button>
+            <span style="font-size:11px;color:var(--ink-3);">Match scores + progression + leaderboard</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn-sm primary" data-rebuild="qf">Update QF</button>
+            <span style="font-size:11px;color:var(--ink-3);">Match scores + progression + leaderboard</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn-sm primary" data-rebuild="sf">Update SF</button>
+            <span style="font-size:11px;color:var(--ink-3);">Match scores + progression + leaderboard</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn-sm primary" data-rebuild="final">Update Final</button>
+            <span style="font-size:11px;color:var(--ink-3);">Match scores + progression + leaderboard</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn-sm danger" data-rebuild="all">Update everything</button>
+            <span style="font-size:11px;color:var(--ink-3);">All scores + progression + leaderboard</span>
+          </div>
         </div>
         <div id="rebuildStatus" style="font-size:13px;color:var(--ink-3);"></div>
       </div>
@@ -340,6 +380,7 @@ let activeRound    = 'r32';
 let activeMatchIdx = 0;
 let groupPositions = {};
 let actualGroups   = {};
+let groupLocked    = {};  // tracks locked state per group letter
 
 const FIXED_R32 = {
   73: { team1: { type:'RUNNER_UP', group:'A' }, team2: { type:'RUNNER_UP', group:'B' } },
@@ -384,6 +425,7 @@ const PROGRESSION = {
 function resolveFixedSlot(slot) {
   const g = actualGroups[slot.group];
   if (!g) return '';
+  if (!groupLocked[slot.group]) return '';  // only resolve if group is locked
   return slot.type === 'WINNER' ? (g.pos1 || '') : (g.pos2 || '');
 }
 
@@ -403,6 +445,7 @@ function matchDependsOnGroup(matchNoNum, group) {
   return false;
 }
 
+/* ── Helpers ── */
 function toast(msg, type = 'info') {
   const el = document.getElementById('toast');
   el.textContent = msg;
@@ -495,7 +538,10 @@ async function initAdmin() {
     const d = await apiGet('getResults');
     if (d?.ok) {
       if (d.groups) {
-        Object.keys(d.groups).forEach(g => { actualGroups[g] = d.groups[g]; });
+        Object.keys(d.groups).forEach(g => {
+          actualGroups[g] = d.groups[g];
+          groupLocked[g] = d.groups[g].finalStandings === true;
+        });
       }
       if (d.knockout) {
         Object.values(d.knockout).forEach(matches => {
@@ -516,6 +562,7 @@ async function initAdmin() {
     w.style.display = 'block';
   }
 
+  refreshGroupTabStyles();
   loadGroupForm(activeGroup);
   loadKoForm();
 }
@@ -524,7 +571,7 @@ async function initAdmin() {
 function buildGroupTabs() {
   const bar = document.getElementById('groupTabBar');
   bar.innerHTML = GROUPS.map(g =>
-    `<button class="group-tab-btn${g === 'A' ? ' active' : ''}" data-g="${g}">${g}</button>`
+    `<button class="group-tab-btn${g === 'A' ? ' active' : ''}" data-g="${g}" id="gtab-${g}">${g}</button>`
   ).join('');
   bar.addEventListener('click', e => {
     const btn = e.target.closest('.group-tab-btn');
@@ -534,6 +581,34 @@ function buildGroupTabs() {
     activeGroup = btn.dataset.g;
     loadGroupForm(activeGroup);
   });
+}
+
+function refreshGroupTabStyles() {
+  GROUPS.forEach(g => {
+    const btn = document.getElementById(`gtab-${g}`);
+    if (!btn) return;
+    if (groupLocked[g]) {
+      btn.classList.add('locked');
+      btn.textContent = `🔒${g}`;
+    } else {
+      btn.classList.remove('locked');
+      btn.textContent = g;
+    }
+  });
+}
+
+function updateFinalStandingsUI(isLocked) {
+  const row = document.getElementById('finalStandingsRow');
+  const check = document.getElementById('finalStandingsCheck');
+  const note = document.getElementById('lockNote');
+  check.checked = isLocked;
+  if (isLocked) {
+    row.classList.add('locked-state');
+    note.textContent = 'Standings confirmed — R32 fixtures unlocked';
+  } else {
+    row.classList.remove('locked-state');
+    note.textContent = '';
+  }
 }
 
 async function loadGroupForm(g) {
@@ -548,9 +623,12 @@ async function loadGroupForm(g) {
       if (r.pos2 && groupPositions.hasOwnProperty(r.pos2)) groupPositions[r.pos2] = 2;
       if (r.pos3 && groupPositions.hasOwnProperty(r.pos3)) groupPositions[r.pos3] = 3;
       if (r.pos4 && groupPositions.hasOwnProperty(r.pos4)) groupPositions[r.pos4] = 4;
+      groupLocked[g] = !!r.finalStandings;
     }
   } catch(e) {}
   renderGroupPicker(teams);
+  updateFinalStandingsUI(!!groupLocked[g]);
+  refreshGroupTabStyles();
 }
 
 function renderGroupPicker(teams) {
@@ -593,17 +671,22 @@ document.getElementById('saveGroupBtn').addEventListener('click', async () => {
     toast('Assign all 4 positions first.', 'error');
     return;
   }
+  const finalStandings = document.getElementById('finalStandingsCheck').checked;
   const btn = document.getElementById('saveGroupBtn');
   btn.disabled = true;
   btn.textContent = 'Saving…';
   try {
     const res = await apiPost('saveGroupResult', {
       group: activeGroup,
-      pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3]
+      pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3],
+      finalStandings
     });
     if (!res?.ok) throw new Error(res?.error || 'Save failed');
 
-    actualGroups[activeGroup] = { pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3] };
+    actualGroups[activeGroup] = { pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3], finalStandings };
+    groupLocked[activeGroup] = finalStandings;
+    updateFinalStandingsUI(finalStandings);
+    refreshGroupTabStyles();
 
     const matches = getRoundFixtures();
     const currentMatch = matches[activeMatchIdx];
@@ -612,7 +695,20 @@ document.getElementById('saveGroupBtn').addEventListener('click', async () => {
       loadKoForm();
     }
 
-    toast(`Group ${activeGroup} saved.`, 'success');
+    // if locking, auto-run group scoring rebuild
+    if (finalStandings) {
+      btn.textContent = 'Rebuilding…';
+      try {
+        const rb = await apiPost('rebuildGroups', { clearCache: true });
+        if (!rb?.ok) throw new Error(rb?.error || 'Rebuild failed');
+        const dur = rb.durationMs ? ` (${(rb.durationMs / 1000).toFixed(1)}s)` : '';
+        toast(`Group ${activeGroup} locked and scores updated${dur}.`, 'success');
+      } catch(rbErr) {
+        toast(`Group ${activeGroup} saved but rebuild failed: ${rbErr.message}`, 'error');
+      }
+    } else {
+      toast(`Group ${activeGroup} saved.`, 'success');
+    }
   } catch(err) {
     toast(err.message || 'Save failed.', 'error');
   } finally {
@@ -649,12 +745,7 @@ function getRoundFixtures() {
   const found = fixtures.filter(f => f.round === sheetLabel);
   if (found.length) return found;
   return Array.from({ length: ROUND_COUNTS[activeRound] }, () => ({
-    matchNo: null,
-    round: sheetLabel,
-    date: '',
-    kickOffGmt: '',
-    description: '',
-    _placeholder: true
+    matchNo: null, round: sheetLabel, date: '', kickOffGmt: '', description: '', _placeholder: true
   }));
 }
 
@@ -696,7 +787,6 @@ function loadKoForm() {
 
   const matchForm = document.getElementById('matchForm');
   if (matchForm) matchForm.classList.toggle('saved', isSaved);
-
   document.getElementById('matchNavLabel').classList.toggle('match-nav-label-saved', isSaved);
 
   const teamOptions = `<option value="">TBD</option>` +
@@ -743,15 +833,8 @@ function updateTeamLabels() {
 document.getElementById('koTeam1').addEventListener('change', updateTeamLabels);
 document.getElementById('koTeam2').addEventListener('change', updateTeamLabels);
 
-document.getElementById('prevMatchBtn').addEventListener('click', () => {
-  activeMatchIdx--;
-  loadKoForm();
-});
-
-document.getElementById('nextMatchBtn').addEventListener('click', () => {
-  activeMatchIdx++;
-  loadKoForm();
-});
+document.getElementById('prevMatchBtn').addEventListener('click', () => { activeMatchIdx--; loadKoForm(); });
+document.getElementById('nextMatchBtn').addEventListener('click', () => { activeMatchIdx++; loadKoForm(); });
 
 document.getElementById('saveKoBtn').addEventListener('click', async () => {
   const matches = getRoundFixtures();
@@ -777,10 +860,7 @@ document.getElementById('saveKoBtn').addEventListener('click', async () => {
   }
 
   const payload = {
-    matchNo,
-    round:  m.round,
-    team1:  t1,
-    team2:  t2,
+    matchNo, round: m.round, team1: t1, team2: t2,
     goals1: g1Raw !== '' ? parseInt(g1Raw, 10) : null,
     goals2: g2Raw !== '' ? parseInt(g2Raw, 10) : null,
     winner
@@ -816,23 +896,12 @@ const REBUILD_ACTIONS = {
 };
 
 const REBUILD_LABELS = {
-  groups: 'groups',
-  r32:    'R32',
-  r16:    'R16',
-  qf:     'QF',
-  sf:     'SF',
-  final:  'Final',
-  all:    'everything'
+  groups: 'groups', r32: 'R32', r16: 'R16', qf: 'QF', sf: 'SF', final: 'Final', all: 'everything'
 };
 
 const REBUILD_DEFAULT_TEXT = {
-  groups: 'Update groups',
-  r32:    'Update R32',
-  r16:    'Update R16',
-  qf:     'Update QF',
-  sf:     'Update SF',
-  final:  'Update Final',
-  all:    'Update everything'
+  groups: 'Update groups', r32: 'Update R32', r16: 'Update R16',
+  qf: 'Update QF', sf: 'Update SF', final: 'Update Final', all: 'Update everything'
 };
 
 document.querySelectorAll('[data-rebuild]').forEach(btn => {
@@ -846,13 +915,9 @@ document.querySelectorAll('[data-rebuild]').forEach(btn => {
     status.textContent = `Updating ${REBUILD_LABELS[key]}…`;
 
     try {
-      const payload = key === 'all'
-        ? { clearCache: true }
-        : { round: key, clearCache: true };
-
+      const payload = key === 'all' ? { clearCache: true } : { round: key, clearCache: true };
       const res = await apiPost(REBUILD_ACTIONS[key], payload);
       if (!res?.ok) throw new Error(res?.error || 'Failed');
-
       const dur = res.durationMs ? ` (${(res.durationMs / 1000).toFixed(1)}s)` : '';
       status.textContent = `Done${dur}.`;
       toast(`Updated ${REBUILD_LABELS[key]}.`, 'success');
