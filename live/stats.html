@@ -63,8 +63,7 @@
     .kb-card-body { padding: 8px 16px 10px; display: flex; flex-direction: column; gap: 5px; }
 
     .kb-row { display: flex; align-items: center; gap: 10px; }
-    .kb-pos { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: var(--ink-3); width: 14px; text-align: right; flex-shrink: 0; }
-    .kb-team { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+     .kb-team { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .kb-track { flex: 1; height: 18px; background: #f2f8f5; border-radius: 3px; overflow: hidden; }
     .kb-fill { height: 100%; border-radius: 3px; }
     .kb-pct { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); width: 34px; text-align: right; flex-shrink: 0; }
@@ -251,7 +250,6 @@
         if (t.pct !== lastPct) { pos++; lastPct = t.pct; }
         const w = max > 0 ? Math.round((t.pct / max) * 100) : 0;
         return `<div class="kb-row" title="${t.count}/${entryCount} entrants">
-          <span class="kb-pos">${pos}</span>
           <span class="kb-team">${esc(t.team)}</span>
           <div class="kb-track"><div class="kb-fill ${cssClass}" style="width:${w}%"></div></div>
           <span class="kb-pct">${t.pct}%</span>
