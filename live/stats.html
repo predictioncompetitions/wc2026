@@ -54,58 +54,100 @@
     .kb-legend-arrow { color: var(--ink-3); font-size: 10px; margin: 0 2px; opacity: .5; }
     .kb-legend-note { margin-left: auto; font-family: var(--font-head); font-size: 11px; color: var(--ink-3); font-style: italic; font-weight: 400; }
 
+    /* Collapsible cards */
     .kb-card { border-radius: 10px; border: 1px solid var(--border); overflow: hidden; background: var(--surface); }
-    .kb-card-head { display: flex; align-items: baseline; gap: 10px; padding: 9px 16px; background: #f2f8f5; border-bottom: 1px solid rgba(13,92,46,0.1); flex-wrap: wrap; }
+    .kb-card-head { display: flex; align-items: center; gap: 10px; padding: 9px 16px; background: #f2f8f5; border-bottom: 1px solid rgba(13,92,46,0.1); cursor: pointer; user-select: none; flex-wrap: wrap; }
+    .kb-card-head:hover { background: #e8f4ee; }
     .kb-card-title { font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--pitch); }
     .kb-card-count { font-family: var(--font-head); font-size: 11px; font-weight: 500; color: var(--ink-3); }
     .kb-card-note { font-family: var(--font-head); font-size: 11px; font-weight: 400; color: var(--ink-3); font-style: italic; margin-left: auto; }
-    .kb-card-body { padding: 8px 16px 10px; display: flex; flex-direction: column; gap: 5px; }
+    .kb-card-toggle { font-size: 14px; color: var(--ink-3); flex-shrink: 0; transition: transform .2s; line-height: 1; margin-left: 6px; }
+    .kb-card.kb-card-open .kb-card-toggle { transform: rotate(90deg); }
+    .kb-card-body { display: none; padding: 8px 16px 10px; flex-direction: column; gap: 5px; }
+    .kb-card.kb-card-open .kb-card-body { display: flex; }
 
     .kb-row { display: flex; align-items: center; gap: 8px; }
     .kb-team { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kb-track { flex: 1; height: 22px; background: #f2f8f5; border-radius: 3px; overflow: hidden; position: relative; min-width: 0; }
+    .kb-track { flex: 1; height: 24px; background: #e8f0ec; border-radius: 3px; overflow: hidden; position: relative; min-width: 0; }
     .kb-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; overflow: hidden; min-width: 0; }
-    .kb-bar-count { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.8); white-space: nowrap; padding: 0 7px; line-height: 1; }
+    .kb-bar-count { font-family: var(--font-head); font-size: 11px; font-weight: 700; white-space: nowrap; padding: 0 7px; line-height: 1; }
     .kb-pct { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); width: 30px; text-align: right; flex-shrink: 0; }
     .kb-chevron-spacer { width: 15px; flex-shrink: 0; }
 
-    .kb-fill-r32 { background: #b4d9c3; }
-    .kb-fill-r16 { background: #7dbf9a; }
-    .kb-fill-qf  { background: #3da06a; }
-    .kb-fill-sf  { background: #1a8a4a; }
+    /* Bar fill colours with matching readable text colours */
+    .kb-fill-r32 { background: #7dbf9a; }
+    .kb-fill-r32 .kb-bar-count { color: #0d3d20; }
+    .kb-fill-r16 { background: #3da06a; }
+    .kb-fill-r16 .kb-bar-count { color: #fff; }
+    .kb-fill-qf  { background: #1a8a4a; }
+    .kb-fill-qf  .kb-bar-count { color: #fff; }
+    .kb-fill-sf  { background: #0f6e3a; }
+    .kb-fill-sf  .kb-bar-count { color: #fff; }
     .kb-fill-fin { background: #0d5c2e; }
+    .kb-fill-fin .kb-bar-count { color: #fff; }
 
-    /* ── Trophy block — pitch green background ── */
+    /* Track backgrounds lightened so bars contrast well */
+    .kb-track-r32 { background: #d4edde; }
+    .kb-track-r16 { background: #c8e8d4; }
+    .kb-track-qf  { background: #b8e0c8; }
+    .kb-track-sf  { background: #a8d8bc; }
+    .kb-track-fin { background: #98d0b0; }
+
+    /* ── Trophy block ── */
     .kb-trophy { border-radius: 10px; border: 1px solid #0a4a24; overflow: hidden; background: #0d5c2e; }
 
-    .kb-trophy-head { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.12); }
-    .kb-trophy-title { font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); flex-shrink: 0; }
+    .kb-trophy-head { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .kb-trophy-title { font-family: var(--font-head); font-size: 13px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); flex-shrink: 0; }
     .kb-trophy-rule { flex: 1; height: 1px; background: rgba(255,255,255,0.12); }
     .kb-trophy-sub { font-family: var(--font-head); font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.5); flex-shrink: 0; }
 
-    .kb-trophy-body { padding: 8px 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .kb-trophy-body { padding: 10px 18px 14px; display: flex; flex-direction: column; gap: 6px; }
+    .kb-trophy-sep { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
 
-    .kb-trophy-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
-    .kb-trophy-medal { font-family: var(--font-head); font-size: 11px; font-weight: 800; width: 14px; text-align: center; flex-shrink: 0; }
-    .kb-trophy-team { font-family: var(--font-head); font-weight: 800; width: 90px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kb-trophy-track { flex: 1; height: 16px; background: rgba(0,0,0,0.2); border-radius: 3px; overflow: hidden; display: flex; align-items: center; min-width: 0; }
+    /* Podium rows — larger */
+    .kb-trophy-row { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
+    .kb-trophy-medal { font-family: var(--font-head); font-weight: 800; width: 18px; text-align: center; flex-shrink: 0; }
+    .kb-trophy-team { font-family: var(--font-head); font-weight: 800; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kb-trophy-track { flex: 1; border-radius: 3px; overflow: hidden; display: flex; align-items: center; min-width: 0; }
     .kb-trophy-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; overflow: hidden; flex-shrink: 0; }
-    .kb-trophy-bar-count { font-family: var(--font-head); font-size: 10px; font-weight: 700; white-space: nowrap; padding: 0 6px; line-height: 1; }
-    .kb-trophy-pct { font-family: var(--font-head); font-weight: 700; font-size: 12px; width: 30px; text-align: right; flex-shrink: 0; }
-    .kb-trophy-sep { height: 1px; background: rgba(255,255,255,0.1); margin: 3px 0; }
+    .kb-trophy-bar-count { font-family: var(--font-head); font-weight: 700; white-space: nowrap; padding: 0 8px; line-height: 1; }
+    .kb-trophy-pct { font-family: var(--font-head); font-weight: 800; text-align: right; flex-shrink: 0; }
 
-    /* Trophy text/fill colours — adjusted for green background */
-    .kb-m1 { color: #d4a843; } .kb-m2 { color: #c8d8e8; } .kb-m3 { color: #e8b080; } .kb-mx { color: rgba(255,255,255,0.4); }
-    .kb-t1 { font-size: 20px; color: #fff; } .kb-t2 { font-size: 15px; color: rgba(255,255,255,0.95); } .kb-t3 { font-size: 14px; color: rgba(255,255,255,0.9); } .kb-tx { font-size: 13px; color: rgba(255,255,255,0.75); }
-    .kb-f1 { background: #d4a843; } .kb-f2 { background: #c8d8e8; } .kb-f3 { background: #e8b080; } .kb-fx { background: rgba(255,255,255,0.25); }
-    .kb-p1 { color: #d4a843; } .kb-p2 { color: #c8d8e8; } .kb-p3 { color: #e8b080; } .kb-px { color: rgba(255,255,255,0.6); }
-    .kb-bc1 { color: rgba(212,168,67,0.9); } .kb-bc2 { color: rgba(200,216,232,0.9); } .kb-bc3 { color: rgba(232,176,128,0.9); } .kb-bcx { color: rgba(255,255,255,0.55); }
+    /* Podium sizing */
+    .kb-trophy-row.podium-1 .kb-trophy-medal  { font-size: 16px; color: #d4a843; }
+    .kb-trophy-row.podium-1 .kb-trophy-team   { font-size: 26px; color: #fff; width: 120px; }
+    .kb-trophy-row.podium-1 .kb-trophy-track  { height: 26px; background: rgba(0,0,0,0.2); }
+    .kb-trophy-row.podium-1 .kb-trophy-fill   { background: #d4a843; }
+    .kb-trophy-row.podium-1 .kb-trophy-bar-count { font-size: 12px; color: rgba(0,0,0,0.6); }
+    .kb-trophy-row.podium-1 .kb-trophy-pct    { font-size: 20px; color: #d4a843; width: 42px; }
+
+    .kb-trophy-row.podium-2 .kb-trophy-medal  { font-size: 13px; color: #c8d8e8; }
+    .kb-trophy-row.podium-2 .kb-trophy-team   { font-size: 20px; color: rgba(255,255,255,0.95); width: 120px; }
+    .kb-trophy-row.podium-2 .kb-trophy-track  { height: 22px; background: rgba(0,0,0,0.2); }
+    .kb-trophy-row.podium-2 .kb-trophy-fill   { background: #c8d8e8; }
+    .kb-trophy-row.podium-2 .kb-trophy-bar-count { font-size: 11px; color: rgba(0,0,0,0.5); }
+    .kb-trophy-row.podium-2 .kb-trophy-pct    { font-size: 16px; color: #c8d8e8; width: 42px; }
+
+    .kb-trophy-row.podium-3 .kb-trophy-medal  { font-size: 13px; color: #e8b080; }
+    .kb-trophy-row.podium-3 .kb-trophy-team   { font-size: 18px; color: rgba(255,255,255,0.9); width: 120px; }
+    .kb-trophy-row.podium-3 .kb-trophy-track  { height: 20px; background: rgba(0,0,0,0.2); }
+    .kb-trophy-row.podium-3 .kb-trophy-fill   { background: #e8b080; }
+    .kb-trophy-row.podium-3 .kb-trophy-bar-count { font-size: 11px; color: rgba(0,0,0,0.45); }
+    .kb-trophy-row.podium-3 .kb-trophy-pct    { font-size: 15px; color: #e8b080; width: 42px; }
+
+    /* Non-podium sizing */
+    .kb-trophy-row.podium-x .kb-trophy-medal  { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .kb-trophy-row.podium-x .kb-trophy-team   { font-size: 14px; color: rgba(255,255,255,0.7); width: 120px; }
+    .kb-trophy-row.podium-x .kb-trophy-track  { height: 16px; background: rgba(0,0,0,0.2); }
+    .kb-trophy-row.podium-x .kb-trophy-fill   { background: rgba(255,255,255,0.22); }
+    .kb-trophy-row.podium-x .kb-trophy-bar-count { font-size: 10px; color: rgba(255,255,255,0.5); }
+    .kb-trophy-row.podium-x .kb-trophy-pct    { font-size: 13px; color: rgba(255,255,255,0.55); width: 42px; }
 
     /* Clickable rows */
     .kb-clickable { cursor: pointer; transition: opacity .15s; }
     .kb-clickable:hover { opacity: .82; }
     .kb-chevron { font-size: 13px; flex-shrink: 0; transition: transform .2s; line-height: 1; width: 15px; text-align: center; color: var(--ink-3); }
-    .kb-trophy-row .kb-chevron { color: rgba(255,255,255,.45); }
+    .kb-trophy-row .kb-chevron { color: rgba(255,255,255,.4); }
     .kb-row.kb-open .kb-chevron { transform: rotate(90deg); }
     .kb-trophy-row.kb-open .kb-chevron { transform: rotate(90deg); }
 
@@ -147,7 +189,10 @@
     }
     @media (max-width: 600px) {
       .kb-team { width: 80px; }
-      .kb-trophy-team { width: 70px; }
+      .kb-trophy-row.podium-1 .kb-trophy-team,
+      .kb-trophy-row.podium-2 .kb-trophy-team,
+      .kb-trophy-row.podium-3 .kb-trophy-team,
+      .kb-trophy-row.podium-x .kb-trophy-team { width: 70px; }
       .kb-legend-note { display: none; }
       .kb-trophy-sub { display: none; }
       .kb-card-note { width: 100%; margin-left: 0; }
@@ -298,7 +343,7 @@
   function renderBracket(roundReach, entryCount) {
     if (!roundReach) return '';
 
-    function rows(key, cssClass) {
+    function rows(key, fillClass, trackClass) {
       const teams = roundReach[key] || [];
       if (!teams.length) return '<div style="font-size:12px;color:var(--ink-3);font-style:italic;padding:4px 0;">No picks yet</div>';
       const max = teams[0].pct;
@@ -309,8 +354,8 @@
         if (clickable) {
           return `<div class="kb-row kb-clickable" data-team="${esc(t.team)}" data-round="${key}">
             <span class="kb-team">${esc(t.team)}</span>
-            <div class="kb-track">
-              <div class="kb-fill ${cssClass}" style="width:${w}%">
+            <div class="kb-track ${trackClass}">
+              <div class="kb-fill ${fillClass}" style="width:${w}%">
                 <span class="kb-bar-count">${t.count} entrants</span>
               </div>
             </div>
@@ -321,8 +366,8 @@
         } else {
           return `<div class="kb-row">
             <span class="kb-team">${esc(t.team)}</span>
-            <div class="kb-track">
-              <div class="kb-fill ${cssClass}" style="width:${w}%">
+            <div class="kb-track ${trackClass}">
+              <div class="kb-fill ${fillClass}" style="width:${w}%">
                 <span class="kb-bar-count">${t.count} entrants</span>
               </div>
             </div>
@@ -336,27 +381,24 @@
     function trophyRows(teams) {
       if (!teams.length) return '<div style="font-size:12px;color:rgba(255,255,255,.5);font-style:italic;padding:4px 0;">No picks yet</div>';
       const max = teams[0].pct;
-      const medalNum   = ['1','2','3'];
-      const medalClass = ['kb-m1','kb-m2','kb-m3'];
-      const teamClass  = ['kb-t1','kb-t2','kb-t3'];
-      const fillClass  = ['kb-f1','kb-f2','kb-f3'];
-      const pctClass   = ['kb-p1','kb-p2','kb-p3'];
-      const countClass = ['kb-bc1','kb-bc2','kb-bc3'];
+      const podiumClass = ['podium-1','podium-2','podium-3'];
+      const medalNum    = ['1','2','3'];
       let html = '';
       teams.forEach((t, i) => {
-        const isPodium = i < 3;
+        const cls = i < 3 ? podiumClass[i] : 'podium-x';
+        const medal = i < 3 ? medalNum[i] : String(i + 1);
         const w = max > 0 ? Math.round((t.pct / max) * 100) : 0;
         const did = detailId('CHAMPION', t.team);
         if (i === 3) html += '<div class="kb-trophy-sep"></div>';
-        html += `<div class="kb-trophy-row kb-clickable" data-team="${esc(t.team)}" data-round="CHAMPION">
-          <span class="kb-trophy-medal ${isPodium ? medalClass[i] : 'kb-mx'}">${isPodium ? medalNum[i] : i + 1}</span>
-          <span class="kb-trophy-team ${isPodium ? teamClass[i] : 'kb-tx'}">${esc(t.team)}</span>
+        html += `<div class="kb-trophy-row ${cls} kb-clickable" data-team="${esc(t.team)}" data-round="CHAMPION">
+          <span class="kb-trophy-medal">${medal}</span>
+          <span class="kb-trophy-team">${esc(t.team)}</span>
           <div class="kb-trophy-track">
-            <div class="kb-trophy-fill ${isPodium ? fillClass[i] : 'kb-fx'}" style="width:${w}%">
-              <span class="kb-trophy-bar-count ${isPodium ? countClass[i] : 'kb-bcx'}">${t.count} entrants</span>
+            <div class="kb-trophy-fill" style="width:${w}%">
+              <span class="kb-trophy-bar-count">${t.count} entrants</span>
             </div>
           </div>
-          <span class="kb-trophy-pct ${isPodium ? pctClass[i] : 'kb-px'}">${t.pct}%</span>
+          <span class="kb-trophy-pct">${t.pct}%</span>
           <span class="kb-chevron">›</span>
         </div>
         <div class="kb-detail kb-detail-dark" id="${did}"></div>`;
@@ -379,6 +421,18 @@
         : '';
     }
 
+    function collapsibleCard(title, count, noteHtml, bodyHtml, toggleClass) {
+      return `<div class="kb-card ${toggleClass}">
+        <div class="kb-card-head">
+          <span class="kb-card-title">${title}</span>
+          <span class="kb-card-count">${count}</span>
+          ${noteHtml}
+          <span class="kb-card-toggle">›</span>
+        </div>
+        <div class="kb-card-body">${bodyHtml}</div>
+      </div>`;
+    }
+
     const r32count = (roundReach['R32']   || []).length;
     const r16count = (roundReach['R16']   || []).length;
     const qfcount  = (roundReach['QF']    || []).length;
@@ -393,59 +447,23 @@
       <div class="kb">
 
         <div class="kb-legend">
-          <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#b4d9c3"></div>R32</div>
+          <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#7dbf9a"></div>R32</div>
           <span class="kb-legend-arrow">›</span>
-          <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#7dbf9a"></div>R16</div>
+          <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#3da06a"></div>R16</div>
           <span class="kb-legend-arrow">›</span>
-          <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#3da06a"></div>QF</div>
+          <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#1a8a4a"></div>QF</div>
           <span class="kb-legend-arrow">›</span>
-          <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#1a8a4a"></div>SF</div>
+          <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#0f6e3a"></div>SF</div>
           <span class="kb-legend-arrow">›</span>
           <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#0d5c2e"></div>Final</div>
           <span class="kb-legend-note">Darker = field expects a deeper run</span>
         </div>
 
-        <div class="kb-card">
-          <div class="kb-card-head">
-            <span class="kb-card-title">Round of 32</span>
-            <span class="kb-card-count">${countLabel(r32count)}</span>
-            ${outlierNote('R32')}
-          </div>
-          <div class="kb-card-body">${rows('R32', 'kb-fill-r32')}</div>
-        </div>
-
-        <div class="kb-card">
-          <div class="kb-card-head">
-            <span class="kb-card-title">Round of 16</span>
-            <span class="kb-card-count">${countLabel(r16count)}</span>
-            ${outlierNote('R16')}
-          </div>
-          <div class="kb-card-body">${rows('R16', 'kb-fill-r16')}</div>
-        </div>
-
-        <div class="kb-card">
-          <div class="kb-card-head">
-            <span class="kb-card-title">Quarter-finals</span>
-            <span class="kb-card-count">${countLabel(qfcount)}</span>
-          </div>
-          <div class="kb-card-body">${rows('QF', 'kb-fill-qf')}</div>
-        </div>
-
-        <div class="kb-card">
-          <div class="kb-card-head">
-            <span class="kb-card-title">Semi-finals</span>
-            <span class="kb-card-count">${countLabel(sfcount)}</span>
-          </div>
-          <div class="kb-card-body">${rows('SF', 'kb-fill-sf')}</div>
-        </div>
-
-        <div class="kb-card">
-          <div class="kb-card-head">
-            <span class="kb-card-title">Final</span>
-            <span class="kb-card-count">${countLabel(fincount)}</span>
-          </div>
-          <div class="kb-card-body">${rows('FINAL', 'kb-fill-fin')}</div>
-        </div>
+        ${collapsibleCard('Round of 32', countLabel(r32count), outlierNote('R32'), rows('R32','kb-fill-r32','kb-track-r32'), '')}
+        ${collapsibleCard('Round of 16', countLabel(r16count), outlierNote('R16'), rows('R16','kb-fill-r16','kb-track-r16'), '')}
+        ${collapsibleCard('Quarter-finals', countLabel(qfcount), '', rows('QF','kb-fill-qf','kb-track-qf'), '')}
+        ${collapsibleCard('Semi-finals', countLabel(sfcount), '', rows('SF','kb-fill-sf','kb-track-sf'), '')}
+        ${collapsibleCard('Final', countLabel(fincount), '', rows('FINAL','kb-fill-fin','kb-track-fin'), '')}
 
         <div class="kb-trophy">
           <div class="kb-trophy-head">
@@ -458,6 +476,28 @@
 
       </div>`;
   }
+
+  /* ── Collapsible card toggle ── */
+  document.addEventListener('click', function(e) {
+    const head = e.target.closest('.kb-card-head');
+    if (head) {
+      const card = head.closest('.kb-card');
+      if (card) card.classList.toggle('kb-card-open');
+      return;
+    }
+
+    const row = e.target.closest('.kb-clickable');
+    if (!row) return;
+    const team  = row.dataset.team;
+    const round = row.dataset.round;
+    if (!team || !round) return;
+    const did = detailId(round, team);
+    const detailEl = document.getElementById(did);
+    if (!detailEl) return;
+    const willOpen = !detailEl.classList.contains('kb-detail-open');
+    row.classList.toggle('kb-open', willOpen);
+    loadStatDetail(team, round, detailEl);
+  });
 
   /* ── Detail expansion ── */
   const detailCache = {};
@@ -510,20 +550,6 @@
       detailEl.innerHTML = `<div class="kb-detail-inner"><div class="kb-detail-msg">Could not load entrants.</div></div>`;
     }
   }
-
-  document.addEventListener('click', function(e) {
-    const row = e.target.closest('.kb-clickable');
-    if (!row) return;
-    const team  = row.dataset.team;
-    const round = row.dataset.round;
-    if (!team || !round) return;
-    const did = detailId(round, team);
-    const detailEl = document.getElementById(did);
-    if (!detailEl) return;
-    const willOpen = !detailEl.classList.contains('kb-detail-open');
-    row.classList.toggle('kb-open', willOpen);
-    loadStatDetail(team, round, detailEl);
-  });
 
   /* ── Main load ── */
   async function loadStats() {
