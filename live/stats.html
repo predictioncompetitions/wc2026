@@ -45,9 +45,7 @@
     .headline-box.scorelines .headline-label { margin-bottom: 8px; }
     .pos-row-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; cursor: help; }
 
-    /* Knockout stages */
-    --pitch-bg: #f2f8f5;
-
+    /* ── Knockout stages ── */
     .kb { display: flex; flex-direction: column; gap: 10px; }
 
     .kb-legend { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 8px 14px; background: #f2f8f5; border-radius: 8px; border: 1px solid rgba(13,92,46,0.12); margin-bottom: 4px; }
@@ -63,9 +61,10 @@
     .kb-card-body { padding: 8px 16px 10px; display: flex; flex-direction: column; gap: 5px; }
 
     .kb-row { display: flex; align-items: center; gap: 10px; }
-     .kb-team { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kb-track { flex: 1; height: 18px; background: #f2f8f5; border-radius: 3px; overflow: hidden; }
-    .kb-fill { height: 100%; border-radius: 3px; }
+    .kb-team { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kb-track { flex: 1; height: 22px; background: #f2f8f5; border-radius: 3px; overflow: hidden; position: relative; }
+    .kb-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; overflow: hidden; min-width: 0; }
+    .kb-bar-count { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.75); white-space: nowrap; padding: 0 8px; line-height: 1; }
     .kb-pct { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); width: 34px; text-align: right; flex-shrink: 0; }
 
     .kb-fill-r32 { background: #b4d9c3; }
@@ -74,6 +73,7 @@
     .kb-fill-sf  { background: #1a8a4a; }
     .kb-fill-fin { background: #0d5c2e; }
 
+    /* Trophy block */
     .kb-trophy { border-radius: 10px; border: 1px solid rgba(26,31,46,0.8); overflow: hidden; background: var(--ink); }
     .kb-trophy-head { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); }
     .kb-trophy-title { font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); }
@@ -83,15 +83,44 @@
     .kb-trophy-row { display: flex; align-items: center; gap: 10px; }
     .kb-trophy-medal { font-family: var(--font-head); font-size: 11px; font-weight: 800; width: 16px; text-align: center; flex-shrink: 0; }
     .kb-trophy-team { font-family: var(--font-head); font-weight: 800; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kb-trophy-track { width: 100px; height: 14px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
-    .kb-trophy-fill { height: 100%; border-radius: 3px; }
+    .kb-trophy-track { flex: 1; height: 18px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; display: flex; align-items: center; }
+    .kb-trophy-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; overflow: hidden; }
+    .kb-trophy-bar-count { font-family: var(--font-head); font-size: 11px; font-weight: 700; white-space: nowrap; padding: 0 7px; line-height: 1; }
     .kb-trophy-pct { font-family: var(--font-head); font-weight: 700; width: 34px; text-align: right; flex-shrink: 0; }
     .kb-trophy-sep { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
 
-    .kb-m1 { color: #d4a843; } .kb-m2 { color: #8e9eb5; } .kb-m3 { color: #b07040; } .kb-mx { color: rgba(255,255,255,0.2); }
-    .kb-t1 { font-size: 22px; color: #fff; } .kb-t2 { font-size: 16px; color: rgba(255,255,255,0.85); } .kb-t3 { font-size: 14px; color: rgba(255,255,255,0.75); } .kb-tx { font-size: 13px; color: rgba(255,255,255,0.45); }
+    .kb-m1 { color: #d4a843; } .kb-m2 { color: #8e9eb5; } .kb-m3 { color: #b07040; } .kb-mx { color: rgba(255,255,255,0.45); }
+    .kb-t1 { font-size: 22px; color: #fff; } .kb-t2 { font-size: 16px; color: rgba(255,255,255,0.9); } .kb-t3 { font-size: 14px; color: rgba(255,255,255,0.85); } .kb-tx { font-size: 13px; color: rgba(255,255,255,0.7); }
     .kb-f1 { background: #d4a843; } .kb-f2 { background: #8e9eb5; } .kb-f3 { background: #b07040; } .kb-fx { background: rgba(255,255,255,0.12); }
-    .kb-p1 { font-size: 15px; color: #d4a843; } .kb-p2 { font-size: 12px; color: #8e9eb5; } .kb-p3 { font-size: 12px; color: #b07040; } .kb-px { font-size: 12px; color: rgba(255,255,255,0.25); }
+    .kb-p1 { font-size: 15px; color: #d4a843; } .kb-p2 { font-size: 12px; color: #8e9eb5; } .kb-p3 { font-size: 12px; color: #b07040; } .kb-px { font-size: 12px; color: rgba(255,255,255,0.55); }
+    .kb-bc1 { color: rgba(212,168,67,0.8); } .kb-bc2 { color: rgba(142,158,181,0.8); } .kb-bc3 { color: rgba(176,112,64,0.8); } .kb-bcx { color: rgba(255,255,255,0.45); }
+
+    /* Clickable rows */
+    .kb-clickable { cursor: pointer; transition: opacity .15s; }
+    .kb-clickable:hover { opacity: .82; }
+    .kb-chevron { font-size: 13px; color: var(--ink-3); flex-shrink: 0; transition: transform .2s; line-height: 1; margin-left: 2px; }
+    .kb-row.kb-open .kb-chevron { transform: rotate(90deg); }
+    .kb-trophy-row.kb-open .kb-chevron { transform: rotate(90deg); }
+
+    /* Detail expansion */
+    .kb-detail { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
+    .kb-detail.kb-detail-open { max-height: 800px; }
+    .kb-detail-inner { padding: 6px 0 10px 0; display: flex; flex-direction: column; gap: 3px; border-bottom: 1px solid var(--border); margin-bottom: 3px; }
+    .kb-detail-dark .kb-detail-inner { border-bottom-color: rgba(255,255,255,.07); }
+    .kb-detail-msg { font-family: var(--font-head); font-size: 12px; color: var(--ink-3); padding: 6px 0; font-style: italic; }
+    .kb-detail-dark .kb-detail-msg { color: rgba(255,255,255,.3); }
+
+    .kb-entrant-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+    .kb-entrant-rank { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: var(--ink-3); width: 28px; text-align: right; flex-shrink: 0; }
+    .kb-detail-dark .kb-entrant-rank { color: rgba(255,255,255,.3); }
+    .kb-entrant-name { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--ink); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kb-detail-dark .kb-entrant-name { color: rgba(255,255,255,.8); }
+    .kb-entrant-pts { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--pitch); flex-shrink: 0; }
+    .kb-detail-dark .kb-entrant-pts { color: var(--gold); }
+    .kb-entrant-badge { font-family: var(--font-head); font-size: 10px; font-weight: 700; border-radius: 3px; padding: 1px 5px; flex-shrink: 0; letter-spacing: .3px; }
+    .kb-badge-paid { color: #fff; background: var(--pitch); }
+    .kb-badge-due  { color: var(--ink-3); background: var(--border); }
+    .kb-detail-dark .kb-badge-due { color: rgba(255,255,255,.35); background: rgba(255,255,255,.1); }
 
     .loading-state { text-align: center; padding: 32px; color: var(--ink-3); font-size: 14px; }
 
@@ -101,7 +130,6 @@
     }
     @media (max-width: 600px) {
       .kb-team { width: 80px; }
-      .kb-trophy-track { width: 60px; }
       .kb-legend-note { display: none; }
     }
     @media (max-width: 480px) {
@@ -171,6 +199,10 @@
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  function detailId(round, team) {
+    return 'detail-' + round + '-' + team.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  }
+
   function renderHeadline(data) {
     const scorelines = (data.topScorelines && data.topScorelines.length)
       ? `<div class="scoreline-list">${data.topScorelines.map((s, i) => `
@@ -229,7 +261,7 @@
         </div>`;
     }).join('');
     return `
-    <div class="section-head">
+      <div class="section-head">
         <h2>Group consensus</h2>
         <p>Top picks for group winner, and how likely the field thinks each team is to qualify. Hover a percentage to see the entrant count.</p>
         <p style="margin-top:4px;font-size:12px;color:var(--ink-3);">Predicted to Qualify shows how many entrants predicted each team to reach the Round of 32.</p>
@@ -244,16 +276,20 @@
       const teams = roundReach[key] || [];
       if (!teams.length) return '<div style="font-size:12px;color:var(--ink-3);font-style:italic;padding:4px 0;">No picks yet</div>';
       const max = teams[0].pct;
-      let pos = 0;
-      let lastPct = null;
       return teams.map(t => {
-        if (t.pct !== lastPct) { pos++; lastPct = t.pct; }
         const w = max > 0 ? Math.round((t.pct / max) * 100) : 0;
-        return `<div class="kb-row" title="${t.count}/${entryCount} entrants">
+        const did = detailId(key, t.team);
+        return `<div class="kb-row kb-clickable" data-team="${esc(t.team)}" data-round="${key}">
           <span class="kb-team">${esc(t.team)}</span>
-          <div class="kb-track"><div class="kb-fill ${cssClass}" style="width:${w}%"></div></div>
+          <div class="kb-track">
+            <div class="kb-fill ${cssClass}" style="width:${w}%">
+              <span class="kb-bar-count">${t.count} entrants</span>
+            </div>
+          </div>
           <span class="kb-pct">${t.pct}%</span>
-        </div>`;
+          <span class="kb-chevron">›</span>
+        </div>
+        <div class="kb-detail" id="${did}"></div>`;
       }).join('');
     }
 
@@ -265,19 +301,32 @@
       const teamClass  = ['kb-t1','kb-t2','kb-t3'];
       const fillClass  = ['kb-f1','kb-f2','kb-f3'];
       const pctClass   = ['kb-p1','kb-p2','kb-p3'];
+      const countClass = ['kb-bc1','kb-bc2','kb-bc3'];
       let html = '';
       teams.forEach((t, i) => {
         const isPodium = i < 3;
         const w = max > 0 ? Math.round((t.pct / max) * 100) : 0;
+        const did = detailId('CHAMPION', t.team);
         if (i === 3) html += '<div class="kb-trophy-sep"></div>';
-        html += `<div class="kb-trophy-row" title="${t.count}/${entryCount} entrants">
+        html += `<div class="kb-trophy-row kb-clickable" data-team="${esc(t.team)}" data-round="CHAMPION">
           <span class="kb-trophy-medal ${isPodium ? medalClass[i] : 'kb-mx'}">${isPodium ? medalNum[i] : i + 1}</span>
           <span class="kb-trophy-team ${isPodium ? teamClass[i] : 'kb-tx'}">${esc(t.team)}</span>
-          <div class="kb-trophy-track"><div class="kb-trophy-fill ${isPodium ? fillClass[i] : 'kb-fx'}" style="width:${w}%"></div></div>
+          <div class="kb-trophy-track">
+            <div class="kb-trophy-fill ${isPodium ? fillClass[i] : 'kb-fx'}" style="width:${w}%">
+              <span class="kb-trophy-bar-count ${isPodium ? countClass[i] : 'kb-bcx'}">${t.count} entrants</span>
+            </div>
+          </div>
           <span class="kb-trophy-pct ${isPodium ? pctClass[i] : 'kb-px'}">${t.pct}%</span>
-        </div>`;
+          <span class="kb-chevron" style="color:rgba(255,255,255,.3)">›</span>
+        </div>
+        <div class="kb-detail kb-detail-dark" id="${did}"></div>`;
       });
       return html;
+    }
+
+    function countLabel(n) {
+      if (!n) return '';
+      return `${n} team${n !== 1 ? 's' : ''}`;
     }
 
     const r32count  = (roundReach['R32']      || []).length;
@@ -285,19 +334,14 @@
     const qfcount   = (roundReach['QF']       || []).length;
     const sfcount   = (roundReach['SF']       || []).length;
     const fincount  = (roundReach['FINAL']    || []).length;
-    const champcount= (roundReach['CHAMPION'] || []).length;
-
-    function countLabel(n, round) {
-      if (!n) return '';
-      return `${n} team${n !== 1 ? 's' : ''}`;
-    }
 
     return `
       <div class="section-head">
         <h2>Knockout stages</h2>
-        <p>Most-picked teams to reach each round. Bars are relative to the top pick in that round. Hover any row for the entrant count.</p>
+        <p>Most-picked teams to reach each round. Bars are relative to the top pick in that round. Tap any team to see who picked them.</p>
       </div>
       <div class="kb">
+
         <div class="kb-legend">
           <div class="kb-legend-item"><div class="kb-legend-swatch" style="background:#b4d9c3"></div>R32</div>
           <span class="kb-legend-arrow">›</span>
@@ -363,6 +407,68 @@
       </div>`;
   }
 
+  /* ── Detail expansion ── */
+  const detailCache = {};
+
+  async function loadStatDetail(team, round, detailEl) {
+    const cacheKey = round + '::' + team;
+    const isOpen = detailEl.classList.contains('kb-detail-open');
+
+    if (isOpen) {
+      detailEl.classList.remove('kb-detail-open');
+      return;
+    }
+
+    detailEl.classList.add('kb-detail-open');
+
+    if (detailCache[cacheKey]) {
+      detailEl.innerHTML = detailCache[cacheKey];
+      return;
+    }
+
+    const isDark = detailEl.classList.contains('kb-detail-dark');
+    detailEl.innerHTML = `<div class="kb-detail-inner"><div class="kb-detail-msg">Loading…</div></div>`;
+
+    try {
+      const data = await apiFetch('getStatDetail', { team, round });
+      if (!data.ok || !data.entrants) throw new Error(data.error || 'Failed');
+
+      let html;
+      if (!data.entrants.length) {
+        html = `<div class="kb-detail-inner"><div class="kb-detail-msg">No entrants found.</div></div>`;
+      } else {
+        const rowsHtml = data.entrants.map(e => `
+          <div class="kb-entrant-row">
+            <span class="kb-entrant-rank">${e.rank ? e.rank : '—'}</span>
+            <span class="kb-entrant-name">${esc(e.displayName)}</span>
+            <span class="kb-entrant-pts">${e.totalPoints} pts</span>
+            <span class="kb-entrant-badge ${e.paymentStatus === 'PAID' ? 'kb-badge-paid' : 'kb-badge-due'}">${e.paymentStatus === 'PAID' ? 'Paid' : 'Due'}</span>
+          </div>`).join('');
+        html = `<div class="kb-detail-inner">${rowsHtml}</div>`;
+      }
+
+      detailCache[cacheKey] = html;
+      detailEl.innerHTML = html;
+    } catch(err) {
+      detailEl.innerHTML = `<div class="kb-detail-inner"><div class="kb-detail-msg">Could not load entrants.</div></div>`;
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    const row = e.target.closest('.kb-clickable');
+    if (!row) return;
+    const team  = row.dataset.team;
+    const round = row.dataset.round;
+    if (!team || !round) return;
+    const did = detailId(round, team);
+    const detailEl = document.getElementById(did);
+    if (!detailEl) return;
+    const willOpen = !detailEl.classList.contains('kb-detail-open');
+    row.classList.toggle('kb-open', willOpen);
+    loadStatDetail(team, round, detailEl);
+  });
+
+  /* ── Main load ── */
   async function loadStats() {
     const main = document.getElementById('statsMain');
     try {
