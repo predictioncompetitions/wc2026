@@ -55,19 +55,19 @@
     .kb-legend-note { margin-left: auto; font-family: var(--font-head); font-size: 11px; color: var(--ink-3); font-style: italic; font-weight: 400; }
 
     .kb-card { border-radius: 10px; border: 1px solid var(--border); overflow: hidden; background: var(--surface); }
-    .kb-card-head { display: flex; align-items: baseline; gap: 10px; padding: 9px 16px; background: #f2f8f5; border-bottom: 1px solid rgba(13,92,46,0.1); }
+    .kb-card-head { display: flex; align-items: baseline; gap: 10px; padding: 9px 16px; background: #f2f8f5; border-bottom: 1px solid rgba(13,92,46,0.1); flex-wrap: wrap; }
     .kb-card-title { font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--pitch); }
     .kb-card-count { font-family: var(--font-head); font-size: 11px; font-weight: 500; color: var(--ink-3); }
     .kb-card-note { font-family: var(--font-head); font-size: 11px; font-weight: 400; color: var(--ink-3); font-style: italic; margin-left: auto; }
     .kb-card-body { padding: 8px 16px 10px; display: flex; flex-direction: column; gap: 5px; }
 
-    .kb-row { display: flex; align-items: center; gap: 10px; }
-    .kb-team { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kb-track { flex: 1; height: 22px; background: #f2f8f5; border-radius: 3px; overflow: hidden; position: relative; }
+    .kb-row { display: flex; align-items: center; gap: 8px; }
+    .kb-team { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kb-track { flex: 1; height: 22px; background: #f2f8f5; border-radius: 3px; overflow: hidden; position: relative; min-width: 0; }
     .kb-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; overflow: hidden; min-width: 0; }
-    .kb-bar-count { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.75); white-space: nowrap; padding: 0 8px; line-height: 1; }
-    .kb-pct { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); width: 34px; text-align: right; flex-shrink: 0; }
-    .kb-chevron-spacer { width: 17px; flex-shrink: 0; }
+    .kb-bar-count { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.8); white-space: nowrap; padding: 0 7px; line-height: 1; }
+    .kb-pct { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); width: 30px; text-align: right; flex-shrink: 0; }
+    .kb-chevron-spacer { width: 15px; flex-shrink: 0; }
 
     .kb-fill-r32 { background: #b4d9c3; }
     .kb-fill-r16 { background: #7dbf9a; }
@@ -75,60 +75,68 @@
     .kb-fill-sf  { background: #1a8a4a; }
     .kb-fill-fin { background: #0d5c2e; }
 
-    /* Trophy block */
-    .kb-trophy { border-radius: 10px; border: 1px solid rgba(26,31,46,0.8); overflow: hidden; background: var(--ink); }
-    .kb-trophy-head { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-    .kb-trophy-title { font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); }
-    .kb-trophy-rule { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
-    .kb-trophy-sub { font-family: var(--font-head); font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.25); }
-    .kb-trophy-body { padding: 10px 18px 12px; display: flex; flex-direction: column; gap: 6px; }
-    .kb-trophy-row { display: flex; align-items: center; gap: 10px; }
-    .kb-trophy-medal { font-family: var(--font-head); font-size: 11px; font-weight: 800; width: 16px; text-align: center; flex-shrink: 0; }
-    .kb-trophy-team { font-family: var(--font-head); font-weight: 800; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kb-trophy-track { flex: 1; height: 18px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; display: flex; align-items: center; }
-    .kb-trophy-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; overflow: hidden; }
-    .kb-trophy-bar-count { font-family: var(--font-head); font-size: 11px; font-weight: 700; white-space: nowrap; padding: 0 7px; line-height: 1; }
-    .kb-trophy-pct { font-family: var(--font-head); font-weight: 700; width: 34px; text-align: right; flex-shrink: 0; }
-    .kb-trophy-sep { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
+    /* ── Trophy block — pitch green background ── */
+    .kb-trophy { border-radius: 10px; border: 1px solid #0a4a24; overflow: hidden; background: #0d5c2e; }
 
-    .kb-m1 { color: #d4a843; } .kb-m2 { color: #8e9eb5; } .kb-m3 { color: #b07040; } .kb-mx { color: rgba(255,255,255,0.45); }
-    .kb-t1 { font-size: 22px; color: #fff; } .kb-t2 { font-size: 16px; color: rgba(255,255,255,0.9); } .kb-t3 { font-size: 14px; color: rgba(255,255,255,0.85); } .kb-tx { font-size: 13px; color: rgba(255,255,255,0.7); }
-    .kb-f1 { background: #d4a843; } .kb-f2 { background: #8e9eb5; } .kb-f3 { background: #b07040; } .kb-fx { background: rgba(255,255,255,0.12); }
-    .kb-p1 { font-size: 15px; color: #d4a843; } .kb-p2 { font-size: 12px; color: #8e9eb5; } .kb-p3 { font-size: 12px; color: #b07040; } .kb-px { font-size: 12px; color: rgba(255,255,255,0.55); }
-    .kb-bc1 { color: rgba(212,168,67,0.8); } .kb-bc2 { color: rgba(142,158,181,0.8); } .kb-bc3 { color: rgba(176,112,64,0.8); } .kb-bcx { color: rgba(255,255,255,0.45); }
+    .kb-trophy-head { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .kb-trophy-title { font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); flex-shrink: 0; }
+    .kb-trophy-rule { flex: 1; height: 1px; background: rgba(255,255,255,0.12); }
+    .kb-trophy-sub { font-family: var(--font-head); font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.5); flex-shrink: 0; }
+
+    .kb-trophy-body { padding: 8px 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+
+    .kb-trophy-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+    .kb-trophy-medal { font-family: var(--font-head); font-size: 11px; font-weight: 800; width: 14px; text-align: center; flex-shrink: 0; }
+    .kb-trophy-team { font-family: var(--font-head); font-weight: 800; width: 90px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kb-trophy-track { flex: 1; height: 16px; background: rgba(0,0,0,0.2); border-radius: 3px; overflow: hidden; display: flex; align-items: center; min-width: 0; }
+    .kb-trophy-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; overflow: hidden; flex-shrink: 0; }
+    .kb-trophy-bar-count { font-family: var(--font-head); font-size: 10px; font-weight: 700; white-space: nowrap; padding: 0 6px; line-height: 1; }
+    .kb-trophy-pct { font-family: var(--font-head); font-weight: 700; font-size: 12px; width: 30px; text-align: right; flex-shrink: 0; }
+    .kb-trophy-sep { height: 1px; background: rgba(255,255,255,0.1); margin: 3px 0; }
+
+    /* Trophy text/fill colours — adjusted for green background */
+    .kb-m1 { color: #d4a843; } .kb-m2 { color: #c8d8e8; } .kb-m3 { color: #e8b080; } .kb-mx { color: rgba(255,255,255,0.4); }
+    .kb-t1 { font-size: 20px; color: #fff; } .kb-t2 { font-size: 15px; color: rgba(255,255,255,0.95); } .kb-t3 { font-size: 14px; color: rgba(255,255,255,0.9); } .kb-tx { font-size: 13px; color: rgba(255,255,255,0.75); }
+    .kb-f1 { background: #d4a843; } .kb-f2 { background: #c8d8e8; } .kb-f3 { background: #e8b080; } .kb-fx { background: rgba(255,255,255,0.25); }
+    .kb-p1 { color: #d4a843; } .kb-p2 { color: #c8d8e8; } .kb-p3 { color: #e8b080; } .kb-px { color: rgba(255,255,255,0.6); }
+    .kb-bc1 { color: rgba(212,168,67,0.9); } .kb-bc2 { color: rgba(200,216,232,0.9); } .kb-bc3 { color: rgba(232,176,128,0.9); } .kb-bcx { color: rgba(255,255,255,0.55); }
 
     /* Clickable rows */
     .kb-clickable { cursor: pointer; transition: opacity .15s; }
     .kb-clickable:hover { opacity: .82; }
-    .kb-chevron { font-size: 13px; color: var(--ink-3); flex-shrink: 0; transition: transform .2s; line-height: 1; margin-left: 2px; width: 15px; text-align: center; }
+    .kb-chevron { font-size: 13px; flex-shrink: 0; transition: transform .2s; line-height: 1; width: 15px; text-align: center; color: var(--ink-3); }
+    .kb-trophy-row .kb-chevron { color: rgba(255,255,255,.45); }
     .kb-row.kb-open .kb-chevron { transform: rotate(90deg); }
     .kb-trophy-row.kb-open .kb-chevron { transform: rotate(90deg); }
 
     /* Detail expansion */
     .kb-detail { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
-    .kb-detail.kb-detail-open { max-height: 800px; }
+    .kb-detail.kb-detail-open { max-height: 220px; overflow-y: auto; }
 
-    .kb-detail-inner { padding: 4px 0 8px 0; display: flex; flex-direction: column; gap: 1px; border-bottom: 1px solid var(--border); margin-bottom: 3px; }
-    .kb-detail-dark .kb-detail-inner { border-bottom-color: rgba(255,255,255,.07); }
+    .kb-detail-inner { padding: 2px 0 6px 0; display: flex; flex-direction: column; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 3px; }
+    .kb-detail-dark .kb-detail-inner { border-bottom-color: rgba(255,255,255,.1); }
 
     .kb-detail-msg { font-family: var(--font-head); font-size: 12px; color: var(--ink-3); padding: 6px 0; font-style: italic; }
-    .kb-detail-dark .kb-detail-msg { color: rgba(255,255,255,.3); }
+    .kb-detail-dark .kb-detail-msg { color: rgba(255,255,255,.5); }
 
-    .kb-entrant-header { display: flex; align-items: center; gap: 8px; padding: 3px 0 5px; border-bottom: 1px solid var(--border); margin-bottom: 3px; }
-    .kb-detail-dark .kb-entrant-header { border-bottom-color: rgba(255,255,255,.1); }
+    .kb-entrant-header { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--border); margin-bottom: 1px; position: sticky; top: 0; z-index: 1; background: var(--surface); }
+    .kb-detail-dark .kb-entrant-header { border-bottom-color: rgba(255,255,255,.15); background: #0d5c2e; }
     .kb-entrant-header .kb-entrant-rank,
     .kb-entrant-header .kb-entrant-name,
-    .kb-entrant-header .kb-entrant-pts { font-family: var(--font-head); font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--ink-3); }
+    .kb-entrant-header .kb-entrant-pts { font-family: var(--font-head); font-size: 9px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--ink-3); }
     .kb-detail-dark .kb-entrant-header .kb-entrant-rank,
     .kb-detail-dark .kb-entrant-header .kb-entrant-name,
-    .kb-detail-dark .kb-entrant-header .kb-entrant-pts { color: rgba(255,255,255,.3); }
+    .kb-detail-dark .kb-entrant-header .kb-entrant-pts { color: rgba(255,255,255,.45); }
 
-    .kb-entrant-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
-    .kb-entrant-rank { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: var(--ink-3); width: 28px; text-align: right; flex-shrink: 0; }
-    .kb-detail-dark .kb-entrant-rank { color: rgba(255,255,255,.4); }
+    .kb-entrant-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,.04); }
+    .kb-detail-dark .kb-entrant-row { border-bottom-color: rgba(255,255,255,.07); }
+    .kb-entrant-row:last-child { border-bottom: none; }
+
+    .kb-entrant-rank { font-family: var(--font-head); font-size: 10px; font-weight: 700; color: var(--ink-3); width: 24px; text-align: right; flex-shrink: 0; }
+    .kb-detail-dark .kb-entrant-rank { color: rgba(255,255,255,.45); }
     .kb-entrant-name { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--ink); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kb-detail-dark .kb-entrant-name { color: rgba(255,255,255,.8); }
-    .kb-entrant-pts { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--pitch); flex-shrink: 0; }
+    .kb-detail-dark .kb-entrant-name { color: #fff; }
+    .kb-entrant-pts { font-family: var(--font-head); font-size: 11px; font-weight: 700; color: var(--pitch); flex-shrink: 0; }
     .kb-detail-dark .kb-entrant-pts { color: var(--gold); }
 
     .loading-state { text-align: center; padding: 32px; color: var(--ink-3); font-size: 14px; }
@@ -139,7 +147,10 @@
     }
     @media (max-width: 600px) {
       .kb-team { width: 80px; }
+      .kb-trophy-team { width: 70px; }
       .kb-legend-note { display: none; }
+      .kb-trophy-sub { display: none; }
+      .kb-card-note { width: 100%; margin-left: 0; }
     }
     @media (max-width: 480px) {
       .group-grid { grid-template-columns: 1fr; }
@@ -291,7 +302,6 @@
       const teams = roundReach[key] || [];
       if (!teams.length) return '<div style="font-size:12px;color:var(--ink-3);font-style:italic;padding:4px 0;">No picks yet</div>';
       const max = teams[0].pct;
-      const hasAnyClickable = teams.some(t => isClickable(t.pct));
       return teams.map(t => {
         const w = max > 0 ? Math.round((t.pct / max) * 100) : 0;
         const clickable = isClickable(t.pct);
@@ -324,7 +334,7 @@
     }
 
     function trophyRows(teams) {
-      if (!teams.length) return '<div style="font-size:12px;color:rgba(255,255,255,.4);font-style:italic;padding:4px 0;">No picks yet</div>';
+      if (!teams.length) return '<div style="font-size:12px;color:rgba(255,255,255,.5);font-style:italic;padding:4px 0;">No picks yet</div>';
       const max = teams[0].pct;
       const medalNum   = ['1','2','3'];
       const medalClass = ['kb-m1','kb-m2','kb-m3'];
@@ -347,7 +357,7 @@
             </div>
           </div>
           <span class="kb-trophy-pct ${isPodium ? pctClass[i] : 'kb-px'}">${t.pct}%</span>
-          <span class="kb-chevron" style="color:rgba(255,255,255,.3)">›</span>
+          <span class="kb-chevron">›</span>
         </div>
         <div class="kb-detail kb-detail-dark" id="${did}"></div>`;
       });
@@ -363,17 +373,17 @@
       return (roundReach[key] || []).some(t => isClickable(t.pct));
     }
 
-    const r32count  = (roundReach['R32']   || []).length;
-    const r16count  = (roundReach['R16']   || []).length;
-    const qfcount   = (roundReach['QF']    || []).length;
-    const sfcount   = (roundReach['SF']    || []).length;
-    const fincount  = (roundReach['FINAL'] || []).length;
-
     function outlierNote(key) {
       return hasOutliers(key)
         ? `<span class="kb-card-note">Tap a pick below 40% to see who's backing them</span>`
         : '';
     }
+
+    const r32count = (roundReach['R32']   || []).length;
+    const r16count = (roundReach['R16']   || []).length;
+    const qfcount  = (roundReach['QF']    || []).length;
+    const sfcount  = (roundReach['SF']    || []).length;
+    const fincount = (roundReach['FINAL'] || []).length;
 
     return `
       <div class="section-head">
@@ -441,7 +451,7 @@
           <div class="kb-trophy-head">
             <span class="kb-trophy-title">Champion</span>
             <div class="kb-trophy-rule"></div>
-            <span class="kb-trophy-sub">Most picked to win the World Cup — tap any name to see who's backing them</span>
+            <span class="kb-trophy-sub">Tap any name to see who's backing them</span>
           </div>
           <div class="kb-trophy-body">${trophyRows(roundReach['CHAMPION'] || [])}</div>
         </div>
