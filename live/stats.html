@@ -11,22 +11,25 @@
   <style>
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+    /* ── Headline strip ── */
     .headline-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
-    .headline-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; box-shadow: var(--shadow-sm); }
+    .headline-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
     .headline-value { font-family: var(--font-head); font-size: 32px; font-weight: 800; color: var(--pitch); line-height: 1; margin-bottom: 4px; }
     .headline-label { font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .3px; text-transform: uppercase; }
-    .headline-sub { font-size: 11px; color: var(--ink-3); margin-top: 6px; }
+    .headline-sub { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
 
-    .scoreline-list { display: flex; flex-direction: column; gap: 4px; }
+    .scoreline-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
     .scoreline-row { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
     .scoreline-rank { font-family: var(--font-head); font-weight: 700; color: var(--ink-3); width: 14px; }
     .scoreline-score { font-family: var(--font-head); font-weight: 700; color: var(--ink); flex: 1; }
     .scoreline-pct { font-size: 12px; font-weight: 700; color: var(--pitch); }
 
+    /* ── Section heads ── */
     .section-head { margin: 28px 0 12px; }
     .section-head h2 { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--ink); margin: 0; }
     .section-head p { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; }
 
+    /* ── Group consensus ── */
     .group-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .group-card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--pitch); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
     .group-card-head { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
@@ -41,9 +44,11 @@
     .pos-row-bar { width: 60px; height: 6px; background: var(--surface-3); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
     .pos-row-bar-fill { height: 100%; background: var(--pitch); }
     .pos-row-bar-fill.qualify { background: #1a8a4a; }
+    /* Count shown inline — no hover needed */
+    .pos-row-pct { font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; }
+    .pos-row-count { font-size: 11px; color: var(--ink-3); flex-shrink: 0; min-width: 36px; text-align: right; }
     .headline-box.scorelines { padding: 12px 16px; }
-    .headline-box.scorelines .headline-label { margin-bottom: 8px; }
-    .pos-row-pct { width: 36px; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink-3); flex-shrink: 0; cursor: help; }
+    .headline-box.scorelines .headline-label { margin-bottom: 0; }
 
     /* ── Knockout stages ── */
     .kb { display: flex; flex-direction: column; gap: 10px; }
@@ -54,57 +59,59 @@
     .kb-legend-arrow { color: var(--ink-3); font-size: 10px; margin: 0 2px; opacity: .5; }
     .kb-legend-note { margin-left: auto; font-family: var(--font-head); font-size: 11px; color: var(--ink-3); font-style: italic; font-weight: 400; }
 
-    /* Collapsible cards */
+    /* Collapsible cards — smooth transition */
     .kb-card { border-radius: 10px; border: 1px solid var(--border); overflow: hidden; background: var(--surface); }
-    .kb-card-head { display: flex; align-items: center; gap: 10px; padding: 9px 16px; background: #f2f8f5; border-bottom: 1px solid rgba(13,92,46,0.1); cursor: pointer; user-select: none; flex-wrap: wrap; }
+    .kb-card-head { display: flex; align-items: center; gap: 8px; padding: 9px 16px; background: #f2f8f5; border-bottom: 1px solid transparent; cursor: pointer; user-select: none; transition: background .15s; flex-wrap: nowrap; }
     .kb-card-head:hover { background: #e8f4ee; }
-    .kb-card-title { font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--pitch); }
-    .kb-card-count { font-family: var(--font-head); font-size: 11px; font-weight: 500; color: var(--ink-3); }
-    .kb-card-note { font-family: var(--font-head); font-size: 11px; font-weight: 400; color: var(--ink-3); font-style: italic; margin-left: auto; }
-    .kb-card-toggle { font-size: 14px; color: var(--ink-3); flex-shrink: 0; transition: transform .2s; line-height: 1; margin-left: 6px; }
+    .kb-card.kb-card-open .kb-card-head { border-bottom-color: rgba(13,92,46,0.1); }
+    .kb-card-title { font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--pitch); flex-shrink: 0; }
+    .kb-card-count { font-family: var(--font-head); font-size: 11px; font-weight: 500; color: var(--ink-3); flex-shrink: 0; }
+    .kb-card-note { font-family: var(--font-head); font-size: 11px; font-weight: 400; color: var(--ink-3); font-style: italic; flex: 1; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .kb-card-toggle { font-size: 14px; color: var(--ink-3); flex-shrink: 0; transition: transform .25s; line-height: 1; margin-left: 4px; }
     .kb-card.kb-card-open .kb-card-toggle { transform: rotate(90deg); }
-    .kb-card-body { display: none; padding: 8px 16px 10px; flex-direction: column; gap: 5px; }
-    .kb-card.kb-card-open .kb-card-body { display: flex; }
+
+    /* Smooth collapse via max-height */
+    .kb-card-body { overflow: hidden; max-height: 0; transition: max-height .3s ease, padding .3s ease; padding: 0 16px; display: flex; flex-direction: column; gap: 5px; }
+    .kb-card.kb-card-open .kb-card-body { max-height: 2000px; padding: 8px 16px 10px; }
 
     .kb-row { display: flex; align-items: center; gap: 8px; }
     .kb-team { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .kb-track { flex: 1; height: 24px; background: #e8f0ec; border-radius: 3px; overflow: hidden; position: relative; min-width: 0; }
+    .kb-track { flex: 1; height: 24px; border-radius: 3px; overflow: hidden; position: relative; min-width: 0; }
     .kb-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; overflow: hidden; min-width: 0; }
     .kb-bar-count { font-family: var(--font-head); font-size: 11px; font-weight: 700; white-space: nowrap; padding: 0 7px; line-height: 1; }
     .kb-pct { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--ink-3); width: 30px; text-align: right; flex-shrink: 0; }
     .kb-chevron-spacer { width: 15px; flex-shrink: 0; }
 
-    /* Bar fill colours with matching readable text colours */
+    /* Bar fill + track colours with legible text */
     .kb-fill-r32 { background: #7dbf9a; }
     .kb-fill-r32 .kb-bar-count { color: #0d3d20; }
+    .kb-track-r32 { background: #d4edde; }
+
     .kb-fill-r16 { background: #3da06a; }
     .kb-fill-r16 .kb-bar-count { color: #fff; }
-    .kb-fill-qf  { background: #1a8a4a; }
-    .kb-fill-qf  .kb-bar-count { color: #fff; }
-    .kb-fill-sf  { background: #0f6e3a; }
-    .kb-fill-sf  .kb-bar-count { color: #fff; }
+    .kb-track-r16 { background: #c8e8d4; }
+
+    .kb-fill-qf { background: #1a8a4a; }
+    .kb-fill-qf .kb-bar-count { color: #fff; }
+    .kb-track-qf { background: #b8e0c8; }
+
+    .kb-fill-sf { background: #0f6e3a; }
+    .kb-fill-sf .kb-bar-count { color: #fff; }
+    .kb-track-sf { background: #a8d8bc; }
+
     .kb-fill-fin { background: #0d5c2e; }
     .kb-fill-fin .kb-bar-count { color: #fff; }
-
-    /* Track backgrounds lightened so bars contrast well */
-    .kb-track-r32 { background: #d4edde; }
-    .kb-track-r16 { background: #c8e8d4; }
-    .kb-track-qf  { background: #b8e0c8; }
-    .kb-track-sf  { background: #a8d8bc; }
     .kb-track-fin { background: #98d0b0; }
 
     /* ── Trophy block ── */
     .kb-trophy { border-radius: 10px; border: 1px solid #0a4a24; overflow: hidden; background: #0d5c2e; }
-
     .kb-trophy-head { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.12); }
     .kb-trophy-title { font-family: var(--font-head); font-size: 13px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); flex-shrink: 0; }
     .kb-trophy-rule { flex: 1; height: 1px; background: rgba(255,255,255,0.12); }
     .kb-trophy-sub { font-family: var(--font-head); font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.5); flex-shrink: 0; }
-
     .kb-trophy-body { padding: 10px 18px 14px; display: flex; flex-direction: column; gap: 6px; }
     .kb-trophy-sep { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
 
-    /* Podium rows — larger */
     .kb-trophy-row { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
     .kb-trophy-medal { font-family: var(--font-head); font-weight: 800; width: 18px; text-align: center; flex-shrink: 0; }
     .kb-trophy-team { font-family: var(--font-head); font-weight: 800; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -113,35 +120,33 @@
     .kb-trophy-bar-count { font-family: var(--font-head); font-weight: 700; white-space: nowrap; padding: 0 8px; line-height: 1; }
     .kb-trophy-pct { font-family: var(--font-head); font-weight: 800; text-align: right; flex-shrink: 0; }
 
-    /* Podium sizing */
-    .kb-trophy-row.podium-1 .kb-trophy-medal  { font-size: 16px; color: #d4a843; }
-    .kb-trophy-row.podium-1 .kb-trophy-team   { font-size: 26px; color: #fff; width: 120px; }
-    .kb-trophy-row.podium-1 .kb-trophy-track  { height: 26px; background: rgba(0,0,0,0.2); }
-    .kb-trophy-row.podium-1 .kb-trophy-fill   { background: #d4a843; }
-    .kb-trophy-row.podium-1 .kb-trophy-bar-count { font-size: 12px; color: rgba(0,0,0,0.6); }
-    .kb-trophy-row.podium-1 .kb-trophy-pct    { font-size: 20px; color: #d4a843; width: 42px; }
+    .kb-trophy-row.podium-1 .kb-trophy-medal     { font-size: 16px; color: #d4a843; }
+    .kb-trophy-row.podium-1 .kb-trophy-team      { font-size: 22px; color: #fff; width: 28%; min-width: 70px; max-width: 160px; }
+    .kb-trophy-row.podium-1 .kb-trophy-track     { height: 28px; background: rgba(0,0,0,0.25); }
+    .kb-trophy-row.podium-1 .kb-trophy-fill      { background: #d4a843; min-width: fit-content; }
+    .kb-trophy-row.podium-1 .kb-trophy-bar-count { font-size: 12px; color: rgba(0,0,0,0.65); }
+    .kb-trophy-row.podium-1 .kb-trophy-pct       { font-size: 20px; color: #d4a843; width: 42px; }
 
-    .kb-trophy-row.podium-2 .kb-trophy-medal  { font-size: 13px; color: #c8d8e8; }
-    .kb-trophy-row.podium-2 .kb-trophy-team   { font-size: 20px; color: rgba(255,255,255,0.95); width: 120px; }
-    .kb-trophy-row.podium-2 .kb-trophy-track  { height: 22px; background: rgba(0,0,0,0.2); }
-    .kb-trophy-row.podium-2 .kb-trophy-fill   { background: #c8d8e8; }
-    .kb-trophy-row.podium-2 .kb-trophy-bar-count { font-size: 11px; color: rgba(0,0,0,0.5); }
-    .kb-trophy-row.podium-2 .kb-trophy-pct    { font-size: 16px; color: #c8d8e8; width: 42px; }
+    .kb-trophy-row.podium-2 .kb-trophy-medal     { font-size: 13px; color: #c8d8e8; }
+    .kb-trophy-row.podium-2 .kb-trophy-team      { font-size: 18px; color: rgba(255,255,255,0.95); width: 28%; min-width: 70px; max-width: 160px; }
+    .kb-trophy-row.podium-2 .kb-trophy-track     { height: 24px; background: rgba(0,0,0,0.25); }
+    .kb-trophy-row.podium-2 .kb-trophy-fill      { background: #c8d8e8; min-width: fit-content; }
+    .kb-trophy-row.podium-2 .kb-trophy-bar-count { font-size: 11px; color: rgba(0,0,0,0.55); }
+    .kb-trophy-row.podium-2 .kb-trophy-pct       { font-size: 16px; color: #c8d8e8; width: 42px; }
 
-    .kb-trophy-row.podium-3 .kb-trophy-medal  { font-size: 13px; color: #e8b080; }
-    .kb-trophy-row.podium-3 .kb-trophy-team   { font-size: 18px; color: rgba(255,255,255,0.9); width: 120px; }
-    .kb-trophy-row.podium-3 .kb-trophy-track  { height: 20px; background: rgba(0,0,0,0.2); }
-    .kb-trophy-row.podium-3 .kb-trophy-fill   { background: #e8b080; }
-    .kb-trophy-row.podium-3 .kb-trophy-bar-count { font-size: 11px; color: rgba(0,0,0,0.45); }
-    .kb-trophy-row.podium-3 .kb-trophy-pct    { font-size: 15px; color: #e8b080; width: 42px; }
+    .kb-trophy-row.podium-3 .kb-trophy-medal     { font-size: 13px; color: #e8b080; }
+    .kb-trophy-row.podium-3 .kb-trophy-team      { font-size: 16px; color: rgba(255,255,255,0.9); width: 28%; min-width: 70px; max-width: 160px; }
+    .kb-trophy-row.podium-3 .kb-trophy-track     { height: 22px; background: rgba(0,0,0,0.25); }
+    .kb-trophy-row.podium-3 .kb-trophy-fill      { background: #e8b080; min-width: fit-content; }
+    .kb-trophy-row.podium-3 .kb-trophy-bar-count { font-size: 11px; color: rgba(0,0,0,0.5); }
+    .kb-trophy-row.podium-3 .kb-trophy-pct       { font-size: 15px; color: #e8b080; width: 42px; }
 
-    /* Non-podium sizing */
-    .kb-trophy-row.podium-x .kb-trophy-medal  { font-size: 11px; color: rgba(255,255,255,0.35); }
-    .kb-trophy-row.podium-x .kb-trophy-team   { font-size: 14px; color: rgba(255,255,255,0.7); width: 120px; }
-    .kb-trophy-row.podium-x .kb-trophy-track  { height: 16px; background: rgba(0,0,0,0.2); }
-    .kb-trophy-row.podium-x .kb-trophy-fill   { background: rgba(255,255,255,0.22); }
-    .kb-trophy-row.podium-x .kb-trophy-bar-count { font-size: 10px; color: rgba(255,255,255,0.5); }
-    .kb-trophy-row.podium-x .kb-trophy-pct    { font-size: 13px; color: rgba(255,255,255,0.55); width: 42px; }
+    .kb-trophy-row.podium-x .kb-trophy-medal     { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .kb-trophy-row.podium-x .kb-trophy-team      { font-size: 14px; color: rgba(255,255,255,0.7); width: 28%; min-width: 70px; max-width: 160px; }
+    .kb-trophy-row.podium-x .kb-trophy-track     { height: 18px; background: rgba(0,0,0,0.25); }
+    .kb-trophy-row.podium-x .kb-trophy-fill      { background: rgba(255,255,255,0.28); min-width: fit-content; }
+    .kb-trophy-row.podium-x .kb-trophy-bar-count { font-size: 10px; color: rgba(255,255,255,0.7); }
+    .kb-trophy-row.podium-x .kb-trophy-pct       { font-size: 13px; color: rgba(255,255,255,0.55); width: 42px; }
 
     /* Clickable rows */
     .kb-clickable { cursor: pointer; transition: opacity .15s; }
@@ -154,10 +159,8 @@
     /* Detail expansion */
     .kb-detail { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
     .kb-detail.kb-detail-open { max-height: 220px; overflow-y: auto; }
-
     .kb-detail-inner { padding: 2px 0 6px 0; display: flex; flex-direction: column; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 3px; }
     .kb-detail-dark .kb-detail-inner { border-bottom-color: rgba(255,255,255,.1); }
-
     .kb-detail-msg { font-family: var(--font-head); font-size: 12px; color: var(--ink-3); padding: 6px 0; font-style: italic; }
     .kb-detail-dark .kb-detail-msg { color: rgba(255,255,255,.5); }
 
@@ -173,7 +176,6 @@
     .kb-entrant-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,.04); }
     .kb-detail-dark .kb-entrant-row { border-bottom-color: rgba(255,255,255,.07); }
     .kb-entrant-row:last-child { border-bottom: none; }
-
     .kb-entrant-rank { font-family: var(--font-head); font-size: 10px; font-weight: 700; color: var(--ink-3); width: 24px; text-align: right; flex-shrink: 0; }
     .kb-detail-dark .kb-entrant-rank { color: rgba(255,255,255,.45); }
     .kb-entrant-name { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--ink); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -189,16 +191,14 @@
     }
     @media (max-width: 600px) {
       .kb-team { width: 80px; }
-      .kb-trophy-row.podium-1 .kb-trophy-team,
-      .kb-trophy-row.podium-2 .kb-trophy-team,
-      .kb-trophy-row.podium-3 .kb-trophy-team,
-      .kb-trophy-row.podium-x .kb-trophy-team { width: 70px; }
+
       .kb-legend-note { display: none; }
       .kb-trophy-sub { display: none; }
       .kb-card-note { width: 100%; margin-left: 0; }
     }
     @media (max-width: 480px) {
       .group-grid { grid-template-columns: 1fr; }
+      .headline-strip { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -282,20 +282,20 @@
             <span class="scoreline-score">${esc(s.scoreline)}</span>
             <span class="scoreline-pct">${s.pct}%</span>
           </div>`).join('')}</div>`
-      : '<div style="font-size:12px;color:var(--ink-3);font-style:italic;">No knockout scores yet</div>';
+      : '<div style="font-size:12px;color:var(--ink-3);font-style:italic;margin-top:6px;">No knockout scores yet</div>';
     return `
       <div class="headline-strip">
         <div class="headline-box">
-          <div class="headline-value">${data.entryCount}</div>
           <div class="headline-label">Entries</div>
+          <div class="headline-value">${data.entryCount}</div>
         </div>
         <div class="headline-box">
-          <div class="headline-value">€${(data.prizePot || 0).toLocaleString()}</div>
           <div class="headline-label">Prize pot</div>
+          <div class="headline-value">€${(data.prizePot || 0).toLocaleString()}</div>
         </div>
         <div class="headline-box">
-          <div class="headline-value">${data.avgGoalsPerMatch || '—'}</div>
           <div class="headline-label">Avg goals per knockout</div>
+          <div class="headline-value">${data.avgGoalsPerMatch || '—'}</div>
           <div class="headline-sub">Across all predicted knockout scorelines</div>
         </div>
         <div class="headline-box scorelines">
@@ -312,13 +312,15 @@
         <div class="pos-row">
           <span class="pos-row-team ${i === 0 ? 'lead' : ''}">${esc(p.team)}</span>
           <div class="pos-row-bar"><div class="pos-row-bar-fill" style="width:${p.pct}%"></div></div>
-          <span class="pos-row-pct" title="${p.count}/${entryCount} entrants">${p.pct}%</span>
+          <span class="pos-row-pct">${p.pct}%</span>
+          <span class="pos-row-count">${p.count}/${entryCount}</span>
         </div>`).join('');
       const qualify = (g.qualify || []).map(p => `
         <div class="pos-row">
           <span class="pos-row-team">${esc(p.team)}</span>
           <div class="pos-row-bar"><div class="pos-row-bar-fill qualify" style="width:${p.pct}%"></div></div>
-          <span class="pos-row-pct" title="${p.count}/${entryCount} entrants">${p.pct}%</span>
+          <span class="pos-row-pct">${p.pct}%</span>
+          <span class="pos-row-count">${p.count}/${entryCount}</span>
         </div>`).join('');
       return `
         <div class="group-card">
@@ -334,8 +336,7 @@
     return `
       <div class="section-head">
         <h2>Group consensus</h2>
-        <p>Top picks for group winner, and how likely the field thinks each team is to qualify. Hover a percentage to see the entrant count.</p>
-        <p style="margin-top:4px;font-size:12px;color:var(--ink-3);">Predicted to Qualify shows how many entrants predicted each team to reach the Round of 32.</p>
+        <p>Top picks for group winner and which teams the field expects to qualify. % shows the share of entries, count shows the raw numbers.</p>
       </div>
       <div class="group-grid">${cards}</div>`;
   }
@@ -385,10 +386,10 @@
       const medalNum    = ['1','2','3'];
       let html = '';
       teams.forEach((t, i) => {
-        const cls = i < 3 ? podiumClass[i] : 'podium-x';
+        const cls   = i < 3 ? podiumClass[i] : 'podium-x';
         const medal = i < 3 ? medalNum[i] : String(i + 1);
-        const w = max > 0 ? Math.round((t.pct / max) * 100) : 0;
-        const did = detailId('CHAMPION', t.team);
+        const w     = max > 0 ? Math.round((t.pct / max) * 100) : 0;
+        const did   = detailId('CHAMPION', t.team);
         if (i === 3) html += '<div class="kb-trophy-sep"></div>';
         html += `<div class="kb-trophy-row ${cls} kb-clickable" data-team="${esc(t.team)}" data-round="CHAMPION">
           <span class="kb-trophy-medal">${medal}</span>
@@ -421,8 +422,8 @@
         : '';
     }
 
-    function collapsibleCard(title, count, noteHtml, bodyHtml, toggleClass) {
-      return `<div class="kb-card ${toggleClass}">
+    function collapsibleCard(title, count, noteHtml, bodyHtml) {
+      return `<div class="kb-card">
         <div class="kb-card-head">
           <span class="kb-card-title">${title}</span>
           <span class="kb-card-count">${count}</span>
@@ -459,11 +460,11 @@
           <span class="kb-legend-note">Darker = field expects a deeper run</span>
         </div>
 
-        ${collapsibleCard('Round of 32', countLabel(r32count), outlierNote('R32'), rows('R32','kb-fill-r32','kb-track-r32'), '')}
-        ${collapsibleCard('Round of 16', countLabel(r16count), outlierNote('R16'), rows('R16','kb-fill-r16','kb-track-r16'), '')}
-        ${collapsibleCard('Quarter-finals', countLabel(qfcount), '', rows('QF','kb-fill-qf','kb-track-qf'), '')}
-        ${collapsibleCard('Semi-finals', countLabel(sfcount), '', rows('SF','kb-fill-sf','kb-track-sf'), '')}
-        ${collapsibleCard('Final', countLabel(fincount), '', rows('FINAL','kb-fill-fin','kb-track-fin'), '')}
+        ${collapsibleCard('Round of 32',   countLabel(r32count), outlierNote('R32'),   rows('R32',   'kb-fill-r32', 'kb-track-r32'))}
+        ${collapsibleCard('Round of 16',   countLabel(r16count), outlierNote('R16'),   rows('R16',   'kb-fill-r16', 'kb-track-r16'))}
+        ${collapsibleCard('Quarter-finals', countLabel(qfcount),  '',                  rows('QF',    'kb-fill-qf',  'kb-track-qf'))}
+        ${collapsibleCard('Semi-finals',    countLabel(sfcount),  '',                  rows('SF',    'kb-fill-sf',  'kb-track-sf'))}
+        ${collapsibleCard('Final',          countLabel(fincount), '',                  rows('FINAL', 'kb-fill-fin', 'kb-track-fin'))}
 
         <div class="kb-trophy">
           <div class="kb-trophy-head">
@@ -477,21 +478,19 @@
       </div>`;
   }
 
-  /* ── Collapsible card toggle ── */
+  /* ── Card collapse + row tap ── */
   document.addEventListener('click', function(e) {
     const head = e.target.closest('.kb-card-head');
     if (head) {
-      const card = head.closest('.kb-card');
-      if (card) card.classList.toggle('kb-card-open');
+      head.closest('.kb-card').classList.toggle('kb-card-open');
       return;
     }
-
     const row = e.target.closest('.kb-clickable');
     if (!row) return;
     const team  = row.dataset.team;
     const round = row.dataset.round;
     if (!team || !round) return;
-    const did = detailId(round, team);
+    const did      = detailId(round, team);
     const detailEl = document.getElementById(did);
     if (!detailEl) return;
     const willOpen = !detailEl.classList.contains('kb-detail-open');
@@ -504,26 +503,16 @@
 
   async function loadStatDetail(team, round, detailEl) {
     const cacheKey = round + '::' + team;
-    const isOpen = detailEl.classList.contains('kb-detail-open');
-
-    if (isOpen) {
+    if (detailEl.classList.contains('kb-detail-open')) {
       detailEl.classList.remove('kb-detail-open');
       return;
     }
-
     detailEl.classList.add('kb-detail-open');
-
-    if (detailCache[cacheKey]) {
-      detailEl.innerHTML = detailCache[cacheKey];
-      return;
-    }
-
+    if (detailCache[cacheKey]) { detailEl.innerHTML = detailCache[cacheKey]; return; }
     detailEl.innerHTML = `<div class="kb-detail-inner"><div class="kb-detail-msg">Loading…</div></div>`;
-
     try {
       const data = await apiFetch('getStatDetail', { team, round });
       if (!data.ok || !data.entrants) throw new Error(data.error || 'Failed');
-
       let html;
       if (!data.entrants.length) {
         html = `<div class="kb-detail-inner"><div class="kb-detail-msg">No entrants found.</div></div>`;
@@ -543,7 +532,6 @@
           ${rowsHtml}
         </div>`;
       }
-
       detailCache[cacheKey] = html;
       detailEl.innerHTML = html;
     } catch(err) {
