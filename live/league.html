@@ -1,0 +1,342 @@
+<!-- FILE: live/league.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private league Mick's World Cup Predictor 2026</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="icon" href="../soccerball.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .league-badge {
+      display: inline-block; background: var(--pitch); color: #fff;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 4px; margin-bottom: 8px;
+    }
+    .league-meta {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+      gap: 8px; margin-bottom: 10px; font-size: 12px; color: var(--ink-3);
+    }
+    .league-meta strong { color: var(--ink-2); }
+
+    .top3-section { background: var(--surface); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .top3-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--pitch); margin-bottom: 10px; }
+    .top3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .top3-card { background: var(--surface-2); border-radius: 8px; padding: 10px 8px; text-align: center; border-top: 2px solid transparent; }
+    .top3-card.p-1 { border-top-color: var(--gold); }
+    .top3-card.p-2 { border-top-color: #94a3b8; }
+    .top3-card.p-3 { border-top-color: #cd7c4a; }
+    .top3-medal  { font-size: 18px; margin-bottom: 3px; }
+    .top3-name   { font-family: var(--font-head); font-size: 13px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .top3-pts    { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--pitch); line-height: 1; }
+    .top3-ptslbl { font-size: 9px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .3px; }
+
+    .lb-table-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    table.lb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.lb-table th { background: var(--surface-2); color: var(--ink-3); padding: 8px 10px; font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; white-space: nowrap; border-bottom: 2px solid var(--pitch); cursor: pointer; user-select: none; }
+    table.lb-table th.num { text-align: right; }
+    table.lb-table th.ctr { text-align: center; }
+    table.lb-table td.lb-score { text-align: center; }
+    table.lb-table td.lb-num   { text-align: center; }
+    table.lb-table th .sort-arrow { margin-left: 3px; opacity: .4; font-size: 9px; }
+    table.lb-table th.sorted .sort-arrow { opacity: 1; color: var(--pitch); }
+    table.lb-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
+    table.lb-table tr:last-child td { border-bottom: none; }
+    table.lb-table tr:hover td { background: var(--surface-2); cursor: pointer; }
+    table.lb-table tr.league-top td { background: #d8f5e4; }
+    table.lb-table tr.league-top:hover td { background: #bfedcf; }
+
+    .rank-badge { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 12px; font-weight: 800; background: var(--surface-2); color: var(--ink-3); }
+    .rank-badge.rb-1 { background: var(--gold); color: #fff; }
+
+    .lb-name  { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+    .lb-score { font-family: var(--font-head); font-size: 16px; font-weight: 800; color: var(--pitch); text-align: right; }
+    .lb-num   { text-align: right; color: var(--ink-3); font-size: 12px; }
+    .global-rank { font-size: 11px; color: var(--ink-3); }
+
+    .badge-paid { background: #dcfce7; color: #166534; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
+    .badge-due  { background: #fee2e2; color: #991b1b; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
+
+    .lb-view-btn { font-size: 11px; color: var(--pitch); font-weight: 600; text-decoration: none; }
+    .lb-view-btn:hover { text-decoration: underline; }
+
+    .league-footer-link {
+      text-align: center; margin-top: 16px; padding: 12px;
+      background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);
+    }
+    .league-footer-link a { color: var(--pitch); font-weight: 600; text-decoration: none; font-size: 13px; }
+    .league-footer-link a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .top3-grid  { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+      .top3-name  { font-size: 11px; }
+      .top3-pts   { font-size: 16px; }
+      table.lb-table td, table.lb-table th { padding: 6px 7px; }
+      .lb-name { max-width: 100px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <span class="nav-brand-icon">
+      <img src="../soccerball.png" width="28" height="28" alt="" style="display:block;" />
+    </span>
+    <span class="nav-brand-text">Mick's <span>WC26</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="rules.html"><span class="nav-icon">📋</span> Rules</a></li>
+    <li><a href="https://revolut.me/mickeybo" target="_blank" rel="noopener"><span class="nav-icon">💳</span> Pay €10</a></li>
+    <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
+    <li><a href="results.html"><span class="nav-icon">📰</span> Results</a></li>
+    <li><a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</nav>
+
+<nav class="nav-mobile" id="navMobile">
+  <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules & scoring</a>
+  <a href="https://revolut.me/mickeybo" target="_blank" rel="noopener"><span class="nav-icon">💳</span> Pay €10</a>
+  <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
+  <a href="results.html"><span class="nav-icon">📰</span> Results</a>
+  <a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a>
+  <a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="league-badge">🔒 Private league</div>
+    <h1 id="leagueHeading">League<span> standings</span></h1>
+    <p class="page-hero-sub" id="leagueSub">Loading…</p>
+  </div>
+  <div class="page-hero-rainbow"></div>
+</div>
+
+<div class="main" id="lgMain">
+  <div style="text-align:center;padding:40px;">
+    <img src="../soccerball.png" width="32" height="32" alt=""
+         style="display:block;margin:0 auto 10px;animation:spin 1s linear infinite;" />
+    Loading league…
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-logo">Mick's <span>World Cup Predictor</span> 2026</div>
+    <p>A friendly competition between friends. 100% of entry fees go to the prize pool.</p>
+    <p style="margin-top:8px;"><a href="mailto:predictioncompetitionworldcup@gmail.com" style="color:rgba(255,255,255,.5);text-decoration:none;">predictioncompetitionworldcup@gmail.com</a></p>
+  </div>
+</footer>
+
+<script src="../site.js"></script>
+<script>
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function getLeagueId() {
+    const params = new URLSearchParams(window.location.search);
+    return (params.get('id') || '').trim().toLowerCase();
+  }
+
+  function getName(e)    { return e.displayName || '—'; }
+  function getTotal(e)   { return +(e.totalPoints || 0); }
+  function getGroup(e)   { return +(e.groupTotal || 0); }
+  function getProg(e)    { return +(e.progressionTotal || 0); }
+  function getMatch(e)   { return +(e.matchTotal || 0); }
+  function getExact(e)   { return +(e.exactScoreCount || 0); }
+  function getLgRank(e)  { return +(e.leagueRank || 0); }
+  function getGbRank(e)  { return +(e.globalRank || 0); }
+  function getPayment(e) { return e.paymentStatus || ''; }
+
+  let sortCol    = 'leagueRank';
+  let sortAsc    = true;
+  let allEntries = [];
+  let hasScores  = false;
+
+  function renderTable(entries, leagueName, paidCount) {
+    document.getElementById('leagueHeading').innerHTML = esc(leagueName);
+    document.getElementById('leagueSub').textContent =
+      `${entries.length} member${entries.length === 1 ? '' : 's'} ranked against each other. Global ranking shown for context.`;
+
+    let html = '';
+
+    // Top 3 podium
+    const top3 = entries.slice().sort((a, b) => getLgRank(a) - getLgRank(b)).slice(0, 3);
+    if (top3.length) {
+      const medals = ['🥇','🥈','🥉'];
+      html += '<div class="top3-section"><div class="top3-label">🏆 League leaders</div><div class="top3-grid">';
+      top3.forEach((e, i) => {
+        html += `
+          <div class="top3-card p-${i+1}">
+            <div class="top3-medal">${medals[i]}</div>
+            <div class="top3-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
+            <div class="top3-pts">${hasScores ? getTotal(e) : '—'}</div>
+            <div class="top3-ptslbl">pts</div>
+          </div>`;
+      });
+      html += '</div></div>';
+    }
+
+    html += `
+      <div class="league-meta">
+        <span><strong>${entries.length}</strong> member${entries.length === 1 ? '' : 's'} &middot; <strong>${paidCount}</strong> paid</span>
+        <a href="lookup.html" class="btn btn-outline" style="min-height:32px;font-size:12px;">🔍 Look up my scores</a>
+      </div>`;
+
+    if (!hasScores) {
+      html += `<div class="card" style="margin-bottom:12px;"><div class="card-body" style="padding:12px;font-size:13px;color:var(--ink-3);">
+        ⚽ Scoring hasn't started yet — points will appear once the tournament kicks off.
+      </div></div>`;
+    }
+
+    const cols = [
+      { key: 'leagueRank', label: 'League #',   cls: '' },
+      { key: 'name',       label: 'Entrant',    cls: '' },
+      { key: 'total',      label: 'Total',      cls: 'num' },
+      { key: 'group',      label: 'Groups',     cls: 'num' },
+      { key: 'prog',       label: 'Prog.',      cls: 'num' },
+      { key: 'match',      label: 'KO',         cls: 'num' },
+      { key: 'exact',      label: 'Exact',      cls: 'num' },
+      { key: 'globalRank', label: 'Global #',   cls: 'num' },
+      { key: 'pay',        label: 'Payment',    cls: '' },
+      { key: 'action',     label: '',           cls: '', noSort: true },
+    ];
+
+    html += '<div class="lb-table-wrap"><table class="lb-table"><thead><tr>';
+    cols.forEach(c => {
+      if (c.noSort) { html += `<th class="${c.cls}">${c.label}</th>`; return; }
+      const sorted = sortCol === c.key ? 'sorted' : '';
+      const arrow  = sortCol === c.key ? (sortAsc ? '▲' : '▼') : '▲';
+      html += `<th class="${c.cls} ${sorted}" data-col="${c.key}">${c.label}<span class="sort-arrow">${arrow}</span></th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    entries.forEach(e => {
+      const lr = getLgRank(e);
+      const isTop = lr === 1;
+      const rbClass = lr === 1 ? 'rb-1' : '';
+      const payStr = String(getPayment(e)).toUpperCase();
+      const payBadge = payStr === 'PAID'
+        ? '<span class="badge-paid">Paid</span>'
+        : '<span class="badge-due">Due</span>';
+
+      html += `
+        <tr class="${isTop ? 'league-top' : ''}" data-name="${esc(getName(e))}" style="cursor:pointer;">
+          <td><div class="rank-badge ${rbClass}">${lr}</div></td>
+          <td><div class="lb-name" title="${esc(getName(e))}">${esc(getName(e))}</div></td>
+          <td class="lb-score">${hasScores ? getTotal(e) : '—'}</td>
+          <td class="lb-num">${hasScores ? getGroup(e) : '—'}</td>
+          <td class="lb-num">${hasScores ? getProg(e) : '—'}</td>
+          <td class="lb-num">${hasScores ? getMatch(e) : '—'}</td>
+          <td class="lb-num">${hasScores ? getExact(e) : '—'}</td>
+          <td class="lb-num"><span class="global-rank">${getGbRank(e) || '—'}</span></td>
+          <td style="text-align:center;">${payBadge}</td>
+          <td><a class="lb-view-btn" href="lookup.html?name=${encodeURIComponent(getName(e))}">View →</a></td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    html += `<div class="league-footer-link"><a href="leaderboard.html">View the main leaderboard →</a></div>`;
+
+    document.getElementById('lgMain').innerHTML = html;
+
+    document.querySelectorAll('table.lb-table th[data-col]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (sortCol === col) { sortAsc = !sortAsc; }
+        else { sortCol = col; sortAsc = (col === 'leagueRank' || col === 'name' || col === 'globalRank'); }
+        renderTable(sortEntries(allEntries), leagueName, paidCount);
+      });
+    });
+
+    document.querySelectorAll('tr[data-name]').forEach(row => {
+      row.addEventListener('click', e => {
+        if (e.target.tagName === 'A') return;
+        window.location.href = `lookup.html?name=${encodeURIComponent(row.dataset.name)}`;
+      });
+    });
+  }
+
+  function getVal(e, col) {
+    switch(col) {
+      case 'leagueRank': return getLgRank(e);
+      case 'globalRank': return getGbRank(e) || 9999;
+      case 'name':       return getName(e).toLowerCase();
+      case 'total':      return getTotal(e);
+      case 'group':      return getGroup(e);
+      case 'prog':       return getProg(e);
+      case 'match':      return getMatch(e);
+      case 'exact':      return getExact(e);
+      case 'pay':        return String(getPayment(e)).toUpperCase();
+      default:           return getLgRank(e);
+    }
+  }
+
+  function sortEntries(entries) {
+    return [...entries].sort((a, b) => {
+      const av = getVal(a, sortCol);
+      const bv = getVal(b, sortCol);
+      if (av < bv) return sortAsc ? -1 : 1;
+      if (av > bv) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }
+
+  function showError(title, msg) {
+    document.getElementById('leagueHeading').innerHTML = 'League<span> not found</span>';
+    document.getElementById('leagueSub').textContent = '';
+    document.getElementById('lgMain').innerHTML = `
+      <div class="card"><div class="card-body">
+        <div class="coming-soon">
+          <div class="coming-soon-icon">🔒</div>
+          <h2>${esc(title)}</h2>
+          <p>${esc(msg)}</p>
+          <p style="margin-top:16px;"><a href="leaderboard.html" class="btn btn-outline">View main leaderboard</a></p>
+        </div>
+      </div></div>`;
+  }
+
+  async function loadLeague() {
+    const leagueId = getLeagueId();
+    if (!leagueId) {
+      showError('No league specified', 'This page needs a league ID in the URL, e.g. league.html?id=cathal');
+      return;
+    }
+    try {
+      const data = await apiFetch('getLeagueLeaderboard', { leagueId });
+      if (!data || !data.ok) {
+        showError('League not found', (data && data.error) || 'Check the link and try again.');
+        return;
+      }
+      allEntries = data.entries || [];
+      const leagueName = data.leagueName || 'Private league';
+      const paidCount = data.paidCount || 0;
+      if (!allEntries.length) {
+        document.getElementById('leagueHeading').innerHTML = esc(leagueName);
+        document.getElementById('leagueSub').textContent = 'No members yet.';
+        document.getElementById('lgMain').innerHTML =
+          '<div class="status-msg status-warn">No members are tagged to this league yet.</div>';
+        return;
+      }
+      hasScores = allEntries.some(e => getTotal(e) > 0);
+      window.leagueName = leagueName;
+      window.paidCount = paidCount;
+      renderTable(sortEntries(allEntries), leagueName, paidCount);
+    } catch (err) {
+      showError('Could not load league', 'Please try again shortly.');
+    }
+  }
+
+  loadLeague();
+</script>
+</body>
+</html>
