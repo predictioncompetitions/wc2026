@@ -119,10 +119,11 @@
       border-bottom:1px solid var(--surface-2);font-size:12px;
     }
     .fixture-row:last-child { border-bottom:none; }
-    .fixture-home { text-align:right; }
-    .fixture-away { text-align:left; }
-    .fx-team { display:flex;align-items:center;gap:4px;font-weight:600; }
+    .fixture-home { text-align:right;min-width:0; }
+    .fixture-away { text-align:left;min-width:0; }
+    .fx-team { display:flex;align-items:center;gap:4px;font-weight:600;min-width:0; }
     .fixture-home .fx-team { flex-direction:row-reverse; }
+    .fx-team span { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
     .fx-flag { width:18px;height:12px;object-fit:cover;border-radius:1px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
     .fx-score-box { text-align:center;min-width:64px; }
     .fx-score { font-family:var(--font-head);font-size:14px;font-weight:800;color:var(--ink);letter-spacing:.05em; }
@@ -311,6 +312,25 @@
     return `<img src="${url}" alt="${esc(name)}" class="${cls}" onerror="this.style.display='none'">`;
   }
 
+  // Short display names for long team names in fixture rows
+  const SHORT_NAMES = {
+    'Bosnia-Herzegovina':'Bosnia',
+    'Trinidad and Tobago':'Trinidad',
+    'United States':'USA',
+    'Cape Verde Islands':'Cape Verde',
+    'Korea Republic':'South Korea',
+    'Congo DR':'Congo DR',
+    'North Macedonia':'N. Macedonia',
+    'Saudi Arabia':'Saudi Arabia',
+    'New Zealand':'New Zealand',
+    'Ivory Coast':'Ivory Coast',
+    'El Salvador':'El Salvador',
+    'Costa Rica':'Costa Rica',
+  };
+  function shortName(name) {
+    return SHORT_NAMES[name] || name;
+  }
+
   function fmtDate(str) {
     if (!str) return '';
     const d = new Date(str);
@@ -436,9 +456,9 @@
           const dateBelow = (isFinished||isMatchLive) ? `<div class="fx-date">${fmtDate(m.utcDate)}</div>` : '';
 
           return `<div class="fixture-row">
-            <div class="fixture-home"><div class="fx-team">${flagImg(home,'fx-flag')}<span>${esc(home)}</span></div></div>
+            <div class="fixture-home"><div class="fx-team">${flagImg(home,'fx-flag')}<span title="${esc(home)}">${esc(shortName(home))}</span></div></div>
             <div class="fx-score-box">${scoreHtml}${dateBelow}</div>
-            <div class="fixture-away"><div class="fx-team">${flagImg(away,'fx-flag')}<span>${esc(away)}</span></div></div>
+            <div class="fixture-away"><div class="fx-team">${flagImg(away,'fx-flag')}<span title="${esc(away)}">${esc(shortName(away))}</span></div></div>
           </div>`;
         }).join('');
 
