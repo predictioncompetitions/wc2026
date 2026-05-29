@@ -80,6 +80,11 @@
     .rb-3 { background: var(--surface-2); color: var(--ink-3); }
     .rb-n { background: var(--surface-2); color: var(--ink-3); font-size: 11px; }
 
+    .rank-arrow { font-size: 0.7rem; margin-left: 3px; vertical-align: middle; }
+    .rank-arrow.up   { color: #16a34a; }
+    .rank-arrow.down { color: #dc2626; }
+    .rank-arrow.neu  { color: #94a3b8; }
+
     .lb-name  { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
     .lb-score { font-family: var(--font-head); font-size: 16px; font-weight: 800; color: var(--pitch); text-align: right; }
     .lb-num   { text-align: right; color: var(--ink-3); font-size: 12px; }
@@ -169,13 +174,13 @@
   const TOP5_LABELS = ['1st', '2nd', '3rd', '4th', '5th'];
   const PRIZE_10TH  = 20;
 
-function calcPrizes(paidCount, totalCount) {
+  function calcPrizes(paidCount, totalCount) {
     const totalPot    = paidCount * ENTRY_FEE;
     const tenthCount  = Math.floor(totalCount / 10);
     const fixedTotal  = tenthCount * PRIZE_10TH;
     const top5Pot     = Math.max(0, totalPot - fixedTotal);
     const top5Amounts = TOP5_PCTS.map(p => Math.round(top5Pot * p));
-const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
+    const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
     return { totalPot, fixedTotal, top5Pot, top5Amounts, tenthPlaces, tenthCount };
   }
 
@@ -191,6 +196,13 @@ const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
   function getExact(e)   { return +(e.exactScoreCount || e.EXACT_SCORE_COUNT || 0); }
   function getRank(e, i) { return +(e.rank || e.RANK || (i + 1)); }
   function getPayment(e) { return e.paymentStatus || e.PAYMENT_STATUS || ''; }
+
+  function rankArrow(rank, prevRank) {
+    if (!prevRank) return '<span class="rank-arrow neu">—</span>';
+    if (rank < prevRank) return '<span class="rank-arrow up">▲</span>';
+    if (rank > prevRank) return '<span class="rank-arrow down">▼</span>';
+    return '<span class="rank-arrow neu">—</span>';
+  }
 
   let sortCol    = 'rank';
   let sortAsc    = true;
@@ -267,8 +279,8 @@ const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
       const r         = getRank(e, i);
       const isTop5    = r <= 5;
       const is10th    = tenthSet.has(r);
-      const isDue = String(getPayment(e)).toUpperCase() === 'DUE';
-      const prizeClass = isDue ? 'prize-row-due' : isTop5 ? 'prize-row-top' : is10th ? 'prize-row-10' : '';      
+      const isDue     = String(getPayment(e)).toUpperCase() === 'DUE';
+      const prizeClass = isDue ? 'prize-row-due' : isTop5 ? 'prize-row-top' : is10th ? 'prize-row-10' : '';
       const rbClass   = r === 1 ? 'rb-1' : r === 2 ? 'rb-2' : r === 3 ? 'rb-3' : 'rb-n';
       const payStr    = String(getPayment(e)).toUpperCase();
       const payBadge  = payStr === 'PAID'
@@ -280,13 +292,13 @@ const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
         prizeChip = prizesConfirmed
           ? `<span class="prize-chip prize-chip-top">€${prizes.top5Amounts[r-1]}</span>`
           : `<span class="prize-chip prize-chip-tba">Prize TBA</span>`;
-          } else if (is10th) {
+      } else if (is10th) {
         prizeChip = `<span class="prize-chip prize-chip-10">€${PRIZE_10TH}</span>`;
       }
 
       html += `
         <tr class="${prizeClass}" data-name="${esc(getName(e))}" style="cursor:pointer;">
-          <td><div class="rank-badge ${rbClass}">${r}</div></td>
+          <td><div class="rank-badge ${rbClass}">${r}</div>${rankArrow(r, e.prevRank || null)}</td>
           <td style="text-align:center;">${prizeChip}</td>
           <td><div class="lb-name" title="${esc(getName(e))}">${esc(getName(e))}</div></td>
           <td class="lb-score">${hasScores ? getTotal(e) : '—'}</td>
@@ -375,15 +387,18 @@ const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
   }
 
   loadLeaderboard();
-  
-function togglePrizePanel() {
-  const body = document.getElementById('prizePanelBody');
-  const chevron = document.getElementById('prizePanelChevron');
-  const hidden = body.style.display === 'none';
-  body.style.display = hidden ? 'block' : 'none';
-  chevron.textContent = hidden ? '▲ Hide' : '▼ Show';
-}
-  
+
+  function togglePrizePanel() {
+    const body = document.getElementById('prizePanelBody');
+    const chevron = document.getElementById('prizePanelChevron');
+    const hidden = body.style.display === 'none';
+    body.style.display = hidden ? 'block' : 'none';
+    chevron.textContent = hidden ? '▲ Hide' : '▼ Show';
+  }
+
+  document.getElementById('navToggle').addEventListener('click', () => {
+    document.getElementById('navMobile').classList.toggle('open');
+  });
 </script>
 </body>
 </html>
