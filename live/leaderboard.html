@@ -22,7 +22,8 @@
     .top5-card.p-1 { border-top-color: var(--gold); }
     .top5-card.p-2 { border-top-color: #94a3b8; }
     .top5-card.p-3 { border-top-color: #cd7c4a; }
-    .top5-card.p-4, .top5-card.p-5 { border-top-color: var(--border-2); }
+    .top5-card.p-4 { border-top-color: #0891b2; }
+    .top5-card.p-5 { border-top-color: #7c3aed; }
     .top5-medal  { font-size: 16px; margin-bottom: 3px; }
     .top5-name   { font-family: var(--font-head); font-size: 13px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
     .top5-pts    { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--pitch); line-height: 1; }
@@ -253,7 +254,6 @@
     _lastPrizesConf = prizesConfirmed;
 
     const prizes   = calcPrizes(paidCount, entries.length);
-    const medals   = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣'];
     const tenthSet = new Set(prizes.tenthPlaces);
 
     let html = '';
@@ -264,9 +264,10 @@
       top5.forEach((e, i) => {
         const prizeAmt   = prizesConfirmed ? `€${prizes.top5Amounts[i]}` : 'Prize TBA';
         const prizeClass = prizesConfirmed ? '' : ' tba';
-        html += `
-          <div class="top5-card p-${i+1}">
-            <div class="top5-medal">${medals[i]}</div>
+        const podiumClass = ['rb-1','rb-2','rb-3','rb-4','rb-5'][i];
+    html += `
+        <div class="top5-card p-${i+1}">
+            <div class="rank-badge ${podiumClass}" style="margin:0 auto 6px;">${i+1}</div>
             <div class="top5-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
             <div class="top5-pts">${hasScores ? getTotal(e) : '—'}</div>
             <div class="top5-ptslbl">pts</div>
