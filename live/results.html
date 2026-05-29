@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fixtures\Results Mick's World Cup Predictor 2026</title>
+  <title>Fixtures/Results Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="../style.css" />
   <link rel="icon" href="../soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -131,6 +131,34 @@
     .fx-score.live     { color:#ef4444; }
     .fx-score.tbd      { font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--ink-3); }
     .fx-date { font-size:10px;color:var(--ink-3);margin-top:2px; }
+
+    /* Chronological fixtures list */
+    .all-fixtures { margin-top:24px; }
+    .all-fixtures-head {
+      font-family:var(--font-head);font-size:18px;font-weight:800;
+      color:var(--ink);margin-bottom:16px;letter-spacing:.02em;
+    }
+    .fixture-day-header {
+      font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+      color:var(--ink-3);padding:6px 0;border-bottom:2px solid var(--surface-3);
+      margin:16px 0 6px;
+    }
+    .fixture-day-header:first-child { margin-top:0; }
+    .all-fx-row {
+      display:grid;grid-template-columns:1fr 80px 1fr;
+      align-items:center;gap:6px;padding:7px 4px;
+      border-bottom:1px solid var(--surface-2);font-size:13px;
+    }
+    .all-fx-row:last-child { border-bottom:none; }
+    .all-fx-home { text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:5px;font-weight:600;min-width:0; }
+    .all-fx-away { text-align:left;display:flex;align-items:center;gap:5px;font-weight:600;min-width:0; }
+    .all-fx-home span, .all-fx-away span { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .all-fx-score-box { text-align:center; }
+    .all-fx-score { font-family:var(--font-head);font-size:14px;font-weight:800;letter-spacing:.05em;color:var(--pitch); }
+    .all-fx-score.upcoming { font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--ink-3); }
+    .all-fx-score.live { color:#ef4444; }
+    .all-fx-group { font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--ink-3);margin-top:1px; }
+    .all-fx-flag { width:18px;height:12px;object-fit:cover;border-radius:1px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
 
     /* Knockout */
     .bracket-section { margin-bottom:32px; }
@@ -484,7 +512,75 @@
       </div>`;
     }).join('');
 
-    return updatedLabel + `<div class="groups-grid">${cards}</div>`;
+    return updatedLabel + `<div class="groups-grid">${cards}</div>` + renderAllFixtures(matchesByGroup);
+  }
+
+  // ── Render: all group fixtures chronologically ─────────────────────────────
+  function renderAllFixtures(matchesByGroup) {
+    // Flatten all matches
+    const all = [];
+    Object.entries(matchesByGroup).forEach(([grp, matches]) => {
+      matches.forEach(m => all.push({ ...m, _grp: grp }));
+    });
+    if (!all.length) return '';
+
+    // Sort by date
+    all.sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
+
+    // Group by date
+    const byDay = {};
+    all.forEach(m => {
+      const day = new Date(m.utcDate).toLocaleDateString('en-IE', { weekday:'long', day:'numeric', month:'long' });
+      if (!byDay[day]) byDay[day] = [];
+      byDay[day].push(m);
+    });
+
+    let html = '<div class="all-fixtures"><div class="all-fixtures-head">All group fixtures</div>';
+
+    Object.entries(byDay).forEach(([day, matches]) => {
+      html += `<div class="fixture-day-header">${esc(day)}</div>`;
+      matches.forEach(m => {
+        const home = m.homeTeam?.name || 'TBD';
+        const away = m.awayTeam?.name || 'TBD';
+        const st = m.status;
+        const isFinished  = st === 'FINISHED';
+        const isLive      = ['IN_PLAY','PAUSED','HALFTIME'].includes(st);
+        const h = m.score?.fullTime?.home;
+        const a = m.score?.fullTime?.away;
+        const hasScore = h !== null && h !== undefined;
+        const grpLetter = (m._grp || '').replace('Group ', '');
+        const time = new Date(m.utcDate).toLocaleTimeString('en-IE', { hour:'2-digit', minute:'2-digit' });
+
+        let scoreHtml;
+        if (isFinished && hasScore) {
+          scoreHtml = `<div class="all-fx-score">${h} – ${a}</div>`;
+        } else if (isLive) {
+          const lh = m.score?.currentScore?.home ?? '?';
+          const la = m.score?.currentScore?.away ?? '?';
+          scoreHtml = `<div class="all-fx-score live">${lh} – ${la}</div>`;
+        } else {
+          scoreHtml = `<div class="all-fx-score upcoming">${time}</div>`;
+        }
+
+        html += `<div class="all-fx-row">
+          <div class="all-fx-home">
+            <span title="${esc(home)}">${esc(shortName(home))}</span>
+            ${flagImg(home,'all-fx-flag')}
+          </div>
+          <div class="all-fx-score-box">
+            ${scoreHtml}
+            <div class="all-fx-group">Grp ${esc(grpLetter)}</div>
+          </div>
+          <div class="all-fx-away">
+            ${flagImg(away,'all-fx-flag')}
+            <span title="${esc(away)}">${esc(shortName(away))}</span>
+          </div>
+        </div>`;
+      });
+    });
+
+    html += '</div>';
+    return html;
   }
 
   // ── Render: knockout bracket ────────────────────────────────────────────────
