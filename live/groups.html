@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Groups | Mick's World Cup 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --pitch: #0d5c2e;
+      --pitch-light: #1a7a40;
+      --pitch-dark: #094a25;
+      --gold: #d4a843;
+      --gold-light: #f0c96a;
+      --ink: #1a1f2e;
+      --ink-light: #2d3448;
+      --surface: #f5f7f5;
+      --surface-alt: #eef2ee;
+      --card: #ffffff;
+      --border: #d4ddd4;
+      --text: #1a1f2e;
+      --text-muted: #6b7a6b;
+      --green-hit: #d1fae5;
+      --green-hit-text: #065f46;
+      --radius: 10px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      background: var(--ink);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links {
+      display: flex;
+      gap: 0.25rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 0.7rem;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: #fff; background: rgba(255,255,255,0.1); }
+    .nav-links a.active { color: var(--gold); }
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.4rem;
+      color: #fff;
+    }
+    .nav-toggle svg { display: block; }
+
+    @media (max-width: 680px) {
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 56px; left: 0; right: 0; background: var(--ink-light); padding: 0.5rem; gap: 0.2rem; }
+      .nav-links.open { display: flex; }
+      .nav-toggle { display: block; }
+    }
+
+    /* PAGE HEADER */
+    .page-header {
+      background: linear-gradient(135deg, var(--pitch-dark) 0%, var(--pitch) 60%, var(--pitch-light) 100%);
+      padding: 2rem 1rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 20px,
+        rgba(255,255,255,0.02) 20px,
+        rgba(255,255,255,0.02) 40px
+      );
+    }
+    .page-header h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: #fff;
+      letter-spacing: 0.03em;
+      position: relative;
+    }
+    .page-header p {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
+      position: relative;
+    }
+    .last-updated {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      position: relative;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    /* LOADING */
+    .loading-wrap {
+      text-align: center;
+      padding: 4rem 1rem;
+    }
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #dde8dd;
+      border-top-color: var(--pitch);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-wrap p { color: var(--text-muted); font-size: 0.9rem; }
+
+    /* ERROR */
+    .error-wrap {
+      text-align: center;
+      padding: 3rem 1rem;
+      display: none;
+    }
+    .error-wrap .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .error-wrap h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .error-wrap p { color: var(--text-muted); font-size: 0.9rem; }
+    .retry-btn {
+      margin-top: 1rem;
+      background: var(--pitch);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+    }
+    .retry-btn:hover { background: var(--pitch-light); }
+
+    /* GROUPS GRID */
+    .groups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+      display: none;
+    }
+
+    /* GROUP CARD */
+    .group-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .group-card-header {
+      background: var(--pitch);
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .group-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+    .group-status {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .status-upcoming { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
+    .status-live { background: #ef4444; color: #fff; animation: pulse 1.5s ease-in-out infinite; }
+    .status-finished { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+
+    /* STANDINGS TABLE */
+    .standings-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .standings-table thead tr {
+      background: var(--surface-alt);
+      border-bottom: 2px solid var(--border);
+    }
+    .standings-table th {
+      padding: 0.4rem 0.5rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .standings-table th.team-col { text-align: left; padding-left: 0.75rem; }
+    .standings-table td {
+      padding: 0.55rem 0.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      font-variant-numeric: tabular-nums;
+    }
+    .standings-table td.team-col {
+      text-align: left;
+      padding-left: 0.75rem;
+    }
+    .standings-table tr:last-child td { border-bottom: none; }
+    .standings-table tr.qualify-auto { background: rgba(13, 92, 46, 0.05); }
+    .standings-table tr.qualify-possible { background: rgba(212, 168, 67, 0.05); }
+
+    .team-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pos-badge {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .pos-1, .pos-2 { background: var(--pitch); color: #fff; }
+    .pos-3 { background: var(--gold); color: var(--ink); }
+    .pos-4 { background: var(--border); color: var(--text-muted); }
+
+    .flag {
+      width: 22px;
+      height: 15px;
+      object-fit: cover;
+      border-radius: 2px;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .flag-placeholder {
+      width: 22px;
+      height: 15px;
+      background: var(--border);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .team-name {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+
+    .pts-cell {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    /* QUALIFY LEGEND */
+    .qualify-legend {
+      display: flex;
+      gap: 1rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--surface-alt);
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .legend-item { display: flex; align-items: flex-start; gap: 0.35rem; }
+
+    /* FIXTURES SECTION */
+    .fixtures-section {
+      border-top: 2px solid var(--border);
+      margin-top: 0;
+    }
+    .fixtures-toggle {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0.65rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--pitch);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      transition: background 0.15s;
+    }
+    .fixtures-toggle:hover { background: var(--surface-alt); }
+    .fixtures-toggle .chevron { transition: transform 0.2s; font-size: 0.75rem; }
+    .fixtures-toggle.open .chevron { transform: rotate(180deg); }
+
+    .fixtures-list {
+      display: none;
+      padding: 0 0.5rem 0.5rem;
+    }
+    .fixtures-list.open { display: block; }
+
+    .fixture-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.25rem;
+      border-bottom: 1px solid var(--surface-alt);
+      font-size: 0.8rem;
+    }
+    .fixture-row:last-child { border-bottom: none; }
+    .fixture-home { text-align: right; font-weight: 500; }
+    .fixture-away { text-align: left; font-weight: 500; }
+    .fixture-team { display: flex; align-items: center; gap: 0.35rem; }
+    .fixture-home .fixture-team { flex-direction: row-reverse; }
+    .fixture-score-box {
+      text-align: center;
+      min-width: 72px;
+    }
+    .score-display {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      color: var(--ink);
+    }
+    .score-display.tbd {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-family: 'Barlow', sans-serif;
+    }
+    .fixture-date {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+    .fixture-flag { width: 18px; height: 12px; object-fit: cover; border-radius: 1px; border: 1px solid rgba(0,0,0,0.08); }
+    .fixture-flag-placeholder { width: 18px; height: 12px; background: var(--border); border-radius: 1px; }
+
+    .fixture-row.live .score-display {
+      color: #ef4444;
+    }
+    .fixture-row.finished .score-display {
+      color: var(--pitch);
+    }
+
+    /* MATCH COUNT BADGE */
+    .match-count {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      font-family: 'Barlow', sans-serif;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    @media (max-width: 500px) {
+      .team-name { max-width: 80px; font-size: 0.78rem; }
+      .standings-table td, .standings-table th { padding: 0.45rem 0.3rem; font-size: 0.75rem; }
+      .pts-cell { font-size: 0.88rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Mick's <span>WC2026</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="enter.html">Enter</a></li>
+      <li><a href="groups.html" class="active">Groups</a></li>
+      <li><a href="leaderboard.html">Leaderboard</a></li>
+      <li><a href="lookup.html">My scores</a></li>
+      <li><a href="rules.html">Rules</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>Group stage</h1>
+  <p>12 groups &middot; 48 teams &middot; 72 matches</p>
+  <span class="last-updated" id="lastUpdated"></span>
+</div>
+
+<div id="rateBanner" style="display:none;background:#7f1d1d;color:#fecaca;font-size:0.82rem;font-weight:500;text-align:center;padding:0.5rem 1rem;position:sticky;top:56px;z-index:99;"></div>
+
+<main>
+  <div class="loading-wrap" id="loadingWrap">
+    <div class="spinner"></div>
+    <p>Loading groups&hellip;</p>
+  </div>
+
+  <div class="error-wrap" id="errorWrap">
+    <div class="icon">⚽</div>
+    <h2>Couldn't load data</h2>
+    <p id="errorMsg">Something went wrong fetching the live data.</p>
+    <button class="retry-btn" onclick="loadData()">Try again</button>
+  </div>
+
+  <div class="groups-grid" id="groupsGrid"></div>
+</main>
+
+<script>
+  const API_KEY = 'd7fbf3eeec94414eb4b4158a9fa5a00b';
+  const BASE    = 'https://api.football-data.org/v4';
+  const HEADERS = { 'X-Auth-Token': API_KEY };
+
+  // Country code map for flags (ISO 3166-1 alpha-2)
+  const COUNTRY_CODES = {
+    'Mexico': 'MX', 'South Africa': 'ZA', 'South Korea': 'KR', 'Czechia': 'CZ',
+    'Argentina': 'AR', 'Morocco': 'MA', 'Ukraine': 'UA', 'Slovakia': 'SK',
+    'Brazil': 'BR', 'Serbia': 'RS', 'Switzerland': 'CH', 'Cameroon': 'CM',
+    'United States': 'US', 'Paraguay': 'PY', 'Australia': 'AU', 'Turkey': 'TR',
+    'Spain': 'ES', 'Egypt': 'EG', 'Nigeria': 'NG', 'Portugal': 'PT',
+    'France': 'FR', 'Honduras': 'HN', 'Saudi Arabia': 'SA', 'Japan': 'JP',
+    'England': 'GB-ENG', 'Senegal': 'SN', 'Uruguay': 'UY', 'IR Iran': 'IR',
+    'Belgium': 'BE', 'Colombia': 'CO', 'Venezuela': 'VE', 'Denmark': 'DK',
+    'Netherlands': 'NL', 'Peru': 'PE', 'Bolivia': 'BO', 'Canada': 'CA',
+    'Germany': 'DE', 'Curaçao': 'CW', 'Ivory Coast': 'CI', 'Ecuador': 'EC',
+    'Croatia': 'HR', 'Chile': 'CL', 'Albania': 'AL', 'New Zealand': 'NZ',
+    'Italy': 'IT', 'Costa Rica': 'CR', 'Qatar': 'QA', 'Poland': 'PL',
+    'Poland': 'PL', 'Austria': 'AT', 'Panama': 'PA', 'Greece': 'GR',
+    'Iran': 'IR', 'Korea Republic': 'KR', 'United Arab Emirates': 'AE',
+    'Uzbekistan': 'UZ', 'Côte d\'Ivoire': 'CI', 'Morocco': 'MA',
+    'DR Congo': 'CD', 'Tunisia': 'TN', 'Algeria': 'DZ', 'Mali': 'ML',
+    'Romania': 'RO', 'Hungary': 'HU', 'Wales': 'GB-WLS', 'Scotland': 'GB-SCT',
+    'Republic of Ireland': 'IE', 'Ireland': 'IE',
+    'Sweden': 'SE', 'Norway': 'NO', 'Finland': 'FI',
+    'Russia': 'RU', 'Serbia': 'RS', 'Slovenia': 'SI', 'North Macedonia': 'MK',
+    'Bosnia-Herzegovina': 'BA', 'Montenegro': 'ME', 'Kosovo': 'XK',
+    'Guatemala': 'GT', 'Jamaica': 'JM', 'Trinidad and Tobago': 'TT',
+    'El Salvador': 'SV', 'Nicaragua': 'NI', 'Cuba': 'CU', 'Haiti': 'HT',
+    'Dominican Republic': 'DO',
+  };
+
+  function flagUrl(name) {
+    const code = COUNTRY_CODES[name];
+    if (!code) return null;
+    if (code.startsWith('GB-')) {
+      // Use flag-icons style for sub-national
+      return `https://flagcdn.com/w40/${code.toLowerCase().replace('-','_').replace('gb_','gb-')}.png`;
+    }
+    return `https://flagcdn.com/w40/${code.toLowerCase()}.png`;
+  }
+
+  function flagImg(name, cls = 'flag') {
+    const url = flagUrl(name);
+    if (url) return `<img src="${url}" alt="${name}" class="${cls}" onerror="this.style.display='none'">`;
+    return `<span class="${cls}-placeholder"></span>`;
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-IE', { day: 'numeric', month: 'short' }) +
+           ' · ' + d.toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function groupStatus(matches) {
+    const now = new Date();
+    const statuses = matches.map(m => m.status);
+    if (statuses.some(s => s === 'IN_PLAY' || s === 'PAUSED' || s === 'HALFTIME')) return 'live';
+    const allFinished = matches.length > 0 && matches.every(s => s === 'FINISHED');
+    if (allFinished) return 'finished';
+    const anyStarted = matches.some(s => s === 'FINISHED');
+    return anyStarted ? 'live' : 'upcoming';
+  }
+
+  function renderStandings(table) {
+    if (!table || table.length === 0) {
+      return '<p style="padding:0.75rem;color:var(--text-muted);font-size:0.8rem;">Standings not yet available.</p>';
+    }
+    const rows = table.map(row => {
+      const pos = row.position;
+      const name = row.team?.name || '';
+      const posClass = pos <= 2 ? `pos-${pos}` : pos === 3 ? 'pos-3' : 'pos-4';
+      const trClass = pos <= 2 ? 'qualify-auto' : pos === 3 ? 'qualify-possible' : '';
+      return `
+        <tr class="${trClass}">
+          <td class="team-col">
+            <div class="team-cell">
+              <span class="pos-badge ${posClass}">${pos}</span>
+              ${flagImg(name)}
+              <span class="team-name" title="${name}">${name}</span>
+            </div>
+          </td>
+          <td>${row.playedGames ?? 0}</td>
+          <td>${row.won ?? 0}</td>
+          <td>${row.draw ?? 0}</td>
+          <td>${row.lost ?? 0}</td>
+          <td>${row.goalsFor ?? 0}</td>
+          <td>${row.goalsAgainst ?? 0}</td>
+          <td>${row.goalDifference ?? 0}</td>
+          <td class="pts-cell">${row.points ?? 0}</td>
+        </tr>`;
+    }).join('');
+
+    return `
+      <table class="standings-table">
+        <thead>
+          <tr>
+            <th class="team-col">Team</th>
+            <th title="Played">P</th>
+            <th title="Won">W</th>
+            <th title="Drawn">D</th>
+            <th title="Lost">L</th>
+            <th title="Goals for">GF</th>
+            <th title="Goals against">GA</th>
+            <th title="Goal difference">GD</th>
+            <th title="Points">Pts</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="qualify-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--pitch)"></div>
+          <span>Advance to R32</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--gold)"></div>
+          <span>Possible via 3rd place</span>
+        </div>
+      </div>`;
+  }
+
+  function renderFixtures(matches, groupId) {
+    if (!matches || matches.length === 0) return '';
+
+    const count = matches.length;
+    const rows = matches.map(m => {
+      const home = m.homeTeam?.name || 'TBD';
+      const away = m.awayTeam?.name || 'TBD';
+      const status = m.status;
+      const isFinished = status === 'FINISHED';
+      const isLive = status === 'IN_PLAY' || status === 'PAUSED' || status === 'HALFTIME';
+      const homeGoals = m.score?.fullTime?.home;
+      const awayGoals = m.score?.fullTime?.away;
+      const hasScore = homeGoals !== null && homeGoals !== undefined;
+
+      let scoreHtml;
+      if (isFinished && hasScore) {
+        scoreHtml = `<div class="score-display">${homeGoals} – ${awayGoals}</div>`;
+      } else if (isLive) {
+        const lh = m.score?.currentScore?.home ?? m.score?.halfTime?.home ?? '?';
+        const la = m.score?.currentScore?.away ?? m.score?.halfTime?.away ?? '?';
+        scoreHtml = `<div class="score-display" style="color:#ef4444">${lh} – ${la}</div>`;
+      } else {
+        scoreHtml = `<div class="score-display tbd">${formatDate(m.utcDate)}</div>`;
+      }
+
+      const dateBelow = (isFinished || isLive) ? `<div class="fixture-date">${formatDate(m.utcDate)}</div>` : '';
+      const rowClass = isFinished ? 'finished' : isLive ? 'live' : '';
+
+      return `
+        <div class="fixture-row ${rowClass}">
+          <div class="fixture-home">
+            <div class="fixture-team">
+              ${flagImg(home, 'fixture-flag')}
+              <span>${home}</span>
+            </div>
+          </div>
+          <div class="fixture-score-box">
+            ${scoreHtml}
+            ${dateBelow}
+          </div>
+          <div class="fixture-away">
+            <div class="fixture-team">
+              ${flagImg(away, 'fixture-flag')}
+              <span>${away}</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="fixtures-section">
+        <button class="fixtures-toggle" onclick="toggleFixtures(this)" aria-expanded="false">
+          <span>Fixtures <span class="match-count">${count} matches</span></span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="fixtures-list">
+          ${rows}
+        </div>
+      </div>`;
+  }
+
+  function toggleFixtures(btn) {
+    btn.classList.toggle('open');
+    const list = btn.nextElementSibling;
+    list.classList.toggle('open');
+    btn.setAttribute('aria-expanded', list.classList.contains('open'));
+  }
+
+  function renderGroup(group, matchesByGroup) {
+    const groupId = group.group || group.stage;
+    const groupLetter = groupId?.replace('GROUP_', '') || '?';
+    const table = group.table || [];
+    const matches = matchesByGroup[groupId] || [];
+
+    const statuses = matches.map(m => m.status);
+    const isLive = statuses.some(s => ['IN_PLAY','PAUSED','HALFTIME'].includes(s));
+    const allDone = matches.length > 0 && matches.every(s => s === 'FINISHED');
+    const anyDone = matches.some(s => s === 'FINISHED');
+
+    let statusLabel, statusClass;
+    if (isLive) { statusLabel = '● Live'; statusClass = 'status-live'; }
+    else if (allDone) { statusLabel = 'Finished'; statusClass = 'status-finished'; }
+    else if (anyDone) { statusLabel = 'In progress'; statusClass = 'status-finished'; }
+    else { statusLabel = 'Upcoming'; statusClass = 'status-upcoming'; }
+
+    return `
+      <div class="group-card">
+        <div class="group-card-header">
+          <span class="group-name">Group ${groupLetter}</span>
+          <span class="group-status ${statusClass}">${statusLabel}</span>
+        </div>
+        ${renderStandings(table)}
+        ${renderFixtures(matches, groupId)}
+      </div>`;
+  }
+
+  const CACHE_KEY = 'wc2026_groups_cache';
+  const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+  function readCache() {
+    try {
+      const raw = sessionStorage.getItem(CACHE_KEY);
+      if (!raw) return null;
+      const { ts, standings, matchesByGroup } = JSON.parse(raw);
+      if (Date.now() - ts > CACHE_TTL) return null;
+      return { standings, matchesByGroup, ts };
+    } catch { return null; }
+  }
+
+  function writeCache(standings, matchesByGroup) {
+    try {
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), standings, matchesByGroup }));
+    } catch { /* storage full or unavailable */ }
+  }
+
+  function checkRateLimit(res) {
+    const available = parseInt(res.headers.get('X-RequestsAvailable') ?? '99', 10);
+    const resetIn   = parseInt(res.headers.get('X-RequestCounter-Reset') ?? '60', 10);
+    if (available <= 2) {
+      const banner = document.getElementById('rateBanner');
+      banner.textContent = `⚠️ API rate limit nearly reached — data will refresh in ${resetIn}s.`;
+      banner.style.display = 'block';
+    }
+    return available;
+  }
+
+  function renderData(standings, matchesByGroup, fromCache, cacheTs) {
+    const grid = document.getElementById('groupsGrid');
+    grid.innerHTML = standings.map(g => renderGroup(g, matchesByGroup)).join('');
+    grid.style.display = 'grid';
+
+    const label = document.getElementById('lastUpdated');
+    const time = new Date(cacheTs).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' });
+    label.textContent = fromCache
+      ? `Cached data from ${time} — refreshes every 5 min`
+      : `Last loaded ${time}`;
+  }
+
+  async function loadData() {
+    const loading  = document.getElementById('loadingWrap');
+    const errorWrap = document.getElementById('errorWrap');
+    const grid     = document.getElementById('groupsGrid');
+
+    // Try cache first
+    const cached = readCache();
+    if (cached) {
+      loading.style.display = 'none';
+      errorWrap.style.display = 'none';
+      renderData(cached.standings, cached.matchesByGroup, true, cached.ts);
+      return;
+    }
+
+    loading.style.display = 'block';
+    errorWrap.style.display = 'none';
+    grid.style.display = 'none';
+
+    try {
+      const [standingsRes, matchesRes] = await Promise.all([
+        fetch(`${BASE}/competitions/WC/standings`, { headers: HEADERS }),
+        fetch(`${BASE}/competitions/WC/matches?stage=GROUP_STAGE`, { headers: HEADERS })
+      ]);
+
+      // Check rate limit headers on both responses
+      checkRateLimit(standingsRes);
+      checkRateLimit(matchesRes);
+
+      if (standingsRes.status === 429 || matchesRes.status === 429) {
+        const reset = standingsRes.headers.get('X-RequestCounter-Reset') ?? '60';
+        throw new Error(`Rate limit hit — try again in ${reset} seconds.`);
+      }
+      if (!standingsRes.ok) throw new Error(`Standings: ${standingsRes.status} ${standingsRes.statusText}`);
+      if (!matchesRes.ok)   throw new Error(`Matches: ${matchesRes.status} ${matchesRes.statusText}`);
+
+      const standingsData = await standingsRes.json();
+      const matchesData   = await matchesRes.json();
+
+      // Index matches by group
+      const matchesByGroup = {};
+      for (const m of (matchesData.matches || [])) {
+        const gKey = m.group || m.stage;
+        if (!matchesByGroup[gKey]) matchesByGroup[gKey] = [];
+        matchesByGroup[gKey].push(m);
+      }
+
+      // Sort groups alphabetically
+      const standings = (standingsData.standings || []).sort((a, b) => {
+        const la = (a.group || '').replace('GROUP_', '');
+        const lb = (b.group || '').replace('GROUP_', '');
+        return la.localeCompare(lb);
+      });
+
+      writeCache(standings, matchesByGroup);
+      loading.style.display = 'none';
+      renderData(standings, matchesByGroup, false, Date.now());
+
+    } catch (err) {
+      loading.style.display = 'none';
+      errorWrap.style.display = 'block';
+      document.getElementById('errorMsg').textContent = err.message || 'Something went wrong.';
+      console.error(err);
+    }
+  }
+
+  // Nav toggle
+  document.getElementById('navToggle').addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  loadData();
+</script>
+</body>
+</html>
