@@ -59,7 +59,7 @@
     .rb-3 { background: var(--surface-2); color: var(--ink-3); }
     .rb-n { background: var(--surface-2); color: var(--ink-3); font-size: 11px; }
 
-    .rank-arrow { font-size: 0.6rem; line-height: 1; flex-shrink: 0; }
+    .rank-arrow { font-size: 0.6rem; line-height: 1; flex-shrink: 0; font-weight: 700; }
     .rank-arrow.up   { color: #16a34a; }
     .rank-arrow.down { color: #dc2626; }
     .rank-arrow.neu  { color: #cbd5e1; }
@@ -174,12 +174,13 @@
   function getRank(e, i) { return +(e.rank || e.RANK || (i + 1)); }
   function getPayment(e) { return e.paymentStatus || e.PAYMENT_STATUS || ''; }
 
-  function rankArrow(rank, prevRank) {
-    if (!prevRank) return '<span class="rank-arrow neu">&#8212;</span>';
-    if (rank < prevRank) return '<span class="rank-arrow up">&#9650;</span>';
-    if (rank > prevRank) return '<span class="rank-arrow down">&#9660;</span>';
-    return '<span class="rank-arrow neu">&#8212;</span>';
-  }
+function rankArrow(rank, prevRank) {
+  if (!prevRank) return '<span class="rank-arrow neu">&#8212;</span>';
+  const diff = prevRank - rank;
+  if (diff > 0) return `<span class="rank-arrow up">&#9650;${diff}</span>`;
+  if (diff < 0) return `<span class="rank-arrow down">&#9660;${Math.abs(diff)}</span>`;
+  return '<span class="rank-arrow neu">&#8212;</span>';
+}
 
   let sortCol    = 'rank';
   let sortAsc    = true;
