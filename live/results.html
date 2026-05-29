@@ -64,16 +64,16 @@
     /* Standings table */
     .group-table { width:100%;border-collapse:collapse; }
     .group-table th {
-      font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
-      color:var(--ink-3);padding:6px 8px;border-bottom:1px solid var(--surface-3);
+      font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+      color:var(--ink-3);padding:5px 4px;border-bottom:1px solid var(--surface-3);
       text-align:center;background:var(--surface-2);
     }
-    .group-table th.tc { text-align:left;padding-left:10px; }
+    .group-table th.tc { text-align:left;padding-left:8px; }
     .group-table td {
-      font-size:13px;padding:7px 8px;border-bottom:1px solid var(--surface-3);
+      font-size:12px;padding:6px 4px;border-bottom:1px solid var(--surface-3);
       text-align:center;vertical-align:middle;font-variant-numeric:tabular-nums;
     }
-    .group-table td.tc { text-align:left;padding-left:10px; }
+    .group-table td.tc { text-align:left;padding-left:8px; }
     .group-table tr:last-child td { border-bottom:none; }
     .group-table tr.row-q1 { background:rgba(13,92,46,.04); }
     .group-table tr.row-q2 { background:rgba(37,99,235,.04); }
@@ -85,10 +85,10 @@
     .pos-3 { background:#7c3aed;color:#fff; }
     .pos-4 { background:var(--surface-3);color:var(--ink-3); }
 
-    .team-cell { display:flex;align-items:center;gap:6px; }
-    .team-flag { width:22px;height:15px;object-fit:cover;border-radius:2px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
-    .team-name-cell { font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px; }
-    .pts-cell { font-family:var(--font-head);font-size:15px;font-weight:800; }
+    .team-cell { display:flex;align-items:center;gap:4px; }
+    .team-flag { width:18px;height:12px;object-fit:cover;border-radius:2px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
+    .team-name-cell { font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px; }
+    .pts-cell { font-family:var(--font-head);font-size:14px;font-weight:800; }
 
     .qualify-legend {
       display:flex;gap:12px;padding:6px 10px;
@@ -371,8 +371,8 @@
               </div>
             </td>
             <td>${row.playedGames??0}</td><td>${row.won??0}</td><td>${row.draw??0}</td>
-            <td>${row.lost??0}</td><td>${row.goalsFor??0}</td><td>${row.goalsAgainst??0}</td>
-            <td>${row.goalDifference??0}</td><td class="pts-cell">${row.points??0}</td>
+            <td>${row.lost??0}</td><td>${row.goalDifference??0}</td>
+            <td class="pts-cell">${row.points??0}</td>
           </tr>`;
         }).join('');
         tableHtml = `
@@ -380,7 +380,6 @@
             <thead><tr>
               <th class="tc">Team</th>
               <th title="Played">P</th><th title="Won">W</th><th title="Drawn">D</th><th title="Lost">L</th>
-              <th title="Goals for">GF</th><th title="Goals against">GA</th>
               <th title="Goal difference">GD</th><th title="Points">Pts</th>
             </tr></thead>
             <tbody>${rows}</tbody>
