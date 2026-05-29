@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Results Mick's World Cup Predictor 2026</title>
+  <title>Results — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="../style.css" />
   <link rel="icon" href="../soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -270,43 +270,33 @@
 
   // ── Flag helper ─────────────────────────────────────────────────────────────
   const FLAG_CODES = {
-    // FIFA/API exact names
-    'Mexico':'MX','South Africa':'ZA','Korea Republic':'KR','Czechia':'CZ',
-    'Argentina':'AR','Morocco':'MA','Ukraine':'UA','Slovakia':'SK',
-    'Brazil':'BR','Serbia':'RS','Switzerland':'CH','Cameroon':'CM',
-    'United States':'US','Paraguay':'PY','Australia':'AU','Türkiye':'TR','Turkey':'TR',
-    'Spain':'ES','Egypt':'EG','Nigeria':'NG','Portugal':'PT',
-    'France':'FR','Honduras':'HN','Saudi Arabia':'SA','Japan':'JP',
-    'Senegal':'SN','Uruguay':'UY','IR Iran':'IR','Iran':'IR',
-    'Belgium':'BE','Colombia':'CO','Venezuela':'VE','Denmark':'DK',
-    'Netherlands':'NL','Peru':'PE','Bolivia':'BO','Canada':'CA',
-    'Germany':'DE','Curaçao':'CW','Ivory Coast':'CI',"Côte d'Ivoire":'CI','Ecuador':'EC',
-    'Croatia':'HR','Chile':'CL','Albania':'AL','New Zealand':'NZ',
-    'Italy':'IT','Costa Rica':'CR','Qatar':'QA','Poland':'PL',
-    'Austria':'AT','Panama':'PA','Greece':'GR','Romania':'RO',
-    'Hungary':'HU','Sweden':'SE','Norway':'NO','Finland':'FI',
-    'Slovenia':'SI','DR Congo':'CD','Tunisia':'TN','Algeria':'DZ',
-    'Mali':'ML','Uzbekistan':'UZ','Jamaica':'JM','El Salvador':'SV',
-    'Guatemala':'GT','Trinidad and Tobago':'TT','Cuba':'CU','Haiti':'HT',
-    'Bosnia-Herzegovina':'BA','Montenegro':'ME','North Macedonia':'MK',
-    'Kosovo':'XK','Georgia':'GE','Iceland':'IS','Wales':'GB-WLS',
-    'Scotland':'GB-SCT','Republic of Ireland':'IE','Ireland':'IE',
-    'England':'GB-ENG','Northern Ireland':'GB-NIR',
-    'United Arab Emirates':'AE','Bahrain':'BH','Iraq':'IQ','Kuwait':'KW',
-    'Oman':'OM','Jordan':'JO','Lebanon':'LB','Syria':'SY',
-    'Philippines':'PH','Thailand':'TH','Vietnam':'VN','Indonesia':'ID',
-    'China PR':'CN','China':'CN','Tajikistan':'TJ','Kyrgyzstan':'KG',
-    'Kazakhstan':'KZ','Azerbaijan':'AZ','Armenia':'AM',
-    'Mozambique':'MZ','Tanzania':'TZ','Zambia':'ZM','Zimbabwe':'ZW',
-    'Angola':'AO','Benin':'BJ','Burkina Faso':'BF','Cape Verde':'CV',
-    'Congo':'CG','Equatorial Guinea':'GQ','Gabon':'GA','Gambia':'GM',
-    'Ghana':'GH','Guinea':'GN','Guinea-Bissau':'GW','Kenya':'KE',
-    'Liberia':'LR','Libya':'LY','Madagascar':'MG','Mauritania':'MR',
-    'Namibia':'NA','Rwanda':'RW','Sierra Leone':'SL','Sudan':'SD',
-    'Togo':'TG','Uganda':'UG',
+    'Czechia':'CZ','Mexico':'MX','South Africa':'ZA','South Korea':'KR',
+    'Bosnia-Herzegovina':'BA','Canada':'CA','Qatar':'QA','Switzerland':'CH',
+    'Brazil':'BR','Morocco':'MA','Haiti':'HT','Scotland':'GB-SCT',
+    'Turkey':'TR','Türkiye':'TR','United States':'US','Paraguay':'PY','Australia':'AU',
+    'Germany':'DE','Curaçao':'CW','Ivory Coast':'CI','Ecuador':'EC',
+    'Sweden':'SE','Netherlands':'NL','Japan':'JP','Tunisia':'TN',
+    'Belgium':'BE','Egypt':'EG','Iran':'IR','IR Iran':'IR','New Zealand':'NZ',
+    'Spain':'ES','Cape Verde Islands':'CV','Saudi Arabia':'SA','Uruguay':'UY',
+    'Iraq':'IQ','France':'FR','Senegal':'SN','Norway':'NO',
+    'Argentina':'AR','Algeria':'DZ','Austria':'AT','Jordan':'JO',
+    'Congo DR':'CD','DR Congo':'CD','Portugal':'PT','Uzbekistan':'UZ',
+    'Colombia':'CO','England':'GB-ENG','Croatia':'HR','Ghana':'GH','Panama':'PA',
+    'Ukraine':'UA','Slovakia':'SK','Serbia':'RS','Cameroon':'CM',
+    'Honduras':'HN','Venezuela':'VE','Denmark':'DK','Peru':'PE','Bolivia':'BO',
+    'Chile':'CL','Albania':'AL','Italy':'IT','Costa Rica':'CR','Poland':'PL',
+    'Romania':'RO','Hungary':'HU','Finland':'FI','Slovenia':'SI',
+    'Mali':'ML','Jamaica':'JM','El Salvador':'SV','Guatemala':'GT',
+    'Trinidad and Tobago':'TT','Cuba':'CU','Nigeria':'NG','Morocco':'MA',
+    'Wales':'GB-WLS','Republic of Ireland':'IE','Ireland':'IE','Northern Ireland':'GB-NIR',
+    'United Arab Emirates':'AE','Bahrain':'BH','Kuwait':'KW','Oman':'OM',
+    'Lebanon':'LB','Syria':'SY','Philippines':'PH','Thailand':'TH',
+    'Vietnam':'VN','Indonesia':'ID','China PR':'CN','China':'CN',
+    'Tajikistan':'TJ','Kyrgyzstan':'KG','Kazakhstan':'KZ','Azerbaijan':'AZ',
+    'Armenia':'AM','Georgia':'GE','Iceland':'IS','Kosovo':'XK',
+    'North Macedonia':'MK','Montenegro':'ME','Kenya':'KE','Tanzania':'TZ',
   };
 
-  // flagcdn doesn't support GB-XXX sub-national codes directly — use a different path
   function flagImg(name, cls) {
     const code = FLAG_CODES[name];
     if (!code) return '';
