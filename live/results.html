@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fixtures/Results Mick's World Cup Predictor 2026</title>
+  <title>Results — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="../style.css" />
   <link rel="icon" href="../soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -133,32 +133,37 @@
     .fx-date { font-size:10px;color:var(--ink-3);margin-top:2px; }
 
     /* Chronological fixtures list */
-    .all-fixtures { margin-top:24px; }
+    .all-fixtures { margin-top:20px; }
     .all-fixtures-head {
-      font-family:var(--font-head);font-size:18px;font-weight:800;
-      color:var(--ink);margin-bottom:16px;letter-spacing:.02em;
+      font-family:var(--font-head);font-size:15px;font-weight:800;
+      color:var(--ink);margin-bottom:8px;letter-spacing:.02em;
     }
+    .all-fx-grid {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:2px 8px;
+    }
+    @media(max-width:900px){ .all-fx-grid{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:560px){ .all-fx-grid{grid-template-columns:1fr;} }
     .fixture-day-header {
-      font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
-      color:var(--ink-3);padding:6px 0;border-bottom:2px solid var(--surface-3);
-      margin:16px 0 6px;
+      font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+      color:#fff;background:var(--ink);padding:3px 6px;border-radius:3px;
+      margin:6px 0 2px;grid-column:1/-1;
     }
-    .fixture-day-header:first-child { margin-top:0; }
     .all-fx-row {
-      display:grid;grid-template-columns:1fr 80px 1fr;
-      align-items:center;gap:6px;padding:7px 4px;
-      border-bottom:1px solid var(--surface-2);font-size:13px;
+      display:grid;grid-template-columns:1fr auto 1fr;
+      align-items:center;gap:3px;padding:3px 4px;
+      border-bottom:1px solid var(--surface-2);font-size:11px;
     }
-    .all-fx-row:last-child { border-bottom:none; }
-    .all-fx-home { text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:5px;font-weight:600;min-width:0; }
-    .all-fx-away { text-align:left;display:flex;align-items:center;gap:5px;font-weight:600;min-width:0; }
+    .all-fx-home { text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:3px;font-weight:600;min-width:0; }
+    .all-fx-away { text-align:left;display:flex;align-items:center;gap:3px;font-weight:600;min-width:0; }
     .all-fx-home span, .all-fx-away span { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-    .all-fx-score-box { text-align:center; }
-    .all-fx-score { font-family:var(--font-head);font-size:14px;font-weight:800;letter-spacing:.05em;color:var(--pitch); }
-    .all-fx-score.upcoming { font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--ink-3); }
+    .all-fx-score-box { text-align:center;min-width:52px; }
+    .all-fx-score { font-family:var(--font-head);font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--pitch); }
+    .all-fx-score.upcoming { font-family:var(--font-body);font-size:10px;font-weight:600;color:var(--ink-3); }
     .all-fx-score.live { color:#ef4444; }
-    .all-fx-group { font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--ink-3);margin-top:1px; }
-    .all-fx-flag { width:18px;height:12px;object-fit:cover;border-radius:1px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
+    .all-fx-group { font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--ink-3); }
+    .all-fx-flag { width:14px;height:10px;object-fit:cover;border-radius:1px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
 
     /* Knockout */
     .bracket-section { margin-bottom:32px; }
@@ -535,10 +540,13 @@
       byDay[day].push(m);
     });
 
-    let html = '<div class="all-fixtures"><div class="all-fixtures-head">All group fixtures</div>';
+    let html = '<div class="all-fixtures"><div class="all-fixtures-head">All group fixtures</div><div class="all-fx-grid">';
 
     Object.entries(byDay).forEach(([day, matches]) => {
-      html += `<div class="fixture-day-header">${esc(day)}</div>`;
+      // Short day header: "Thu 11 Jun"
+      const d = new Date(matches[0].utcDate);
+      const dayStr = d.toLocaleDateString('en-IE', { weekday:'short', day:'numeric', month:'short' });
+      html += `<div class="fixture-day-header">${esc(dayStr)}</div>`;
       matches.forEach(m => {
         const home = m.homeTeam?.name || 'TBD';
         const away = m.awayTeam?.name || 'TBD';
@@ -553,11 +561,11 @@
 
         let scoreHtml;
         if (isFinished && hasScore) {
-          scoreHtml = `<div class="all-fx-score">${h} – ${a}</div>`;
+          scoreHtml = `<div class="all-fx-score">${h}–${a}</div>`;
         } else if (isLive) {
           const lh = m.score?.currentScore?.home ?? '?';
           const la = m.score?.currentScore?.away ?? '?';
-          scoreHtml = `<div class="all-fx-score live">${lh} – ${la}</div>`;
+          scoreHtml = `<div class="all-fx-score live">${lh}–${la}</div>`;
         } else {
           scoreHtml = `<div class="all-fx-score upcoming">${time}</div>`;
         }
@@ -569,7 +577,7 @@
           </div>
           <div class="all-fx-score-box">
             ${scoreHtml}
-            <div class="all-fx-group">Grp ${esc(grpLetter)}</div>
+            <div class="all-fx-group">${esc(grpLetter)}</div>
           </div>
           <div class="all-fx-away">
             ${flagImg(away,'all-fx-flag')}
@@ -579,7 +587,7 @@
       });
     });
 
-    html += '</div>';
+    html += '</div></div>';
     return html;
   }
 
