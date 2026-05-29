@@ -1,4 +1,3 @@
-<!-- FILE: live/lookup.html-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,8 +59,8 @@
     .group-row { display:grid; grid-template-columns:18px 1fr 1fr 32px; gap:4px 8px; align-items:center; padding:5px 0; border-bottom:1px solid var(--surface-3); font-size:13px; }
     .group-row:last-child { border-bottom:none; }
     .group-pos { color:var(--ink-3); font-weight:700; font-size:11px; }
-    .group-pred { color:var(--ink); font-weight:500; }
-    .group-actual { color:var(--ink-3); font-size:12px; }
+    .group-pred { color:var(--ink); font-weight:500; display:flex; align-items:center; gap:4px; }
+    .group-actual { color:var(--ink-3); font-size:12px; display:flex; align-items:center; gap:4px; }
     .group-item-pts { font-family:var(--font-head); font-size:12px; font-weight:800; text-align:right; white-space:nowrap; }
     .group-item-pts.pts-4 { color:#16a34a; }
     .group-item-pts.pts-1 { color:#2563eb; }
@@ -81,13 +80,13 @@
     .prog-col-head { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-3); margin-bottom:6px; }
     .prog-team-row-simple { display:grid; grid-template-columns:1fr auto; align-items:center; padding:3px 0; gap:8px; }
     .prog-team-row { display:grid; grid-template-columns:1fr auto; align-items:center; padding:3px 0; gap:8px; }
-    .prog-team-name { font-size:13px; color:var(--ink); }
+    .prog-team-name { font-size:13px; color:var(--ink); display:flex; align-items:center; gap:5px; }
     .prog-team-name.hit { color:#16a34a; font-weight:700; }
     .prog-team-name.miss { color:var(--ink-3); }
     .prog-team-pts { font-family:var(--font-head); font-size:11px; font-weight:800; padding:1px 6px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
     .prog-team-pts.hit { background:#dcfce7; color:#166534; }
     .prog-team-pts.miss { background:var(--surface-3); color:var(--ink-3); }
-    .prog-actual-team { font-size:13px; padding:3px 0; color:var(--ink); }
+    .prog-actual-team { font-size:13px; padding:3px 0; color:var(--ink); display:flex; align-items:center; gap:5px; }
 
     .match-section { margin-bottom:20px; }
     .match-section-head { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--ink-3); padding:6px 0; border-bottom:2px solid var(--surface-3); margin-bottom:8px; }
@@ -98,8 +97,8 @@
     .match-card-body { padding:10px 12px; }
     .match-score-row { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; margin-bottom:6px; font-size:13px; }
     .match-score-row:last-child { margin-bottom:0; }
-    .match-team-home { text-align:right; font-weight:600; color:var(--ink); }
-    .match-team-away { text-align:left; font-weight:600; color:var(--ink); }
+    .match-team-home { text-align:right; font-weight:600; color:var(--ink); display:flex; align-items:center; justify-content:flex-end; gap:5px; }
+    .match-team-away { text-align:left; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:5px; }
     .match-scoreline { background:var(--ink); color:#fff; font-family:var(--font-head); font-size:13px; font-weight:800; padding:3px 8px; border-radius:6px; white-space:nowrap; text-align:center; min-width:42px; }
     .match-scoreline.pending { background:var(--surface-3); color:var(--ink-3); }
     .match-row-label { font-size:10px; text-align:center; color:var(--ink-3); font-weight:600; text-transform:uppercase; letter-spacing:.3px; }
@@ -112,6 +111,8 @@
     .match-pts-chip { font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; background:var(--surface-3); color:var(--ink-3); }
     .match-pts-chip.earned { background:#dcfce7; color:#166534; }
     .match-pts-chip.exact  { background:#fef9c3; color:#854d0e; }
+
+    .lk-flag { width:18px; height:12px; object-fit:cover; border-radius:2px; border:1px solid rgba(0,0,0,.08); flex-shrink:0; }
 
     .scoring-info { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:16px; overflow:hidden; font-size:13px; }
     .scoring-info-btn { width:100%; display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--surface-2); border:none; cursor:pointer; font-family:var(--font-body); font-size:13px; font-weight:600; color:var(--ink-2,#3d4455); text-align:left; gap:10px; }
@@ -151,7 +152,7 @@
     <li><a href="https://revolut.me/mickeybo" target="_blank" rel="noopener"><span class="nav-icon">💳</span> Pay €10</a></li>
     <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
     <li><a href="results.html"><span class="nav-icon">📰</span> Results</a></li>
-    <li><a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a></li>
+    <li><a href="lookup.html" class="active"><span class="nav-icon">🔍</span> My Scores</a></li>
     <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
   </ul>
   <button class="nav-toggle" id="navToggle">☰</button>
@@ -159,7 +160,7 @@
 
 <nav class="nav-mobile" id="navMobile">
   <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
-  <a href="rules.html"><span class="nav-icon">📋</span> Rules & scoring</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules &amp; scoring</a>
   <a href="https://revolut.me/mickeybo" target="_blank" rel="noopener"><span class="nav-icon">💳</span> Pay €10</a>
   <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
   <a href="results.html"><span class="nav-icon">📰</span> Results</a>
@@ -197,37 +198,62 @@
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
   }
 
+  // ── Flag helper ──────────────────────────────────────────────────────────────
+  const FLAG_CODES = {
+    'Czechia':'CZ','Mexico':'MX','South Africa':'ZA','South Korea':'KR',
+    'Bosnia-Herzegovina':'BA','Canada':'CA','Qatar':'QA','Switzerland':'CH',
+    'Brazil':'BR','Morocco':'MA','Haiti':'HT','Scotland':'GB-SCT',
+    'Turkey':'TR','Türkiye':'TR','United States':'US','Paraguay':'PY','Australia':'AU',
+    'Germany':'DE','Curaçao':'CW','Ivory Coast':'CI','Ecuador':'EC',
+    'Sweden':'SE','Netherlands':'NL','Japan':'JP','Tunisia':'TN',
+    'Belgium':'BE','Egypt':'EG','Iran':'IR','IR Iran':'IR','New Zealand':'NZ',
+    'Spain':'ES','Cape Verde Islands':'CV','Saudi Arabia':'SA','Uruguay':'UY',
+    'Iraq':'IQ','France':'FR','Senegal':'SN','Norway':'NO',
+    'Argentina':'AR','Algeria':'DZ','Austria':'AT','Jordan':'JO',
+    'Congo DR':'CD','DR Congo':'CD','Portugal':'PT','Uzbekistan':'UZ',
+    'Colombia':'CO','England':'GB-ENG','Croatia':'HR','Ghana':'GH','Panama':'PA',
+    'Ukraine':'UA','Slovakia':'SK','Serbia':'RS','Cameroon':'CM',
+    'Honduras':'HN','Venezuela':'VE','Denmark':'DK','Peru':'PE','Bolivia':'BO',
+    'Chile':'CL','Albania':'AL','Italy':'IT','Costa Rica':'CR','Poland':'PL',
+    'Romania':'RO','Hungary':'HU','Finland':'FI','Slovenia':'SI',
+    'Mali':'ML','Jamaica':'JM','El Salvador':'SV','Guatemala':'GT',
+    'Trinidad and Tobago':'TT','Cuba':'CU','Nigeria':'NG',
+    'Wales':'GB-WLS','Republic of Ireland':'IE','Ireland':'IE','Northern Ireland':'GB-NIR',
+    'United Arab Emirates':'AE','Bahrain':'BH','Kuwait':'KW','Oman':'OM',
+    'Lebanon':'LB','Syria':'SY','Philippines':'PH','Thailand':'TH',
+    'Vietnam':'VN','Indonesia':'ID','China PR':'CN','China':'CN',
+    'Tajikistan':'TJ','Kyrgyzstan':'KG','Kazakhstan':'KZ','Azerbaijan':'AZ',
+    'Armenia':'AM','Georgia':'GE','Iceland':'IS','Kosovo':'XK',
+    'North Macedonia':'MK','Montenegro':'ME','Kenya':'KE','Tanzania':'TZ',
+  };
+  function flagImg(name, cls) {
+    const code = FLAG_CODES[name];
+    if (!code) return '';
+    let url;
+    if (code === 'GB-SCT') url = 'https://flagcdn.com/w40/gb-sct.png';
+    else if (code === 'GB-WLS') url = 'https://flagcdn.com/w40/gb-wls.png';
+    else if (code === 'GB-ENG') url = 'https://flagcdn.com/w40/gb-eng.png';
+    else if (code === 'GB-NIR') url = 'https://flagcdn.com/w40/gb-nir.png';
+    else url = `https://flagcdn.com/w40/${code.toLowerCase()}.png`;
+    return `<img src="${url}" alt="${esc(name)}" class="${cls}" onerror="this.style.display='none'">`;
+  }
+
   const FIXTURE_DESC = {
-    73:'Runner-up Group A vs Runner-up Group B',
-    74:'Winner Group E vs Best 3rd-place team',
-    75:'Winner Group F vs Runner-up Group C',
-    76:'Winner Group C vs Runner-up Group F',
-    77:'Winner Group I vs Best 3rd-place team',
-    78:'Runner-up Group E vs Runner-up Group I',
-    79:'Winner Group A vs Best 3rd-place team',
-    80:'Winner Group L vs Best 3rd-place team',
-    81:'Winner Group D vs Best 3rd-place team',
-    82:'Winner Group G vs Best 3rd-place team',
-    83:'Runner-up Group K vs Runner-up Group L',
-    84:'Winner Group H vs Runner-up Group J',
-    85:'Winner Group B vs Best 3rd-place team',
-    86:'Winner Group J vs Runner-up Group H',
-    87:'Winner Group K vs Best 3rd-place team',
-    88:'Runner-up Group D vs Runner-up Group G',
-    89:'Winner Match 74 vs Winner Match 77',
-    90:'Winner Match 73 vs Winner Match 75',
-    91:'Winner Match 76 vs Winner Match 78',
-    92:'Winner Match 79 vs Winner Match 80',
-    93:'Winner Match 83 vs Winner Match 84',
-    94:'Winner Match 81 vs Winner Match 82',
-    95:'Winner Match 86 vs Winner Match 88',
-    96:'Winner Match 85 vs Winner Match 87',
-    97:'Winner Match 89 vs Winner Match 90',
-    98:'Winner Match 93 vs Winner Match 94',
-    99:'Winner Match 91 vs Winner Match 92',
-    100:'Winner Match 95 vs Winner Match 96',
-    101:'Winner Match 97 vs Winner Match 98',
-    102:'Winner Match 99 vs Winner Match 100',
+    73:'Runner-up Group A vs Runner-up Group B',74:'Winner Group E vs Best 3rd-place team',
+    75:'Winner Group F vs Runner-up Group C',76:'Winner Group C vs Runner-up Group F',
+    77:'Winner Group I vs Best 3rd-place team',78:'Runner-up Group E vs Runner-up Group I',
+    79:'Winner Group A vs Best 3rd-place team',80:'Winner Group L vs Best 3rd-place team',
+    81:'Winner Group D vs Best 3rd-place team',82:'Winner Group G vs Best 3rd-place team',
+    83:'Runner-up Group K vs Runner-up Group L',84:'Winner Group H vs Runner-up Group J',
+    85:'Winner Group B vs Best 3rd-place team',86:'Winner Group J vs Runner-up Group H',
+    87:'Winner Group K vs Best 3rd-place team',88:'Runner-up Group D vs Runner-up Group G',
+    89:'Winner Match 74 vs Winner Match 77',90:'Winner Match 73 vs Winner Match 75',
+    91:'Winner Match 76 vs Winner Match 78',92:'Winner Match 79 vs Winner Match 80',
+    93:'Winner Match 83 vs Winner Match 84',94:'Winner Match 81 vs Winner Match 82',
+    95:'Winner Match 86 vs Winner Match 88',96:'Winner Match 85 vs Winner Match 87',
+    97:'Winner Match 89 vs Winner Match 90',98:'Winner Match 93 vs Winner Match 94',
+    99:'Winner Match 91 vs Winner Match 92',100:'Winner Match 95 vs Winner Match 96',
+    101:'Winner Match 97 vs Winner Match 98',102:'Winner Match 99 vs Winner Match 100',
     104:'Winner Match 101 vs Winner Match 102'
   };
 
@@ -322,6 +348,7 @@
 
   function renderDetail(d) {
     const main = document.getElementById('lookupMain');
+    const champFlag = flagImg(d.predictedChampion||'', 'lk-flag');
     let html = `
       <button class="back-btn" id="backBtn">← Back to all entries</button>
       <div class="detail-header">
@@ -330,7 +357,7 @@
             <div class="detail-name">${esc(d.displayName)}</div>
             <div class="detail-meta">
               <span>Rank #${d.rank}</span>
-              <span>🏆 ${esc(d.predictedChampion||'—')}</span>
+              <span style="display:flex;align-items:center;gap:5px;">🏆 ${champFlag}${esc(d.predictedChampion||'—')}</span>
             </div>
             <div class="detail-payment">
               <span class="detail-payment-label">Payment status:</span>
@@ -405,7 +432,12 @@
         let rowClass = '';
         if (hasActual && pred!=='—') { if (pts===4) rowClass='correct-pos'; else if (pts===1) rowClass='correct'; }
         const ptsHtml = (!hasActual||pts===null) ? `<div class="group-item-pts pts-pending">—</div>` : `<div class="group-item-pts pts-${pts}">${pts}</div>`;
-        html += `<div class="group-row ${rowClass}"><div class="group-pos">${pos+1}</div><div class="group-pred">${esc(pred)}</div><div class="group-actual">${esc(act)}</div>${ptsHtml}</div>`;
+        html += `<div class="group-row ${rowClass}">
+          <div class="group-pos">${pos+1}</div>
+          <div class="group-pred">${flagImg(pred,'lk-flag')}${esc(pred)}</div>
+          <div class="group-actual">${flagImg(act,'lk-flag')}${esc(act)}</div>
+          ${ptsHtml}
+        </div>`;
       });
       if (hasActual && g.positionPts && g.positionPts[0]===4) {
         html += `<div class="group-winner-badge">✓ Correct group winner +2 pts</div>`;
@@ -447,13 +479,18 @@
           const statusClass = !hasActual?'':td.hit?'hit':'miss';
           const chipClass   = !hasActual?'':td.hit?'hit':'miss';
           const chipLabel   = !hasActual?'?':td.hit?`+${td.pts}`:'0';
-          html += `<div class="prog-team-row-simple"><span class="prog-team-name ${statusClass}">${esc(td.team)}</span><span class="prog-team-pts ${chipClass}">${chipLabel}</span></div>`;
+          html += `<div class="prog-team-row-simple">
+            <span class="prog-team-name ${statusClass}">${flagImg(td.team,'lk-flag')}${esc(td.team)}</span>
+            <span class="prog-team-pts ${chipClass}">${chipLabel}</span>
+          </div>`;
         });
       } else {
         html += '<div class="prog-team-name miss">No prediction</div>';
       }
       html += `</div><div><div class="prog-col-head">Actual</div>`;
-      if (hasActual) r.actual.forEach(t => { html += `<div class="prog-actual-team">${esc(t)}</div>`; });
+      if (hasActual) r.actual.forEach(t => {
+        html += `<div class="prog-actual-team">${flagImg(t,'lk-flag')}${esc(t)}</div>`;
+      });
       else html += '<div class="prog-team-name miss">Not yet known</div>';
       html += `</div></div></div></div>`;
     });
@@ -470,13 +507,13 @@
           <div>
             <div class="prog-col-head">Your pick</div>
             <div class="prog-team-row">
-              <span class="prog-team-name ${w.actualWinner?(wHit?'hit':'miss'):''}">${esc(w.predictedWinner||'—')}</span>
+              <span class="prog-team-name ${w.actualWinner?(wHit?'hit':'miss'):''}">${flagImg(w.predictedWinner||'','lk-flag')}${esc(w.predictedWinner||'—')}</span>
               ${w.actualWinner?`<span class="prog-team-pts ${wHit?'hit':'miss'}">${wHit?'+'+w.pts:'0'}</span>`:`<span class="prog-team-pts">?</span>`}
             </div>
           </div>
           <div>
             <div class="prog-col-head">Actual winner</div>
-            <div class="prog-actual-team">${esc(w.actualWinner||'Not yet known')}</div>
+            <div class="prog-actual-team">${flagImg(w.actualWinner||'','lk-flag')}${esc(w.actualWinner||'Not yet known')}</div>
           </div>
         </div>
       </div>
@@ -496,7 +533,7 @@
           <div class="scoring-row"><span class="scoring-pts">2 pts</span><span class="scoring-desc">Correct number of goals for Team 2</span></div>
           <div class="scoring-row"><span class="scoring-pts">1 pt</span><span class="scoring-desc">Correct goal difference</span></div>
           <div class="scoring-row"><span class="scoring-pts">2 pts</span><span class="scoring-desc">Exact score bonus (awarded when all of the above are correct)</span></div>
-          <div class="scoring-note">Knockout scores are graded against the actual fixture in that match slot, not against the teams you picked. You can still score points in a match even if you don't have the correct teams in that match number.</div>
+          <div class="scoring-note">Knockout scores are graded against the actual fixture in that match slot, not against the teams you picked.</div>
         </div>
       </div>`;
 
@@ -545,15 +582,15 @@
           </div>
           <div class="match-card-body">
             <div class="match-score-row">
-              <div class="match-team-home">${esc(m.predHome||'—')}</div>
+              <div class="match-team-home">${esc(m.predHome||'—')}${flagImg(m.predHome||'','lk-flag')}</div>
               <div class="match-scoreline ${!hasPred?'pending':''}">${esc(predLine)}</div>
-              <div class="match-team-away">${esc(m.predAway||'—')}</div>
+              <div class="match-team-away">${flagImg(m.predAway||'','lk-flag')}${esc(m.predAway||'—')}</div>
             </div>
             <div class="match-row-label">Your prediction</div>
             <div class="match-score-row" style="margin-top:8px;">
-              <div class="match-team-home">${esc(m.actualHome||'—')}</div>
+              <div class="match-team-home">${esc(m.actualHome||'—')}${flagImg(m.actualHome||'','lk-flag')}</div>
               <div class="match-scoreline ${!m.played?'pending':''}">${esc(actLine)}</div>
-              <div class="match-team-away">${esc(m.actualAway||'—')}</div>
+              <div class="match-team-away">${flagImg(m.actualAway||'','lk-flag')}${esc(m.actualAway||'—')}</div>
             </div>
             <div class="match-row-label">Actual result</div>
             ${breakdownHtml}
