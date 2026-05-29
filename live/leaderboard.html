@@ -136,12 +136,40 @@
     #stickyHeaderClone th:hover { background: #2a2f3e; }
 
     @media (max-width: 640px) {
-      .top5-grid  { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+      .top5-grid {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+      }
+      .top5-card {
+        min-width: 120px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+      }
       .top5-name  { font-size: 11px; }
       .top5-pts   { font-size: 16px; }
       table.lb-table td, table.lb-table th { padding: 6px 7px; }
       .lb-name { max-width: 100px; }
     }
+.table-scroll-hint {
+  display: none;
+  font-size: 11px;
+  color: var(--ink-3);
+  text-align: center;
+  padding: 5px 10px 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  letter-spacing: .2px;
+}
+@media (max-width: 640px) {
+  .table-scroll-hint { display: block; }
+}
+    
   </style>
 </head>
 <body>
@@ -357,7 +385,7 @@
         </tr>`;
     });
 
-    html += '</tbody></table></div>';
+    html += '</tbody></table></div><div class="table-scroll-hint">&#8592; Swipe table to see all columns &#8594;</div>';
     document.getElementById('lbMain').innerHTML = html;
 
     // Wire up sort clicks on main table
@@ -421,7 +449,7 @@
 
     function syncWidths() {
       const wrapRect  = wrap.getBoundingClientRect();
-      const navH      = nav ? nav.getBoundingClientRect().bottom : 60;
+      const navH = nav ? nav.offsetHeight : 60;
       clone.style.top  = navH + 'px';
       clone.style.left = wrapRect.left + 'px';
       clone.style.width = wrapRect.width + 'px';
@@ -440,7 +468,7 @@
     function onScroll() {
       const theadRect = thead.getBoundingClientRect();
       const wrapRect  = wrap.getBoundingClientRect();
-      const navH      = nav ? nav.getBoundingClientRect().bottom : 60;
+      const navH = nav ? nav.offsetHeight : 60;
 
       if (theadRect.bottom < navH && wrapRect.bottom > navH + 50) {
         syncWidths();
