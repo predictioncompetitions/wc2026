@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Results Mick's World Cup Predictor 2026</title>
+  <title>Results — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="../style.css" />
   <link rel="icon" href="../soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,9 +260,7 @@
 <script src="../site.js"></script>
 <script>
   // ── Config ─────────────────────────────────────────────────────────────────
-  const FD_KEY      = 'd7fbf3eeec94414eb4b4158a9fa5a00b';
-  const FD_BASE     = 'https://api.football-data.org/v4';
-  const FD_HEADERS  = { 'X-Auth-Token': FD_KEY };
+  const WORKER_BASE = 'https://api.micksworldcup2026.com';
   const CACHE_KEY   = 'wc2026_groups_v2';
   const CACHE_TTL   = 5 * 60 * 1000; // 5 minutes
 
@@ -534,15 +532,10 @@
     panel.innerHTML = `<div class="panel-loading"><img src="../soccerball.png" class="ball-spinner" alt="">Loading group data…</div>`;
     try {
       const [sRes, mRes] = await Promise.all([
-        fetch(`${FD_BASE}/competitions/WC/standings`, { headers: FD_HEADERS }),
-        fetch(`${FD_BASE}/competitions/WC/matches?stage=GROUP_STAGE`, { headers: FD_HEADERS })
+        fetch(`${WORKER_BASE}/fd?path=/competitions/WC/standings`),
+        fetch(`${WORKER_BASE}/fd?path=/competitions/WC/matches%3Fstage%3DGROUP_STAGE`)
       ]);
-      checkRateLimit(sRes);
-      checkRateLimit(mRes);
-      if (sRes.status === 429 || mRes.status === 429) {
-        const reset = sRes.headers.get('X-RequestCounter-Reset') ?? '60';
-        throw new Error(`Rate limit hit — try again in ${reset}s.`);
-      }
+      if (sRes.status === 429 || mRes.status === 429) throw new Error('Rate limit hit — try again in a minute.');
       if (!sRes.ok) throw new Error(`Standings: ${sRes.status} ${sRes.statusText}`);
       if (!mRes.ok) throw new Error(`Matches: ${mRes.status} ${mRes.statusText}`);
 
