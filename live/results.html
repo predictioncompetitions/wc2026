@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Results — Mick's World Cup Predictor 2026</title>
+  <title>Results Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="../style.css" />
   <link rel="icon" href="../soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -270,16 +270,17 @@
 
   // ── Flag helper ─────────────────────────────────────────────────────────────
   const FLAG_CODES = {
-    'Mexico':'MX','South Africa':'ZA','Korea Republic':'KR','Czech Republic':'CZ','Czechia':'CZ',
+    // FIFA/API exact names
+    'Mexico':'MX','South Africa':'ZA','Korea Republic':'KR','Czechia':'CZ',
     'Argentina':'AR','Morocco':'MA','Ukraine':'UA','Slovakia':'SK',
     'Brazil':'BR','Serbia':'RS','Switzerland':'CH','Cameroon':'CM',
-    'United States':'US','Paraguay':'PY','Australia':'AU','Turkey':'TR',
+    'United States':'US','Paraguay':'PY','Australia':'AU','Türkiye':'TR','Turkey':'TR',
     'Spain':'ES','Egypt':'EG','Nigeria':'NG','Portugal':'PT',
     'France':'FR','Honduras':'HN','Saudi Arabia':'SA','Japan':'JP',
-    'England':'GB','Senegal':'SN','Uruguay':'UY','Iran':'IR','IR Iran':'IR',
+    'Senegal':'SN','Uruguay':'UY','IR Iran':'IR','Iran':'IR',
     'Belgium':'BE','Colombia':'CO','Venezuela':'VE','Denmark':'DK',
     'Netherlands':'NL','Peru':'PE','Bolivia':'BO','Canada':'CA',
-    'Germany':'DE','Curaçao':'CW','Côte d\'Ivoire':'CI','Ivory Coast':'CI','Ecuador':'EC',
+    'Germany':'DE','Curaçao':'CW','Ivory Coast':'CI',"Côte d'Ivoire":'CI','Ecuador':'EC',
     'Croatia':'HR','Chile':'CL','Albania':'AL','New Zealand':'NZ',
     'Italy':'IT','Costa Rica':'CR','Qatar':'QA','Poland':'PL',
     'Austria':'AT','Panama':'PA','Greece':'GR','Romania':'RO',
@@ -287,11 +288,35 @@
     'Slovenia':'SI','DR Congo':'CD','Tunisia':'TN','Algeria':'DZ',
     'Mali':'ML','Uzbekistan':'UZ','Jamaica':'JM','El Salvador':'SV',
     'Guatemala':'GT','Trinidad and Tobago':'TT','Cuba':'CU','Haiti':'HT',
+    'Bosnia-Herzegovina':'BA','Montenegro':'ME','North Macedonia':'MK',
+    'Kosovo':'XK','Georgia':'GE','Iceland':'IS','Wales':'GB-WLS',
+    'Scotland':'GB-SCT','Republic of Ireland':'IE','Ireland':'IE',
+    'England':'GB-ENG','Northern Ireland':'GB-NIR',
+    'United Arab Emirates':'AE','Bahrain':'BH','Iraq':'IQ','Kuwait':'KW',
+    'Oman':'OM','Jordan':'JO','Lebanon':'LB','Syria':'SY',
+    'Philippines':'PH','Thailand':'TH','Vietnam':'VN','Indonesia':'ID',
+    'China PR':'CN','China':'CN','Tajikistan':'TJ','Kyrgyzstan':'KG',
+    'Kazakhstan':'KZ','Azerbaijan':'AZ','Armenia':'AM',
+    'Mozambique':'MZ','Tanzania':'TZ','Zambia':'ZM','Zimbabwe':'ZW',
+    'Angola':'AO','Benin':'BJ','Burkina Faso':'BF','Cape Verde':'CV',
+    'Congo':'CG','Equatorial Guinea':'GQ','Gabon':'GA','Gambia':'GM',
+    'Ghana':'GH','Guinea':'GN','Guinea-Bissau':'GW','Kenya':'KE',
+    'Liberia':'LR','Libya':'LY','Madagascar':'MG','Mauritania':'MR',
+    'Namibia':'NA','Rwanda':'RW','Sierra Leone':'SL','Sudan':'SD',
+    'Togo':'TG','Uganda':'UG',
   };
+
+  // flagcdn doesn't support GB-XXX sub-national codes directly — use a different path
   function flagImg(name, cls) {
     const code = FLAG_CODES[name];
     if (!code) return '';
-    return `<img src="https://flagcdn.com/w40/${code.toLowerCase()}.png" alt="${esc(name)}" class="${cls}" onerror="this.style.display='none'">`;
+    let url;
+    if (code === 'GB-SCT') url = 'https://flagcdn.com/w40/gb-sct.png';
+    else if (code === 'GB-WLS') url = 'https://flagcdn.com/w40/gb-wls.png';
+    else if (code === 'GB-ENG') url = 'https://flagcdn.com/w40/gb-eng.png';
+    else if (code === 'GB-NIR') url = 'https://flagcdn.com/w40/gb-nir.png';
+    else url = `https://flagcdn.com/w40/${code.toLowerCase()}.png`;
+    return `<img src="${url}" alt="${esc(name)}" class="${cls}" onerror="this.style.display='none'">`;
   }
 
   function fmtDate(str) {
