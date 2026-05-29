@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fixtures/Results Mick's World Cup Predictor 2026</title>
+  <title>Results — Mick's World Cup Predictor 2026</title>
   <link rel="stylesheet" href="../style.css" />
   <link rel="icon" href="../soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -181,38 +181,39 @@
     .rh-sf   { background:#b45309; }
     .rh-final{ background:#be123c; }
 
-    .bracket-section-body { padding:12px 0; }
+    .bracket-section-body { padding:4px 0 8px; }
     .bracket-section-body.hidden { display:none; }
-    .bracket-tree { display:grid;gap:10px; }
-    .r32-grid  { grid-template-columns:repeat(4,1fr); }
-    .r16-grid  { grid-template-columns:repeat(4,1fr); }
-    .qf-grid   { grid-template-columns:repeat(2,1fr); }
-    .sf-grid   { grid-template-columns:repeat(2,1fr); }
-    .final-grid{ grid-template-columns:1fr;max-width:360px;margin:0 auto; }
-    @media(max-width:900px){ .r32-grid,.r16-grid{grid-template-columns:repeat(2,1fr);} }
-    @media(max-width:560px){ .r32-grid,.r16-grid,.qf-grid,.sf-grid{grid-template-columns:1fr;} }
+    .bracket-tree { display:block; }
 
-    .match-card {
-      background:var(--surface);border:1px solid var(--border);
-      border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:border-color .15s;
+    /* Knockout match rows — same style as group fixture rows */
+    .ko-row {
+      display:grid;grid-template-columns:44px 1fr 60px 1fr;
+      align-items:center;gap:3px;padding:5px 6px;
+      border-bottom:1px solid var(--border);font-size:12px;
     }
-    .match-card.complete { border-color:#86efac; }
-    .match-card.live     { border-color:#ef4444;box-shadow:0 0 0 2px rgba(239,68,68,.25); }
-    .match-card.pending  { opacity:.5; }
-    .match-card-head {
-      font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
-      color:var(--ink-3);padding:4px 8px;background:var(--surface-2);
-      display:flex;justify-content:space-between;align-items:center;
+    .ko-row:last-child { border-bottom:none; }
+    .ko-row.pending { opacity:.5; }
+    .ko-row.live { background:rgba(239,68,68,.04); }
+    .ko-match-no {
+      font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.2px;
+      background:var(--ink);color:#fff;padding:2px 4px;border-radius:4px;
+      text-align:center;white-space:nowrap;overflow:hidden;
     }
-    .live-dot { display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;color:#ef4444;letter-spacing:.5px; }
-    .live-dot::before { content:'';width:6px;height:6px;border-radius:50%;background:#ef4444;animation:pulse 1.2s ease infinite; }
-    .match-team {
-      display:flex;align-items:center;justify-content:space-between;
-      padding:6px 10px;gap:6px;font-size:13px;
-    }
-    .match-team + .match-team { border-top:1px solid var(--surface-3); }
-    .match-team-inner { display:flex;align-items:center;gap:5px;flex:1;min-width:0; }
-    .ko-flag { width:18px;height:12px;object-fit:cover;border-radius:2px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
+    .ko-row.complete .ko-match-no { background:var(--pitch); }
+    .ko-row.live .ko-match-no { background:#ef4444; }
+    .ko-home { text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:4px;font-weight:600;min-width:0; }
+    .ko-away { text-align:left;display:flex;align-items:center;gap:4px;font-weight:600;min-width:0; }
+    .ko-home span, .ko-away span { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .ko-home span.winner, .ko-away span.winner { color:var(--pitch);font-weight:800; }
+    .ko-home span.loser,  .ko-away span.loser  { color:var(--ink-3);text-decoration:line-through; }
+    .ko-home span.tbd,    .ko-away span.tbd    { color:var(--ink-3);font-style:italic;font-weight:400; }
+    .ko-score-box { text-align:center; }
+    .ko-score { font-family:var(--font-head);font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--pitch);display:block; }
+    .ko-score.pending { font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--ink-3); }
+    .ko-score.live { color:#ef4444; }
+    .ko-flag { width:16px;height:11px;object-fit:cover;border-radius:1px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
+    .live-dot { display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:800;color:#ef4444; }
+    .live-dot::before { content:'';width:5px;height:5px;border-radius:50%;background:#ef4444;animation:pulse 1.2s ease infinite; }
     .match-team-name { font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
     .match-team-name.winner { color:var(--pitch);font-weight:800; }
     .match-team-name.loser  { color:var(--ink-3);text-decoration:line-through; }
@@ -251,7 +252,7 @@
     <li><a href="rules.html"><span class="nav-icon">📋</span> Rules</a></li>
     <li><a href="https://revolut.me/mickeybo" target="_blank" rel="noopener"><span class="nav-icon">💳</span> Pay €10</a></li>
     <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
-    <li><a href="results.html" class="active"><span class="nav-icon">📰</span> Fixtures/Results</a></li>
+    <li><a href="results.html" class="active"><span class="nav-icon">📰</span> Results</a></li>
     <li><a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a></li>
     <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
   </ul>
@@ -263,7 +264,7 @@
   <a href="rules.html"><span class="nav-icon">📋</span> Rules</a>
   <a href="https://revolut.me/mickeybo" target="_blank" rel="noopener"><span class="nav-icon">💳</span> Pay €10</a>
   <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
-  <a href="results.html"><span class="nav-icon">📰</span> Fixtures/Results</a>
+  <a href="results.html"><span class="nav-icon">📰</span> Results</a>
   <a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a>
   <a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a>
 </nav>
@@ -636,33 +637,40 @@
     const w      = m.winner ? esc(m.winner).toUpperCase() : null;
     const w1     = played && w === esc(t1).toUpperCase();
     const w2     = played && w === esc(t2).toUpperCase();
-    return `<div class="match-card ${cls}">
-      <div class="match-card-head">
-        <span>Match ${esc(String(m.matchNo||''))}</span>
-        ${live ? '<span class="live-dot">Live</span>' : ''}
+    const t1cls  = !m.team1 ? 'tbd' : w1 ? 'winner' : played ? 'loser' : '';
+    const t2cls  = !m.team2 ? 'tbd' : w2 ? 'winner' : played ? 'loser' : '';
+
+    let scoreHtml;
+    if (played) {
+      scoreHtml = `<span class="ko-score">${esc(String(m.goals1))} – ${esc(String(m.goals2))}</span>`;
+    } else if (live) {
+      const lh = m.score?.currentScore?.home ?? '?';
+      const la = m.score?.currentScore?.away ?? '?';
+      scoreHtml = `<span class="ko-score live">${lh} – ${la}</span>`;
+    } else {
+      scoreHtml = `<span class="ko-score pending">vs</span>`;
+    }
+
+    return `<div class="ko-row ${cls}">
+      <div class="ko-match-no">${live ? '<span class="live-dot"></span>' : ''}M${esc(String(m.matchNo||''))}</div>
+      <div class="ko-home">
+        <span class="${t1cls}" title="${esc(t1)}">${esc(shortName(t1))}</span>
+        ${flagImg(t1,'ko-flag')}
       </div>
-      <div class="match-team">
-        <div class="match-team-inner">
-          ${flagImg(t1,'ko-flag')}
-          <span class="match-team-name ${!m.team1?'tbd':w1?'winner':played?'loser':''}">${esc(t1)}</span>
-        </div>
-        <span class="match-score ${w1?'winner':''}">${played?esc(String(m.goals1)):''}</span>
-      </div>
-      <div class="match-team">
-        <div class="match-team-inner">
-          ${flagImg(t2,'ko-flag')}
-          <span class="match-team-name ${!m.team2?'tbd':w2?'winner':played?'loser':''}">${esc(t2)}</span>
-        </div>
-        <span class="match-score ${w2?'winner':''}">${played?esc(String(m.goals2)):''}</span>
+      <div class="ko-score-box">${scoreHtml}</div>
+      <div class="ko-away">
+        ${flagImg(t2,'ko-flag')}
+        <span class="${t2cls}" title="${esc(t2)}">${esc(shortName(t2))}</span>
       </div>
     </div>`;
   }
 
   function emptyMatchCard() {
-    return `<div class="match-card pending">
-      <div class="match-card-head"><span>—</span></div>
-      <div class="match-team"><span class="match-team-name tbd">TBD</span></div>
-      <div class="match-team"><span class="match-team-name tbd">TBD</span></div>
+    return `<div class="ko-row pending">
+      <div class="ko-match-no">—</div>
+      <div class="ko-home"><span class="tbd">TBD</span></div>
+      <div class="ko-score-box"><span class="ko-score pending">vs</span></div>
+      <div class="ko-away"><span class="tbd">TBD</span></div>
     </div>`;
   }
 
