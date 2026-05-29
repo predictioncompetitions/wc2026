@@ -357,7 +357,7 @@
 
     const cards = standings.map(g => {
       const groupId  = g.group || g.stage || '';
-      const letter   = groupId.replace('GROUP_','');
+      const letter   = groupId.replace('Group ', '').replace('GROUP_', '');
       const table    = g.table || [];
       const matches  = matchesByGroup[groupId] || [];
       const statuses = matches.map(m => m.status);
@@ -564,14 +564,21 @@
       const sData = await sRes.json();
       const mData = await mRes.json();
 
+      // Normalise "GROUP_A" -> "Group A" to match standings format
+      function normaliseGroup(raw) {
+        if (!raw) return '';
+        if (raw.startsWith('GROUP_')) return 'Group ' + raw.slice(6);
+        return raw;
+      }
+
       const matchesByGroup = {};
       for (const m of (mData.matches || [])) {
-        const k = m.group || m.stage;
+        const k = normaliseGroup(m.group || m.stage);
         if (!matchesByGroup[k]) matchesByGroup[k] = [];
         matchesByGroup[k].push(m);
       }
       const standings = (sData.standings || []).sort((a,b) =>
-        (a.group||'').replace('GROUP_','').localeCompare((b.group||'').replace('GROUP_',''))
+        (a.group||'').localeCompare(b.group||'')
       );
       writeCache(standings, matchesByGroup);
       panel.innerHTML = renderGroupPanel(standings, matchesByGroup, false, Date.now());
