@@ -151,18 +151,19 @@
       margin:6px 0 2px;grid-column:1/-1;
     }
     .all-fx-row {
-      display:grid;grid-template-columns:1fr auto 1fr;
+      display:grid;grid-template-columns:28px 1fr 52px 1fr;
       align-items:center;gap:3px;padding:3px 4px;
       border-bottom:1px solid var(--surface-2);font-size:11px;
     }
+    .all-fx-group { font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;
+      background:var(--ink);color:#fff;padding:2px 4px;border-radius:3px;text-align:center;white-space:nowrap; }
     .all-fx-home { text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:3px;font-weight:600;min-width:0; }
     .all-fx-away { text-align:left;display:flex;align-items:center;gap:3px;font-weight:600;min-width:0; }
     .all-fx-home span, .all-fx-away span { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-    .all-fx-score-box { text-align:center;min-width:52px; }
-    .all-fx-score { font-family:var(--font-head);font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--pitch); }
+    .all-fx-score-box { text-align:center; }
+    .all-fx-score { font-family:var(--font-head);font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--pitch);display:block; }
     .all-fx-score.upcoming { font-family:var(--font-body);font-size:10px;font-weight:600;color:var(--ink-3); }
     .all-fx-score.live { color:#ef4444; }
-    .all-fx-group { font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--ink-3); }
     .all-fx-flag { width:14px;height:10px;object-fit:cover;border-radius:1px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
 
     /* Knockout */
@@ -571,14 +572,12 @@
         }
 
         html += `<div class="all-fx-row">
+          <div class="all-fx-group">Grp ${esc(grpLetter)}</div>
           <div class="all-fx-home">
             <span title="${esc(home)}">${esc(shortName(home))}</span>
             ${flagImg(home,'all-fx-flag')}
           </div>
-          <div class="all-fx-score-box">
-            ${scoreHtml}
-            <div class="all-fx-group">${esc(grpLetter)}</div>
-          </div>
+          <div class="all-fx-score-box">${scoreHtml}</div>
           <div class="all-fx-away">
             ${flagImg(away,'all-fx-flag')}
             <span title="${esc(away)}">${esc(shortName(away))}</span>
