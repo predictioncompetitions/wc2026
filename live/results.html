@@ -176,7 +176,9 @@
       padding:6px 10px;gap:6px;font-size:13px;
     }
     .match-team + .match-team { border-top:1px solid var(--surface-3); }
-    .match-team-name { font-weight:600;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .match-team-inner { display:flex;align-items:center;gap:5px;flex:1;min-width:0; }
+    .ko-flag { width:18px;height:12px;object-fit:cover;border-radius:2px;border:1px solid rgba(0,0,0,.08);flex-shrink:0; }
+    .match-team-name { font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
     .match-team-name.winner { color:var(--pitch);font-weight:800; }
     .match-team-name.loser  { color:var(--ink-3);text-decoration:line-through; }
     .match-team-name.tbd    { color:var(--ink-3);font-style:italic;font-weight:400; }
@@ -517,11 +519,17 @@
         ${live ? '<span class="live-dot">Live</span>' : ''}
       </div>
       <div class="match-team">
-        <span class="match-team-name ${!m.team1?'tbd':w1?'winner':played?'loser':''}">${esc(t1)}</span>
+        <div class="match-team-inner">
+          ${flagImg(t1,'ko-flag')}
+          <span class="match-team-name ${!m.team1?'tbd':w1?'winner':played?'loser':''}">${esc(t1)}</span>
+        </div>
         <span class="match-score ${w1?'winner':''}">${played?esc(String(m.goals1)):''}</span>
       </div>
       <div class="match-team">
-        <span class="match-team-name ${!m.team2?'tbd':w2?'winner':played?'loser':''}">${esc(t2)}</span>
+        <div class="match-team-inner">
+          ${flagImg(t2,'ko-flag')}
+          <span class="match-team-name ${!m.team2?'tbd':w2?'winner':played?'loser':''}">${esc(t2)}</span>
+        </div>
         <span class="match-score ${w2?'winner':''}">${played?esc(String(m.goals2)):''}</span>
       </div>
     </div>`;
