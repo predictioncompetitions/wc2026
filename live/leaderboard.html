@@ -19,17 +19,11 @@
     .top5-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--pitch); margin-bottom: 10px; }
     .top5-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
     .top5-card { background: var(--surface-2); border-radius: 8px; padding: 10px 8px; text-align: center; border-top: 3px solid transparent; }
-    .top5-card.p-1 { background: #fdf8ec; }
-    .top5-card.p-2 { background: #f4f6f9; }
-    .top5-card.p-3 { background: #fdf3ec; }
-    .top5-card.p-4 { background: #ecf8fb; }
-    .top5-card.p-5 { background: #f4ecfd; }
-    .top5-card.p-1 { border-top-color: var(--gold); }
-    .top5-card.p-2 { border-top-color: #94a3b8; }
-    .top5-card.p-3 { border-top-color: #cd7c4a; }
-    .top5-card.p-4 { border-top-color: #0891b2; }
-    .top5-card.p-5 { border-top-color: #7c3aed; }
-    .top5-medal  { font-size: 16px; margin-bottom: 3px; }
+    .top5-card.p-1 { background: #fdf8ec; border-top-color: var(--gold); }
+    .top5-card.p-2 { background: #f4f6f9; border-top-color: #94a3b8; }
+    .top5-card.p-3 { background: #fdf3ec; border-top-color: #cd7c4a; }
+    .top5-card.p-4 { background: #ecf8fb; border-top-color: #0891b2; }
+    .top5-card.p-5 { background: #f4ecfd; border-top-color: #7c3aed; }
     .top5-name   { font-family: var(--font-head); font-size: 15px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
     .top5-pts    { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--pitch); line-height: 1; }
     .top5-ptslbl { font-size: 9px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .3px; }
@@ -38,6 +32,7 @@
 
     .lb-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; font-size: 12px; color: var(--ink-3); }
     .lb-meta strong { color: var(--ink-2); }
+    .lb-last-updated { font-size: 11px; color: var(--ink-3); }
 
     .lb-table-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
 
@@ -108,6 +103,18 @@
     .lb-view-btn { font-size: 11px; color: var(--pitch); font-weight: 600; text-decoration: none; }
     .lb-view-btn:hover { text-decoration: underline; }
 
+    .table-scroll-hint {
+      display: none;
+      font-size: 11px;
+      color: var(--ink-3);
+      text-align: center;
+      padding: 5px 10px 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
     /* Sticky header clone */
     #stickyHeaderClone {
       position: fixed;
@@ -136,40 +143,11 @@
     #stickyHeaderClone th:hover { background: #2a2f3e; }
 
     @media (max-width: 640px) {
-      .top5-grid {
-        display: flex;
-        overflow-x: auto;
-        gap: 10px;
-        padding-bottom: 6px;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-      }
-      .top5-card {
-        min-width: 120px;
-        flex-shrink: 0;
-        scroll-snap-align: start;
-      }
-      .top5-name  { font-size: 11px; }
-      .top5-pts   { font-size: 16px; }
+      .top5-section { display: none; }
+      .table-scroll-hint { display: block; }
       table.lb-table td, table.lb-table th { padding: 6px 7px; }
       .lb-name { max-width: 100px; }
     }
-.table-scroll-hint {
-  display: none;
-  font-size: 11px;
-  color: var(--ink-3);
-  text-align: center;
-  padding: 5px 10px 6px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-top: none;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  letter-spacing: .2px;
-}
-@media (max-width: 640px) {
-  .table-scroll-hint { display: block; }
-}
-    
   </style>
 </head>
 <body>
@@ -220,7 +198,6 @@
   </div>
 </div>
 
-<!-- Sticky header clone container -->
 <div id="stickyHeaderClone"></div>
 
 <footer class="site-footer">
@@ -235,21 +212,19 @@
 <script>
   const ENTRY_FEE   = 10;
   const TOP5_PCTS   = [0.40, 0.25, 0.15, 0.12, 0.08];
-  const TOP5_LABELS = ['1st', '2nd', '3rd', '4th', '5th'];
   const PRIZE_10TH  = 20;
 
-  // Module-level state — needed so sticky header sort clicks can re-render
-  let sortCol           = 'rank';
-  let sortAsc           = true;
-  let allEntries        = [];
-  let hasScores         = false;
-  let _lastPaidCount    = 0;
-  let _lastPrizesConf   = false;
+  let sortCol         = 'rank';
+  let sortAsc         = true;
+  let allEntries      = [];
+  let hasScores       = false;
+  let _lastPaidCount  = 0;
+  let _lastPrizesConf = false;
+  let _lastData       = null;
 
-  // Sticky header scroll/resize handlers (stored so we can remove on re-render)
-  let _stickyScrollFn   = null;
-  let _stickyResizeFn   = null;
-  let _wrapScrollFn     = null;
+  let _stickyScrollFn = null;
+  let _stickyResizeFn = null;
+  let _wrapScrollFn   = null;
 
   function calcPrizes(paidCount, totalCount) {
     const totalPot    = paidCount * ENTRY_FEE;
@@ -282,9 +257,10 @@
     return '<span class="rank-arrow neu">&#8212;</span>';
   }
 
-  function renderTable(entries, paidCount, prizesConfirmed) {
+  function renderTable(entries, paidCount, prizesConfirmed, data) {
     _lastPaidCount  = paidCount;
     _lastPrizesConf = prizesConfirmed;
+    if (data) _lastData = data;
 
     const prizes   = calcPrizes(paidCount, entries.length);
     const tenthSet = new Set(prizes.tenthPlaces);
@@ -295,11 +271,11 @@
     if (top5.length) {
       html += '<div class="top5-section"><div class="top5-label">🏆 Top 5</div><div class="top5-grid">';
       top5.forEach((e, i) => {
-        const prizeAmt   = prizesConfirmed ? `€${prizes.top5Amounts[i]}` : 'Prize TBA';
-        const prizeClass = prizesConfirmed ? '' : ' tba';
+        const prizeAmt    = prizesConfirmed ? `€${prizes.top5Amounts[i]}` : 'Prize TBA';
+        const prizeClass  = prizesConfirmed ? '' : ' tba';
         const podiumClass = ['rb-1','rb-2','rb-3','rb-4','rb-5'][i];
-    html += `
-        <div class="top5-card p-${i+1}">
+        html += `
+          <div class="top5-card p-${i+1}">
             <div class="rank-badge ${podiumClass}" style="margin:0 auto 6px;">${i+1}</div>
             <div class="top5-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
             <div class="top5-pts">${hasScores ? getTotal(e) : '—'}</div>
@@ -315,9 +291,13 @@
       html += '</div>';
     }
 
+    const lastRebuiltStr = _lastData && _lastData.lastRebuilt
+      ? `<span class="lb-last-updated">Last updated: ${esc(_lastData.lastRebuilt)}</span>`
+      : '';
+
     html += `
       <div class="lb-meta">
-        <span><strong>${entries.length}</strong> entr${entries.length === 1 ? 'y' : 'ies'} &middot; <strong>${paidCount}</strong> paid</span>
+        <span><strong>${entries.length}</strong> entr${entries.length === 1 ? 'y' : 'ies'} &middot; <strong>${paidCount}</strong> paid ${lastRebuiltStr}</span>
         <a href="lookup.html" class="btn btn-outline" style="min-height:32px;font-size:12px;">🔍 Look up my scores</a>
       </div>`;
 
@@ -385,20 +365,18 @@
         </tr>`;
     });
 
-    html += '</tbody></table></div><div class="table-scroll-hint">&#8592; Swipe table to see all columns &#8594;</div>';
+    html += '</tbody></table></div><div class="table-scroll-hint">&#8592; Swipe left to see all columns &#8594;</div>';
     document.getElementById('lbMain').innerHTML = html;
 
-    // Wire up sort clicks on main table
     document.querySelectorAll('table.lb-table th[data-col]').forEach(th => {
       th.addEventListener('click', () => {
         const col = th.dataset.col;
         if (sortCol === col) { sortAsc = !sortAsc; }
         else { sortCol = col; sortAsc = col === 'rank' || col === 'name'; }
-        renderTable(sortEntries(allEntries), _lastPaidCount, _lastPrizesConf);
+        renderTable(sortEntries(allEntries), _lastPaidCount, _lastPrizesConf, _lastData);
       });
     });
 
-    // Wire up row clicks
     document.querySelectorAll('tr[data-name]').forEach(row => {
       row.addEventListener('click', e => {
         if (e.target.tagName === 'A') return;
@@ -406,13 +384,10 @@
       });
     });
 
-    // Initialise sticky header after DOM is ready
     requestAnimationFrame(initStickyHeader);
   }
 
-  /* ── Sticky header ── */
   function initStickyHeader() {
-    // Tear down previous listeners
     if (_stickyScrollFn) window.removeEventListener('scroll', _stickyScrollFn);
     if (_stickyResizeFn) window.removeEventListener('resize', _stickyResizeFn);
     if (_wrapScrollFn) {
@@ -420,56 +395,47 @@
       if (oldWrap) oldWrap.removeEventListener('scroll', _wrapScrollFn);
     }
 
-    const clone   = document.getElementById('stickyHeaderClone');
-    const wrap    = document.querySelector('.lb-table-wrap');
-    const table   = document.querySelector('table.lb-table');
+    const clone = document.getElementById('stickyHeaderClone');
+    const wrap  = document.querySelector('.lb-table-wrap');
+    const table = document.querySelector('table.lb-table');
     if (!clone || !wrap || !table) return;
-
     const thead = table.querySelector('thead');
     if (!thead) return;
 
-    // Build cloned table inside the sticky container
     clone.innerHTML = '';
     const cloneTable = document.createElement('table');
     const cloneThead = thead.cloneNode(true);
     cloneTable.appendChild(cloneThead);
     clone.appendChild(cloneTable);
 
-    // Wire sort clicks on cloned headers
     cloneThead.querySelectorAll('th[data-col]').forEach(th => {
       th.addEventListener('click', () => {
         const col = th.dataset.col;
         if (sortCol === col) { sortAsc = !sortAsc; }
         else { sortCol = col; sortAsc = col === 'rank' || col === 'name'; }
-        renderTable(sortEntries(allEntries), _lastPaidCount, _lastPrizesConf);
+        renderTable(sortEntries(allEntries), _lastPaidCount, _lastPrizesConf, _lastData);
       });
     });
 
     const nav = document.querySelector('.nav');
 
     function syncWidths() {
-      const wrapRect  = wrap.getBoundingClientRect();
-      const navH = nav ? nav.offsetHeight : 60;
-      clone.style.top  = navH + 'px';
-      clone.style.left = wrapRect.left + 'px';
+      const wrapRect = wrap.getBoundingClientRect();
+      const navH     = nav ? nav.offsetHeight : 60;
+      clone.style.top   = navH + 'px';
+      clone.style.left  = wrapRect.left + 'px';
       clone.style.width = wrapRect.width + 'px';
-
       const ths      = thead.querySelectorAll('th');
       const cloneThs = cloneThead.querySelectorAll('th');
-      ths.forEach((th, i) => {
-        if (cloneThs[i]) cloneThs[i].style.width = th.getBoundingClientRect().width + 'px';
-      });
+      ths.forEach((th, i) => { if (cloneThs[i]) cloneThs[i].style.width = th.getBoundingClientRect().width + 'px'; });
       cloneTable.style.width = table.getBoundingClientRect().width + 'px';
-
-      // Sync horizontal scroll position
       clone.scrollLeft = wrap.scrollLeft;
     }
 
     function onScroll() {
       const theadRect = thead.getBoundingClientRect();
       const wrapRect  = wrap.getBoundingClientRect();
-      const navH = nav ? nav.offsetHeight : 60;
-
+      const navH      = nav ? nav.offsetHeight : 60;
       if (theadRect.bottom < navH && wrapRect.bottom > navH + 50) {
         syncWidths();
         clone.style.display = 'block';
@@ -478,17 +444,12 @@
       }
     }
 
-    // Sync horizontal scroll from wrap to clone
     _wrapScrollFn = () => { if (clone.style.display === 'block') clone.scrollLeft = wrap.scrollLeft; };
     wrap.addEventListener('scroll', _wrapScrollFn, { passive: true });
-
     _stickyScrollFn = onScroll;
     _stickyResizeFn = () => { if (clone.style.display === 'block') syncWidths(); onScroll(); };
-
     window.addEventListener('scroll', _stickyScrollFn, { passive: true });
     window.addEventListener('resize', _stickyResizeFn, { passive: true });
-
-    // Check immediately in case page loaded already scrolled
     onScroll();
   }
 
@@ -540,7 +501,7 @@
       const paidCount       = data.paidCount || 0;
       const prizesConfirmed = !!data.prizesConfirmed;
       hasScores = allEntries.some(e => getTotal(e) > 0);
-      renderTable(sortEntries(allEntries), paidCount, prizesConfirmed);
+      renderTable(sortEntries(allEntries), paidCount, prizesConfirmed, data);
     } catch(err) {
       document.getElementById('lbMain').innerHTML =
         '<div class="status-msg status-error">Could not load leaderboard. Please try again shortly.</div>';
@@ -553,8 +514,8 @@
     const body    = document.getElementById('prizePanelBody');
     const chevron = document.getElementById('prizePanelChevron');
     const hidden  = body.style.display === 'none';
-    body.style.display    = hidden ? 'block' : 'none';
-    chevron.textContent   = hidden ? '▲ Hide' : '▼ Show';
+    body.style.display  = hidden ? 'block' : 'none';
+    chevron.textContent = hidden ? '▲ Hide' : '▼ Show';
   }
 </script>
 </body>
