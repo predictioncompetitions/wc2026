@@ -315,6 +315,7 @@
       { key: 'action', label: '',        cls: '', noSort: true },
     ];
 
+    html += '<div class="table-scroll-hint" style="border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-bottom:none;border-top:1px solid var(--border);">&#8592; Swipe left to see all columns &#8594;</div>';
     html += '<div class="lb-table-wrap"><table class="lb-table"><thead><tr>';
     cols.forEach(c => {
       if (c.noSort) { html += `<th class="${c.cls}">${c.label}</th>`; return; }
