@@ -633,26 +633,26 @@
         el.innerHTML = '<div style="background:#dcfce7;color:#166534;border-radius:8px;padding:10px 14px;font-weight:600;">🎉 Everyone has paid!</div>';
         return;
       }
-      el.innerHTML = data.entries.map(e => `
-        <div id="paycard-${e.row}" class="pay-entry-card">
+el.innerHTML = data.entries.map(e => `
+        <div id="paycard-${esc(e.id)}" class="pay-entry-card">
           <div>
             <div class="pay-entry-name">${esc(e.name || '—')}</div>
             <div class="pay-entry-id">${esc(e.id)}</div>
           </div>
-          <button class="btn-sm primary" onclick="markEntryPaid(${e.row}, '${(e.name||e.id).replace(/'/g,"\\'")}', this)">Mark paid</button>
+          <button class="btn-sm primary" onclick="markEntryPaid('${esc(e.id)}', '${(e.name||e.id).replace(/'/g,"\\'")}', this)">Mark paid</button>
         </div>`).join('');
     } catch(err) {
       el.textContent = 'Failed to load.';
     }
   }
 
-  async function markEntryPaid(row, label, btn) {
+async function markEntryPaid(id, label, btn) {
     btn.disabled = true;
     btn.textContent = '…';
     try {
-      const res = await apiPost('markEntryPaid', { row });
+      const res = await apiPost('markEntryPaid', { id });
       if (!res?.ok) throw new Error(res?.error || 'Failed');
-      document.getElementById('paycard-' + row)?.remove();
+      document.getElementById('paycard-' + id)?.remove();
       toast(label + ' marked as paid.', 'success');
       if (!document.querySelector('[id^="paycard-"]')) {
         document.getElementById('unpaidList').innerHTML =
