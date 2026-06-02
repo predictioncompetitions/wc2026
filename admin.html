@@ -1,979 +1,689 @@
+<!-- FILE: admin.html (repo root) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Mick's World Cup Predictor 2026</title>
+  <title>Admin — Mick's WC26</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="soccerball.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    @keyframes spin { from{transform:rotate(0deg)}to{transform:rotate(360deg)} }
-    .ball-spinner { width:36px;height:36px;display:block;margin:0 auto 8px;animation:spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    #loginScreen {
-      min-height:60vh; display:flex; align-items:center; justify-content:center;
-      flex-direction:column; padding:40px 20px;
+    .admin-gate {
+      max-width: 360px; margin: 80px auto; padding: 32px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-md);
+      text-align: center;
     }
-    .login-card {
-      background:var(--surface); border:1px solid var(--border);
-      border-radius:16px; padding:40px 36px; width:100%; max-width:400px;
-      box-shadow:0 8px 40px rgba(0,0,0,.12);
+    .admin-gate h2 { font-family: var(--font-head); font-size: 22px; margin-bottom: 6px; }
+    .admin-gate p { font-size: 13px; color: var(--ink-3); margin-bottom: 20px; }
+    .admin-gate input {
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+      border-radius: var(--radius); font-size: 15px; margin-bottom: 12px;
+      font-family: var(--font-body); background: var(--surface-2); color: var(--ink); outline: none;
     }
-    .login-icon {
-      width:56px; height:56px; background:var(--pitch); border-radius:14px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:26px; margin:0 0 20px;
-    }
-    .login-card h2 {
-      font-family:var(--font-head); font-size:26px; font-weight:800;
-      color:var(--ink); margin:0 0 4px;
-    }
-    .login-card p { color:var(--ink-3); font-size:14px; margin:0 0 28px; }
+    .admin-gate input:focus { border-color: var(--pitch); box-shadow: 0 0 0 3px rgba(13,92,46,.1); }
 
-    .pw-field { position:relative; margin-bottom:8px; }
-    .pw-field input {
-      width:100%; padding:13px 44px 13px 16px; box-sizing:border-box;
-      border:2px solid var(--border); border-radius:10px;
-      font-size:15px; font-family:var(--font-body); color:var(--ink);
-      background:var(--surface-2);
-      transition:border-color .15s, box-shadow .15s;
-      outline:none;
+    #adminMain { display: none; }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
     }
-    .pw-field input:focus { border-color:var(--pitch); box-shadow:0 0 0 3px rgba(13,92,46,.12); }
-    .pw-field input.shake { animation:shake .4s ease; border-color:#dc2626; }
-    .pw-toggle {
-      position:absolute; right:13px; top:50%; transform:translateY(-50%);
-      background:none; border:none; cursor:pointer; padding:4px;
-      color:var(--ink-3); font-size:16px; line-height:1; transition:color .15s;
+    .full-width-card { grid-column: 1 / -1; }
+
+    .admin-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
     }
-    .pw-toggle:hover { color:var(--ink); }
-
-    .login-error {
-      display:none; align-items:center; gap:6px;
-      color:#dc2626; font-size:13px; font-weight:600;
-      background:#fef2f2; border:1px solid #fecaca;
-      border-radius:8px; padding:9px 12px; margin-bottom:16px;
+    .admin-card-head {
+      background: var(--ink);
+      color: #fff;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--pitch);
     }
-    .login-error.show { display:flex; }
-
-    .login-btn {
-      width:100%; padding:13px; background:var(--pitch); color:#fff;
-      border:none; border-radius:10px; font-size:15px; font-weight:700;
-      font-family:var(--font-body); cursor:pointer;
-      transition:background .15s, transform .1s, box-shadow .15s;
-      box-shadow:0 4px 14px rgba(13,92,46,.3);
+    .admin-card-head h2 {
+      font-family: var(--font-head);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin: 0;
     }
-    .login-btn:hover  { background:#0a4a24; box-shadow:0 6px 18px rgba(13,92,46,.35); }
-    .login-btn:active { transform:scale(.98); }
-    .login-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+    .admin-card-body { padding: 16px; }
 
-    @keyframes shake {
-      0%,100%{ transform:translateX(0) }
-      20%    { transform:translateX(-6px) }
-      40%    { transform:translateX(6px) }
-      60%    { transform:translateX(-4px) }
-      80%    { transform:translateX(4px) }
+    /* Group selector */
+    .group-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .group-tab {
+      padding: 6px 12px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--surface-2);
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: var(--font-head); color: var(--ink-3);
+      transition: background .1s, color .1s;
     }
+    .group-tab.active { background: var(--pitch); color: #fff; border-color: var(--pitch); }
+    .group-tab.done   { background: #dcfce7; color: #166534; border-color: #86efac; }
 
-    #adminScreen { display:none; }
-    .admin-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
-    @media(max-width:768px){ .admin-grid{grid-template-columns:1fr;} }
-
-    .admin-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-sm); }
-    .admin-card-head { background:var(--ink); color:#fff; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; }
-    .admin-card-head h2 { font-family:var(--font-head); font-size:16px; font-weight:800; margin:0; letter-spacing:.3px; }
-    .admin-card-body { padding:16px; }
-
-    .group-tab-bar { display:flex; flex-wrap:nowrap; gap:4px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px; }
-    .group-tab-btn {
-      padding:5px 8px; font-size:12px; font-weight:700;
-      border:1px solid var(--pitch); border-radius:20px;
-      background:var(--surface); color:var(--pitch);
-      cursor:pointer; transition:background .12s,color .12s,border-color .12s;
-      white-space:nowrap; flex-shrink:0;
+    .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 14px; }
+    .team-btn {
+      padding: 8px 6px; border-radius: var(--radius);
+      border: 2px solid var(--border); background: var(--surface-2);
+      font-size: 12px; font-weight: 600; cursor: pointer; text-align: center;
+      font-family: var(--font-body); color: var(--ink);
+      transition: background .1s, border-color .1s;
     }
-    .group-tab-btn.active { background:var(--pitch); color:#fff; }
-    .group-tab-btn.locked { border-color:#dc2626; color:#dc2626; }
-    .group-tab-btn.locked.active { background:#dc2626; color:#fff; border-color:#dc2626; }
+    .team-btn:hover { border-color: var(--pitch); background: #f0fdf4; }
+    .team-btn.pos-1 { background: #fef9c3; border-color: #ca8a04; color: #713f12; }
+    .team-btn.pos-2 { background: #e0f2fe; border-color: #0284c7; color: #0c4a6e; }
+    .team-btn.pos-3 { background: #fce7f3; border-color: #be185d; color: #831843; }
+    .team-btn.pos-4 { background: #f1f5f9; border-color: #94a3b8; color: #475569; }
 
-    .group-team-picker { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
-    .team-pick-btn {
-      flex:1 1 calc(50% - 4px);
-      padding:10px 8px;
-      font-family:var(--font-body); font-size:13px; font-weight:600;
-      border:2px solid var(--border); border-radius:var(--radius);
-      background:var(--surface-2); color:var(--ink);
-      cursor:pointer; text-align:center;
-      transition:background .12s, border-color .12s, color .12s;
+    .pos-strip { display: flex; gap: 6px; margin-bottom: 10px; }
+    .pos-chip {
+      flex: 1; text-align: center; padding: 6px 4px;
+      border-radius: var(--radius); font-size: 11px; font-weight: 700;
+      border: 1px solid var(--border); background: var(--surface-2); color: var(--ink-3);
     }
-    .team-pick-btn .pos-badge {
-      display:inline-block; margin-left:6px; padding:1px 7px;
-      font-size:11px; font-weight:800; border-radius:20px;
-      background:var(--pitch); color:#fff; vertical-align:middle;
+    .pos-chip span { display: block; font-size: 13px; font-weight: 800; color: var(--ink); margin-top: 2px; word-break: break-word; }
+
+    /* Knockout */
+    .ko-round-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .ko-round-tab {
+      padding: 5px 10px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--surface-2);
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: var(--font-head); color: var(--ink-3);
     }
-    .team-pick-btn.assigned { border-color:var(--pitch); background:#f0faf4; color:var(--ink); }
+    .ko-round-tab.active { background: var(--pitch); color: #fff; border-color: var(--pitch); }
 
-    .group-assignments { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:4px; }
-    .assignment-slot { text-align:center; padding:6px 4px; border-radius:var(--radius); background:var(--surface-2); border:1px solid var(--border); }
-    .assignment-slot .slot-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-3); margin-bottom:3px; }
-    .assignment-slot .slot-team { font-size:12px; font-weight:700; color:var(--ink); min-height:16px; }
-    .assignment-slot.filled { border-color:var(--pitch); background:#f0faf4; }
-
-    .final-standings-row {
-      display:flex; align-items:center; gap:10px;
-      margin:14px 0 10px;
-      padding:10px 12px;
-      border-radius:var(--radius);
-      border:1px solid var(--border);
-      background:var(--surface-2);
-      transition:background .15s, border-color .15s;
+    .ko-match {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 12px; margin-bottom: 8px;
     }
-    .final-standings-row.locked-state {
-      background:#fff1f1;
-      border-color:#dc2626;
+    .ko-match-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-3); margin-bottom: 6px; }
+    .ko-match-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .ko-team { font-weight: 600; font-size: 13px; flex: 1; }
+    .ko-score-input {
+      width: 44px; padding: 4px 6px; border: 1px solid var(--border);
+      border-radius: var(--radius); font-size: 14px; font-weight: 700;
+      text-align: center; font-family: var(--font-head);
+      background: var(--surface); color: var(--ink); outline: none;
     }
-    .final-standings-row input[type="checkbox"] {
-      width:16px; height:16px; cursor:pointer; accent-color:#dc2626; flex-shrink:0;
+    .ko-score-input:focus { border-color: var(--pitch); }
+    .ko-winner-row { display: flex; gap: 6px; }
+    .ko-winner-btn {
+      flex: 1; padding: 5px; border-radius: var(--radius); border: 1px solid var(--border);
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      background: var(--surface-2); color: var(--ink-3); font-family: var(--font-body);
     }
-    .final-standings-row label {
-      font-size:13px; font-weight:700; color:var(--ink); cursor:pointer;
+    .ko-winner-btn.selected { background: var(--pitch); color: #fff; border-color: var(--pitch); }
+    .ko-save-btn {
+      width: 100%; margin-top: 8px; padding: 8px; border-radius: var(--radius);
+      background: var(--pitch); color: #fff; border: none;
+      font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font-body);
     }
-    .final-standings-row .lock-note {
-      font-size:11px; color:var(--ink-3); margin-left:auto;
+    .ko-save-btn:hover { opacity: .9; }
+    .ko-live-toggle { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: var(--ink-3); }
+
+    /* Rebuild */
+    .rebuild-info { font-size: 12px; color: var(--ink-3); margin-bottom: 14px; line-height: 1.5; }
+    .rebuild-btn {
+      width: 100%; padding: 12px; border-radius: var(--radius);
+      border: none; font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: var(--font-body); margin-bottom: 8px;
+      transition: opacity .15s;
     }
-    .final-standings-row.locked-state label { color:#dc2626; }
-    .final-standings-row.locked-state .lock-note { color:#dc2626; }
+    .rebuild-btn:hover { opacity: .9; }
+    .rebuild-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .rebuild-btn.primary { background: var(--pitch); color: #fff; }
+    .rebuild-btn.secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); }
+    .rebuild-result { font-size: 12px; margin-top: 8px; padding: 8px 12px; border-radius: var(--radius); display: none; }
+    .rebuild-result.ok    { background: #dcfce7; color: #166534; }
+    .rebuild-result.error { background: #fee2e2; color: #991b1b; }
 
-    .fixture-desc-banner {
-      background:var(--surface-2); border:1px solid var(--border);
-      border-radius:var(--radius); padding:10px 14px;
-      margin-bottom:12px; font-size:13px; font-weight:700;
-      color:var(--ink); line-height:1.4;
-      transition:background .15s, border-color .15s, color .15s;
+    /* Payments */
+    .pay-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .pay-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-3); margin-bottom: 10px; }
+    .pay-entry-card {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 9px 12px; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px;
     }
-    .fixture-desc-banner .fixture-meta {
-      font-size:11px; font-weight:600; color:var(--ink-3);
-      margin-top:3px; transition:color .15s;
+    .pay-entry-name { font-weight: 700; font-size: 13px; }
+    .pay-entry-id   { font-size: 11px; color: var(--ink-3); margin-top: 1px; }
+    .btn-sm {
+      padding: 6px 12px; border-radius: var(--radius); border: none;
+      font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font-body);
+      flex-shrink: 0;
     }
-    .fixture-desc-banner.saved { background:#f0faf4; border-color:var(--pitch); color:var(--pitch); }
-    .fixture-desc-banner.saved .fixture-meta { color:#166534; }
-    .match-nav-label-saved { color:var(--pitch) !important; font-weight:800 !important; }
-
-    .match-form { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; margin-bottom:12px; }
-    .match-form input[type="number"] {
-      width:100%; padding:8px; text-align:center;
-      font-family:var(--font-head); font-size:20px; font-weight:800;
-      border:1px solid var(--border); border-radius:var(--radius);
-      background:var(--surface-2); color:var(--ink);
-      transition:background .15s, border-color .15s, color .15s;
+    .btn-sm.primary { background: var(--pitch); color: #fff; }
+    .btn-sm.primary:hover { opacity: .9; }
+    .btn-sm:disabled { opacity: .5; cursor: not-allowed; }
+    .pay-name-row { display: flex; gap: 8px; }
+    .pay-name-input {
+      flex: 1; padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius); font-size: 14px;
+      font-family: var(--font-body); background: var(--surface-2); color: var(--ink); outline: none;
     }
-    .match-form-vs { font-family:var(--font-head); font-size:13px; font-weight:800; color:var(--ink-3); text-align:center; }
-    .match-team-label { font-size:12px; font-weight:700; color:var(--ink); margin-bottom:4px; text-align:center; transition:color .15s; }
-    .match-form.saved input[type="number"] { border-color:var(--pitch); background:#f0faf4; color:#14532d; }
-    .match-form.saved .match-team-label { color:var(--pitch); }
+    .pay-name-input:focus { border-color: var(--pitch); box-shadow: 0 0 0 3px rgba(13,92,46,.1); }
 
-    .match-select-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
-    .match-select-row label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-3); display:block; margin-bottom:4px; }
-    .match-select-row select { width:100%; padding:7px 8px; border:1px solid var(--border); border-radius:var(--radius); font-size:13px; font-family:var(--font-body); background:var(--surface-2); color:var(--ink); }
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--ink); color: #fff;
+      padding: 11px 20px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      opacity: 0; transition: transform .3s, opacity .3s;
+      pointer-events: none; white-space: nowrap; z-index: 999;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: #166534; }
+    .toast.error   { background: #991b1b; }
 
-    .round-tab-bar { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-    .round-tab-btn { padding:5px 12px; font-size:12px; font-weight:700; border:1px solid var(--border); border-radius:20px; background:var(--surface); color:var(--ink-3); cursor:pointer; transition:background .12s,color .12s,border-color .12s; }
-    .round-tab-btn.active { background:var(--ink); color:#fff; border-color:var(--ink); }
-
-    .match-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .match-nav span { font-family:var(--font-head); font-size:14px; font-weight:700; color:var(--ink); transition:color .15s; }
-    .match-nav button { padding:5px 12px; font-size:12px; font-weight:700; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--ink); cursor:pointer; }
-    .match-nav button:disabled { opacity:.4; cursor:default; }
-
-    .rebuild-info { font-size:13px; color:var(--ink-3); margin-bottom:16px; line-height:1.5; }
-    .rebuild-info strong { color:var(--ink); }
-
-    .toast { position:fixed; bottom:24px; right:24px; z-index:9999; padding:12px 20px; border-radius:var(--radius); font-size:14px; font-weight:600; box-shadow:0 4px 20px rgba(0,0,0,.25); transform:translateY(80px); opacity:0; transition:transform .3s,opacity .3s; pointer-events:none; }
-    .toast.show { transform:translateY(0); opacity:1; }
-    .toast.success { background:#166534; color:#fff; }
-    .toast.error   { background:#dc2626; color:#fff; }
-    .toast.info    { background:var(--ink); color:#fff; }
-
-    .btn-sm { padding:7px 14px; font-size:13px; font-weight:700; border-radius:var(--radius); border:none; cursor:pointer; font-family:var(--font-body); transition:opacity .15s; }
-    .btn-sm:disabled { opacity:.5; cursor:not-allowed; }
-    .btn-sm.primary { background:var(--pitch); color:#fff; }
-    .btn-sm.danger  { background:#dc2626; color:#fff; }
-    .btn-sm.neutral { background:var(--surface-3); color:var(--ink); }
-
-    .full-width-card { grid-column:1/-1; }
-    .api-warning { background:#fef3c7; border:1px solid #fcd34d; border-radius:var(--radius); padding:10px 14px; font-size:12px; color:#92400e; margin-bottom:16px; display:none; }
+    @media (max-width: 768px) {
+      .admin-grid { grid-template-columns: 1fr; }
+      .full-width-card { grid-column: 1; }
+      .pay-two-col { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(3, 1fr); }
+    }
   </style>
 </head>
 <body>
 
 <nav class="nav">
-  <a class="nav-brand" href="index.html">
-    <span class="nav-brand-icon"><img src="soccerball.png" width="28" height="28" alt="" style="display:block;"/></span>
+  <a class="nav-brand" href="live/index.html">
+    <span class="nav-brand-icon">
+      <img src="soccerball.png" width="28" height="28" alt="" style="display:block;" />
+    </span>
     <span class="nav-brand-text">Mick's <span>WC26</span></span>
   </a>
   <ul class="nav-links">
-    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
-    <li><a href="results.html"><span class="nav-icon">🟢</span> Results</a></li>
-    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="live/index.html">🏠 Home</a></li>
+    <li><a href="live/leaderboard.html">🏆 Leaderboard</a></li>
   </ul>
-  <button class="nav-toggle" id="navToggle">☰</button>
-</nav>
-<nav class="nav-mobile" id="navMobile">
-  <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
-  <a href="results.html"><span class="nav-icon">🟢</span> Results</a>
-  <a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a>
 </nav>
 
-<div class="page-hero">
-  <div class="page-hero-inner">
-    <div class="page-hero-eyebrow">Admin</div>
-    <h1>Results <span>Input</span></h1>
-    <p class="page-hero-sub">Enter results, trigger scoring rebuild.</p>
-  </div>
-  <div class="page-hero-rainbow"></div>
+<!-- Password gate -->
+<div id="adminGate" class="admin-gate">
+  <h2>⚙️ Admin</h2>
+  <p>Enter the admin password to continue.</p>
+  <input type="password" id="pwInput" placeholder="Password" autocomplete="current-password" />
+  <button class="btn btn-primary" style="width:100%;" onclick="checkPassword()">Enter</button>
+  <p id="pwError" style="color:#dc2626;font-size:12px;margin-top:8px;display:none;">Wrong password.</p>
 </div>
 
-<!-- LOGIN -->
-<div id="loginScreen">
-  <div class="login-card">
-    <div class="login-icon">🔐</div>
-    <h2>Admin access</h2>
-    <p>Results input and scoring rebuild.</p>
-    <div class="login-error" id="loginError">
-      <span>⚠</span> Incorrect password. Try again.
+<!-- Admin content -->
+<div id="adminMain">
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-hero-eyebrow">Admin panel</div>
+      <h1>Admin <span>controls</span></h1>
     </div>
-    <div class="pw-field">
-      <input type="password" id="pwInput" placeholder="Enter password" autocomplete="current-password" />
-      <button class="pw-toggle" id="pwToggle" type="button" tabindex="-1" aria-label="Show password">👁</button>
-    </div>
-    <br>
-    <button class="login-btn" id="loginBtn">Sign in</button>
+    <div class="page-hero-rainbow"></div>
   </div>
-</div>
 
-<!-- ADMIN UI -->
-<div class="main" id="adminScreen">
-  <div class="api-warning" id="apiWarning"></div>
-  <div class="admin-grid">
+  <div class="main">
+    <div class="admin-grid">
 
-    <!-- GROUP STANDINGS -->
-    <div class="admin-card">
-      <div class="admin-card-head"><h2>Group standings</h2></div>
-      <div class="admin-card-body">
-        <div class="group-tab-bar" id="groupTabBar"></div>
-        <div id="groupTeamPicker" class="group-team-picker"></div>
-        <div id="groupAssignments" class="group-assignments"></div>
-        <div class="final-standings-row" id="finalStandingsRow">
-          <input type="checkbox" id="finalStandingsCheck" />
-          <label for="finalStandingsCheck">🔒 Final standings</label>
-          <span class="lock-note" id="lockNote"></span>
-        </div>
-        <div style="margin-top:10px;display:flex;gap:8px;">
-          <button class="btn-sm primary" id="saveGroupBtn" style="flex:1">Save group</button>
-          <button class="btn-sm neutral" id="clearGroupBtn">Clear</button>
+      <!-- GROUP STANDINGS -->
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>Group standings</h2></div>
+        <div class="admin-card-body">
+
+          <div class="group-tabs" id="groupTabs"></div>
+
+          <div id="groupEditor" style="display:none;">
+            <p style="font-size:12px;color:var(--ink-3);margin-bottom:10px;">Tap teams in finishing order (1st → 4th). Tap again to deselect.</p>
+            <div class="pos-strip" id="posStrip">
+              <div class="pos-chip">1st<span id="pos1Label">—</span></div>
+              <div class="pos-chip">2nd<span id="pos2Label">—</span></div>
+              <div class="pos-chip">3rd<span id="pos3Label">—</span></div>
+              <div class="pos-chip">4th<span id="pos4Label">—</span></div>
+            </div>
+            <div class="team-grid" id="teamGrid"></div>
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <button class="rebuild-btn secondary" style="margin:0;" onclick="clearGroupSelection()">Clear</button>
+              <button class="rebuild-btn primary" style="margin:0;" id="saveGroupBtn" onclick="saveGroup(false)">Save (provisional)</button>
+            </div>
+            <button class="rebuild-btn primary" style="margin-top:8px;background:#166534;" id="lockGroupBtn" onclick="saveGroup(true)">Lock final standings</button>
+            <div class="rebuild-result" id="groupResult"></div>
+          </div>
+
+          <p id="groupPlaceholder" style="font-size:13px;color:var(--ink-3);">Select a group above to enter standings.</p>
         </div>
       </div>
-    </div>
 
-    <!-- KNOCKOUT RESULTS -->
-    <div class="admin-card">
-      <div class="admin-card-head"><h2>Knockout results</h2></div>
-      <div class="admin-card-body">
-        <div class="round-tab-bar" id="roundTabBar"></div>
-        <div class="match-nav">
-          <button class="btn-sm neutral" id="prevMatchBtn">&#8592;</button>
-          <span id="matchNavLabel">Match 1 of 1</span>
-          <button class="btn-sm neutral" id="nextMatchBtn">&#8594;</button>
-        </div>
-        <div class="fixture-desc-banner" id="fixtureBanner">
-          <div id="fixtureDescText"></div>
-          <div class="fixture-meta" id="fixtureMetaText"></div>
-        </div>
-        <div class="match-select-row">
-          <div><label>Team 1</label><select id="koTeam1"><option value="">TBD</option></select></div>
-          <div><label>Team 2</label><select id="koTeam2"><option value="">TBD</option></select></div>
-        </div>
-        <div class="match-form" id="matchForm">
-          <div>
-            <div class="match-team-label" id="koTeam1Label">Team 1</div>
-            <input type="number" id="koGoals1" min="0" max="20" placeholder="—" />
+      <!-- KNOCKOUT RESULTS -->
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>Knockout results</h2></div>
+        <div class="admin-card-body">
+          <div class="ko-round-tabs" id="koRoundTabs">
+            <button class="ko-round-tab active" data-round="r32" onclick="setKoRound('r32',this)">R32</button>
+            <button class="ko-round-tab" data-round="r16" onclick="setKoRound('r16',this)">R16</button>
+            <button class="ko-round-tab" data-round="qf" onclick="setKoRound('qf',this)">QF</button>
+            <button class="ko-round-tab" data-round="sf" onclick="setKoRound('sf',this)">SF</button>
+            <button class="ko-round-tab" data-round="final" onclick="setKoRound('final',this)">Final</button>
           </div>
-          <div class="match-form-vs">vs</div>
-          <div>
-            <div class="match-team-label" id="koTeam2Label">Team 2</div>
-            <input type="number" id="koGoals2" min="0" max="20" placeholder="—" />
+          <div id="koMatchList" style="max-height:420px;overflow-y:auto;">
+            <p style="font-size:13px;color:var(--ink-3);">Loading…</p>
           </div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn-sm primary" id="saveKoBtn" style="flex:1">Save result</button>
+      </div>
+
+      <!-- SCORING REBUILD -->
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>Scoring rebuild</h2></div>
+        <div class="admin-card-body">
+          <p class="rebuild-info">Run after entering results. "Rebuild all" recalculates everything from scratch. Partial rebuilds are faster but use only when you know what changed.</p>
+          <button class="rebuild-btn primary" data-rebuild="all" onclick="runRebuild(this)">Rebuild all scores</button>
+          <button class="rebuild-btn secondary" data-rebuild="groups" onclick="runRebuild(this)">Update groups only</button>
+          <button class="rebuild-btn secondary" data-rebuild="round" onclick="runRebuild(this)">Update KO round only</button>
+          <div class="rebuild-result" id="rebuildResult"></div>
         </div>
       </div>
-    </div>
 
-    <!-- SCORING REBUILD -->
-   <div class="admin-card full-width-card">
-  <div class="admin-card-head"><h2>Scoring rebuild</h2></div>
-  <div class="admin-card-body">
-    <p class="rebuild-info">Run after saving results. Each button rescores all entries and updates the leaderboard.</p>
+      <!-- PAYMENTS -->
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>Payments</h2></div>
+        <div class="admin-card-body">
+          <p class="rebuild-info" style="margin-bottom:14px;">Mark entries as paid or record a cash payment before an entry is submitted.</p>
+          <div class="pay-two-col">
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,auto));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;">
+            <div>
+              <div class="pay-section-label">Unpaid entries</div>
+              <div id="unpaidList" style="font-size:13px;color:var(--ink-3);">Loading…</div>
+            </div>
 
-      <div style="background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="groups" style="width:100%;">Update groups</button>
-        <span style="font-size:10px;color:var(--ink-3);">Group scores + leaderboard</span>
+            <div>
+              <div class="pay-section-label">No entry yet — record by name</div>
+              <div class="pay-name-row">
+                <input type="text" id="paymentNameInput" class="pay-name-input" placeholder="Full name" autocomplete="off" />
+                <button class="btn-sm primary" id="recordNameBtn" onclick="recordPaymentByName()">Record paid</button>
+              </div>
+              <p style="font-size:11px;color:var(--ink-3);margin-top:8px;">Entry ID will show as PENDING until they submit their entry.</p>
+            </div>
+
+          </div>
+        </div>
       </div>
 
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;border-left:2px solid var(--border);">
-        <button class="btn-sm primary" data-rebuild="r32" style="width:100%;">Update R32</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="r16" style="width:100%;">Update R16</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="qf" style="width:100%;">Update QF</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="sf" style="width:100%;">Update SF</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="final" style="width:100%;">Update Final</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:5px;border-left:2px solid var(--border);">
-        <button class="btn-sm danger" data-rebuild="all" style="width:100%;">Update everything</button>
-        <span style="font-size:10px;color:var(--ink-3);">All scores + progression + leaderboard</span>
-      </div>
-
-    </div>
-    <div id="rebuildStatus" style="font-size:13px;color:var(--ink-3);"></div>
+    </div><!-- .admin-grid -->
   </div>
 </div>
-</div><!-- end scoring rebuild card -->
-
-  </div><!-- end admin-grid -->
-</div><!-- end adminScreen -->
 
 <div class="toast" id="toast"></div>
 
-<footer class="site-footer">
-  <div class="site-footer-inner">
-    <div class="site-footer-logo">Mick's <span>World Cup Predictor</span> 2026</div>
-  </div>
-</footer>
-
 <script src="site.js"></script>
 <script>
-const ADMIN_PW = 'MW1977';
-const GROUPS   = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-const ROUNDS   = ['r32','r16','qf','sf','final'];
-const ROUND_LABELS       = { r32:'R32', r16:'R16', qf:'QF', sf:'SF', final:'Final' };
-const ROUND_COUNTS       = { r32:16, r16:8, qf:4, sf:2, final:1 };
-const ROUND_SHEET_LABELS = { r32:'Round of 32', r16:'Round of 16', qf:'Quarter-final', sf:'Semi-final', final:'Final' };
+  /* ── Password ── */
+  const ADMIN_PASSWORD = 'wc26admin';
 
-let allTeams       = [];
-let groupTeams     = {};
-let fixtures       = [];
-let koData         = {};
-let activeGroup    = 'A';
-let activeRound    = 'r32';
-let activeMatchIdx = 0;
-let groupPositions = {};
-let actualGroups   = {};
-let groupLocked    = {};  // tracks locked state per group letter
-
-const FIXED_R32 = {
-  73: { team1: { type:'RUNNER_UP', group:'A' }, team2: { type:'RUNNER_UP', group:'B' } },
-  75: { team1: { type:'WINNER',    group:'F' }, team2: { type:'RUNNER_UP', group:'C' } },
-  76: { team1: { type:'WINNER',    group:'C' }, team2: { type:'RUNNER_UP', group:'F' } },
-  78: { team1: { type:'RUNNER_UP', group:'E' }, team2: { type:'RUNNER_UP', group:'I' } },
-  83: { team1: { type:'RUNNER_UP', group:'K' }, team2: { type:'RUNNER_UP', group:'L' } },
-  84: { team1: { type:'WINNER',    group:'H' }, team2: { type:'RUNNER_UP', group:'J' } },
-  86: { team1: { type:'WINNER',    group:'J' }, team2: { type:'RUNNER_UP', group:'H' } },
-  88: { team1: { type:'RUNNER_UP', group:'D' }, team2: { type:'RUNNER_UP', group:'G' } }
-};
-
-const FLEXIBLE_R32_TEAM1 = {
-  74: { type:'WINNER', group:'E' },
-  77: { type:'WINNER', group:'I' },
-  79: { type:'WINNER', group:'A' },
-  80: { type:'WINNER', group:'L' },
-  81: { type:'WINNER', group:'D' },
-  82: { type:'WINNER', group:'G' },
-  85: { type:'WINNER', group:'B' },
-  87: { type:'WINNER', group:'K' }
-};
-
-const PROGRESSION = {
-  89:  { team1: 74, team2: 77 },
-  90:  { team1: 73, team2: 75 },
-  91:  { team1: 76, team2: 78 },
-  92:  { team1: 79, team2: 80 },
-  93:  { team1: 83, team2: 84 },
-  94:  { team1: 81, team2: 82 },
-  95:  { team1: 86, team2: 88 },
-  96:  { team1: 85, team2: 87 },
-  97:  { team1: 89, team2: 90 },
-  98:  { team1: 93, team2: 94 },
-  99:  { team1: 91, team2: 92 },
-  100: { team1: 95, team2: 96 },
-  101: { team1: 97, team2: 98 },
-  102: { team1: 99, team2: 100 },
-  104: { team1: 101, team2: 102 }
-};
-
-function resolveFixedSlot(slot) {
-  const g = actualGroups[slot.group];
-  if (!g) return '';
-  if (!groupLocked[slot.group]) return '';  // only resolve if group is locked
-  return slot.type === 'WINNER' ? (g.pos1 || '') : (g.pos2 || '');
-}
-
-function resolveProgressionTeam(feederMatchNo) {
-  const saved = koData[String(feederMatchNo)];
-  return saved && saved.winner ? saved.winner : '';
-}
-
-function matchDependsOnGroup(matchNoNum, group) {
-  if (FIXED_R32[matchNoNum]) {
-    const r = FIXED_R32[matchNoNum];
-    return r.team1.group === group || r.team2.group === group;
-  }
-  if (FLEXIBLE_R32_TEAM1[matchNoNum]) {
-    return FLEXIBLE_R32_TEAM1[matchNoNum].group === group;
-  }
-  return false;
-}
-
-/* ── Helpers ── */
-function toast(msg, type = 'info') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = `toast ${type} show`;
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 3500);
-}
-
-function apiPost(action, payload) {
-  return fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, payload })
-  }).then(r => r.json());
-}
-
-function apiGet(action) {
-  if (typeof apiFetch === 'function') return apiFetch(action);
-  return fetch(SCRIPT_URL + '?action=' + action).then(r => r.json());
-}
-
-function esc(str) {
-  return String(str || '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-
-/* ── Login ── */
-(function() {
-  const pwInput  = document.getElementById('pwInput');
-  const loginBtn = document.getElementById('loginBtn');
-  const pwToggle = document.getElementById('pwToggle');
-  const loginErr = document.getElementById('loginError');
-
-  function tryLogin() {
-    if (pwInput.value !== ADMIN_PW) {
-      loginErr.classList.add('show');
-      pwInput.classList.add('shake');
-      pwInput.addEventListener('animationend', () => pwInput.classList.remove('shake'), { once: true });
-      pwInput.select();
-      return;
-    }
-    loginErr.classList.remove('show');
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminScreen').style.display = 'block';
-    buildGroupTabs();
-    buildRoundTabs();
-    initAdmin();
-  }
-
-  loginBtn.addEventListener('click', tryLogin);
-  pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-
-  pwToggle.addEventListener('click', () => {
-    const hidden = pwInput.type === 'password';
-    pwInput.type = hidden ? 'text' : 'password';
-    pwToggle.textContent = hidden ? '🙈' : '👁';
-    pwInput.focus();
-  });
-})();
-
-/* ── Init ── */
-async function initAdmin() {
-  const warnings = [];
-
-  try {
-    const d = await apiGet('getGroupTeams');
-    if (d?.ok && d.groups) {
-      groupTeams = d.groups;
-      allTeams = Object.values(groupTeams).flat().sort();
+  function checkPassword() {
+    const pw = document.getElementById('pwInput').value;
+    if (pw === ADMIN_PASSWORD) {
+      document.getElementById('adminGate').style.display = 'none';
+      document.getElementById('adminMain').style.display = 'block';
+      initAdmin();
     } else {
-      warnings.push('Could not load group teams — dropdowns may be empty.');
+      document.getElementById('pwError').style.display = 'block';
     }
-  } catch(e) {
-    warnings.push('getGroupTeams failed: ' + e.message);
+  }
+  document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+
+  /* ── Toast ── */
+  function toast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show ' + type;
+    setTimeout(() => el.className = 'toast', 3000);
   }
 
-  try {
-    const d = await apiGet('getFixtures');
-    if (d?.ok && Array.isArray(d.fixtures)) {
-      fixtures = d.fixtures;
-    } else {
-      warnings.push('Could not load fixtures — match info will be missing.');
-    }
-  } catch(e) {
-    warnings.push('getFixtures failed: ' + e.message);
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  try {
-    const d = await apiGet('getResults');
-    if (d?.ok) {
-      if (d.groups) {
-        Object.keys(d.groups).forEach(g => {
-          actualGroups[g] = d.groups[g];
-          groupLocked[g] = d.groups[g].finalStandings === true;
-        });
-      }
-      if (d.knockout) {
-        Object.values(d.knockout).forEach(matches => {
-          if (!Array.isArray(matches)) return;
-          matches.forEach(m => {
-            if (m.matchNo) koData[String(m.matchNo)] = m;
-          });
-        });
-      }
-    }
-  } catch(e) {
-    warnings.push('getResults failed: ' + e.message);
+  /* ── API helpers ── */
+  async function apiGet(action) {
+    const data = await apiFetch(action);
+    return data;
   }
 
-  if (warnings.length) {
-    const w = document.getElementById('apiWarning');
-    w.textContent = warnings.join(' | ');
-    w.style.display = 'block';
-  }
-
-  refreshGroupTabStyles();
-  loadGroupForm(activeGroup);
-  loadKoForm();
-}
-
-/* ══ GROUP SECTION ══ */
-function buildGroupTabs() {
-  const bar = document.getElementById('groupTabBar');
-  bar.innerHTML = GROUPS.map(g =>
-    `<button class="group-tab-btn${g === 'A' ? ' active' : ''}" data-g="${g}" id="gtab-${g}">${g}</button>`
-  ).join('');
-  bar.addEventListener('click', e => {
-    const btn = e.target.closest('.group-tab-btn');
-    if (!btn) return;
-    bar.querySelectorAll('.group-tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeGroup = btn.dataset.g;
-    loadGroupForm(activeGroup);
-  });
-}
-
-function refreshGroupTabStyles() {
-  GROUPS.forEach(g => {
-    const btn = document.getElementById(`gtab-${g}`);
-    if (!btn) return;
-    if (groupLocked[g]) {
-      btn.classList.add('locked');
-      btn.textContent = `🔒${g}`;
-    } else {
-      btn.classList.remove('locked');
-      btn.textContent = g;
-    }
-  });
-}
-
-function updateFinalStandingsUI(isLocked) {
-  const row = document.getElementById('finalStandingsRow');
-  const check = document.getElementById('finalStandingsCheck');
-  const note = document.getElementById('lockNote');
-  check.checked = isLocked;
-  if (isLocked) {
-    row.classList.add('locked-state');
-    note.textContent = 'Standings confirmed — R32 fixtures unlocked';
-  } else {
-    row.classList.remove('locked-state');
-    note.textContent = '';
-  }
-}
-
-async function loadGroupForm(g) {
-  const teams = groupTeams[g] || [];
-  groupPositions = {};
-  teams.forEach(t => { groupPositions[t] = null; });
-  try {
-    const d = await apiGet(`getGroupResult&group=${encodeURIComponent(g)}`);
-    if (d?.ok && d.result) {
-      const r = d.result;
-      if (r.pos1 && groupPositions.hasOwnProperty(r.pos1)) groupPositions[r.pos1] = 1;
-      if (r.pos2 && groupPositions.hasOwnProperty(r.pos2)) groupPositions[r.pos2] = 2;
-      if (r.pos3 && groupPositions.hasOwnProperty(r.pos3)) groupPositions[r.pos3] = 3;
-      if (r.pos4 && groupPositions.hasOwnProperty(r.pos4)) groupPositions[r.pos4] = 4;
-      groupLocked[g] = !!r.finalStandings;
-    }
-  } catch(e) {}
-  renderGroupPicker(teams);
-  updateFinalStandingsUI(!!groupLocked[g]);
-  refreshGroupTabStyles();
-}
-
-function renderGroupPicker(teams) {
-  const picker = document.getElementById('groupTeamPicker');
-  picker.innerHTML = teams.map((t, i) => {
-    const pos = groupPositions[t];
-    return `<button class="team-pick-btn${pos !== null ? ' assigned' : ''}" data-idx="${i}">
-      ${esc(t)}${pos !== null ? `<span class="pos-badge">${pos}</span>` : ''}
-    </button>`;
-  }).join('');
-  picker.querySelectorAll('.team-pick-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const team = teams[parseInt(btn.dataset.idx, 10)];
-      if (groupPositions[team] !== null) {
-        groupPositions[team] = null;
-      } else {
-        const taken = new Set(Object.values(groupPositions).filter(v => v !== null));
-        const next = [1,2,3,4].find(p => !taken.has(p));
-        if (next) groupPositions[team] = next;
-      }
-      renderGroupPicker(teams);
+  async function apiPost(action, payload) {
+    const API_URL = 'https://api.micksworldcup2026.com';
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, payload })
     });
-  });
-  const slots = document.getElementById('groupAssignments');
-  slots.innerHTML = [1,2,3,4].map(pos => {
-    const team = Object.keys(groupPositions).find(t => groupPositions[t] === pos) || '';
-    const label = pos === 1 ? '1st' : pos === 2 ? '2nd' : pos === 3 ? '3rd' : '4th';
-    return `<div class="assignment-slot${team ? ' filled' : ''}">
-      <div class="slot-label">${label}</div>
-      <div class="slot-team">${team ? esc(team) : '—'}</div>
-    </div>`;
-  }).join('');
-}
-
-document.getElementById('saveGroupBtn').addEventListener('click', async () => {
-  const pos = [1,2,3,4].map(p =>
-    Object.keys(groupPositions).find(t => groupPositions[t] === p) || ''
-  );
- const finalStandings = document.getElementById('finalStandingsCheck').checked;
-  if (pos.some(p => !p) && finalStandings) {
-    toast('Assign all 4 positions first.', 'error');
-    return;
+    return await res.json();
   }
-  if (pos.some(p => !p) && !finalStandings) {
-    // Unlocking — just save the lock state without requiring positions
-    const btn = document.getElementById('saveGroupBtn');
+
+  /* ── Init ── */
+  async function initAdmin() {
+    await loadGroupTeams();
+    await loadKoMatches('r32');
+    await loadUnpaidEntries();
+  }
+
+  /* ================================================================
+     GROUP STANDINGS
+  ================================================================ */
+  let groupTeams = {};
+  let activeGroup = null;
+  let groupSelection = [];
+  let groupResults = {};
+
+  async function loadGroupTeams() {
+    try {
+      const data = await apiGet('getGroupTeams');
+      if (!data?.ok) return;
+      groupTeams = data.groups || {};
+      renderGroupTabs();
+    } catch(e) { console.error(e); }
+  }
+
+  function renderGroupTabs() {
+    const container = document.getElementById('groupTabs');
+    container.innerHTML = Object.keys(groupTeams).sort().map(g => `
+      <button class="group-tab ${groupResults[g]?.finalStandings ? 'done' : ''}" onclick="selectGroup('${g}')">${g}</button>
+    `).join('');
+  }
+
+  async function selectGroup(g) {
+    activeGroup = g;
+    groupSelection = [];
+
+    // Load existing result
+    try {
+      const data = await apiGet(`getGroupResult&group=${g}`);
+      if (data?.ok && data.result) {
+        const r = data.result;
+        groupResults[g] = r;
+        if (r.pos1) groupSelection = [r.pos1, r.pos2, r.pos3, r.pos4].filter(Boolean);
+      }
+    } catch(e) {}
+
+    document.querySelectorAll('.group-tab').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent === g);
+    });
+    document.getElementById('groupPlaceholder').style.display = 'none';
+    document.getElementById('groupEditor').style.display = 'block';
+    renderTeamGrid();
+    renderPosStrip();
+  }
+
+  function renderTeamGrid() {
+    const teams = groupTeams[activeGroup] || [];
+    document.getElementById('teamGrid').innerHTML = teams.map(t => {
+      const pos = groupSelection.indexOf(t);
+      const cls = pos === 0 ? 'pos-1' : pos === 1 ? 'pos-2' : pos === 2 ? 'pos-3' : pos === 3 ? 'pos-4' : '';
+      return `<button class="team-btn ${cls}" onclick="toggleTeam('${esc(t)}')">${esc(t)}</button>`;
+    }).join('');
+  }
+
+  function renderPosStrip() {
+    ['pos1Label','pos2Label','pos3Label','pos4Label'].forEach((id, i) => {
+      document.getElementById(id).textContent = groupSelection[i] || '—';
+    });
+  }
+
+  function toggleTeam(team) {
+    const idx = groupSelection.indexOf(team);
+    if (idx > -1) {
+      groupSelection.splice(idx, 1);
+    } else {
+      if (groupSelection.length >= 4) return;
+      groupSelection.push(team);
+    }
+    renderTeamGrid();
+    renderPosStrip();
+  }
+
+  function clearGroupSelection() {
+    groupSelection = [];
+    renderTeamGrid();
+    renderPosStrip();
+  }
+
+  async function saveGroup(finalStandings) {
+    if (!activeGroup) return;
+    if (groupSelection.length < 4) { toast('Select all 4 teams first.', 'error'); return; }
+    const [pos1, pos2, pos3, pos4] = groupSelection;
+    const btn = document.getElementById(finalStandings ? 'lockGroupBtn' : 'saveGroupBtn');
     btn.disabled = true;
     btn.textContent = 'Saving…';
     try {
-      const res = await apiPost('saveGroupResult', {
-        group: activeGroup,
-        pos1: Object.keys(groupPositions).find(t => groupPositions[t] === 1) || '',
-        pos2: Object.keys(groupPositions).find(t => groupPositions[t] === 2) || '',
-        pos3: Object.keys(groupPositions).find(t => groupPositions[t] === 3) || '',
-        pos4: Object.keys(groupPositions).find(t => groupPositions[t] === 4) || '',
-        finalStandings: false
-      });
-      if (!res?.ok) throw new Error(res?.error || 'Unlock failed');
-      groupLocked[activeGroup] = false;
-      updateFinalStandingsUI(false);
-      refreshGroupTabStyles();
-      toast(`Group ${activeGroup} unlocked.`, 'info');
+      const res = await apiPost('saveGroupResult', { group: activeGroup, pos1, pos2, pos3, pos4, finalStandings });
+      if (!res?.ok) throw new Error(res?.error || 'Failed');
+      toast(`Group ${activeGroup} saved${finalStandings ? ' and locked' : ''}.`, 'success');
+      if (finalStandings) {
+        groupResults[activeGroup] = { finalStandings: true };
+        renderGroupTabs();
+        document.querySelectorAll('.group-tab').forEach(btn => {
+          if (btn.textContent === activeGroup) btn.classList.add('done');
+        });
+      }
+      const resultEl = document.getElementById('groupResult');
+      resultEl.className = 'rebuild-result ok';
+      resultEl.textContent = finalStandings ? `Group ${activeGroup} locked: ${pos1}, ${pos2}, ${pos3}, ${pos4}` : `Group ${activeGroup} saved (provisional).`;
+      resultEl.style.display = 'block';
     } catch(err) {
-      toast(err.message || 'Unlock failed.', 'error');
+      toast('Error: ' + err.message, 'error');
+      const resultEl = document.getElementById('groupResult');
+      resultEl.className = 'rebuild-result error';
+      resultEl.textContent = err.message;
+      resultEl.style.display = 'block';
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Save group';
+      btn.textContent = finalStandings ? 'Lock final standings' : 'Save (provisional)';
     }
-    return;
   }
-  const btn = document.getElementById('saveGroupBtn');
-  btn.disabled = true;
-  btn.textContent = 'Saving…';
-  try {
-    const res = await apiPost('saveGroupResult', {
-      group: activeGroup,
-      pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3],
-      finalStandings
-    });
-    if (!res?.ok) throw new Error(res?.error || 'Save failed');
 
-    actualGroups[activeGroup] = { pos1: pos[0], pos2: pos[1], pos3: pos[2], pos4: pos[3], finalStandings };
-    groupLocked[activeGroup] = finalStandings;
-    updateFinalStandingsUI(finalStandings);
-    refreshGroupTabStyles();
+  /* ================================================================
+     KNOCKOUT RESULTS
+  ================================================================ */
+  const KO_ROUNDS = {
+    r32:   { label: 'Round of 32',   matchNos: Array.from({length:16},(_,i)=>73+i) },
+    r16:   { label: 'Round of 16',   matchNos: Array.from({length:8}, (_,i)=>89+i) },
+    qf:    { label: 'Quarter-final', matchNos: Array.from({length:4}, (_,i)=>97+i) },
+    sf:    { label: 'Semi-final',    matchNos: Array.from({length:2}, (_,i)=>101+i) },
+    final: { label: 'Final',         matchNos: [104] }
+  };
+  let koData = {};
+  let currentKoRound = 'r32';
 
-    const matches = getRoundFixtures();
-    const currentMatch = matches[activeMatchIdx];
-    const matchNoNum = currentMatch?.matchNo ? Number(currentMatch.matchNo) : null;
-    if (matchNoNum && matchDependsOnGroup(matchNoNum, activeGroup)) {
-      loadKoForm();
-    }
-
-    // if locking, auto-run group scoring rebuild
-    if (finalStandings) {
-      btn.textContent = 'Rebuilding…';
-      try {
-        const rb = await apiPost('rebuildGroups', { clearCache: true });
-        if (!rb?.ok) throw new Error(rb?.error || 'Rebuild failed');
-        const dur = rb.durationMs ? ` (${(rb.durationMs / 1000).toFixed(1)}s)` : '';
-        toast(`Group ${activeGroup} locked and scores updated${dur}.`, 'success');
-      } catch(rbErr) {
-        toast(`Group ${activeGroup} saved but rebuild failed: ${rbErr.message}`, 'error');
-      }
-    } else {
-      toast(`Group ${activeGroup} saved.`, 'success');
-    }
-  } catch(err) {
-    toast(err.message || 'Save failed.', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Save group';
+  async function loadKoMatches(round) {
+    currentKoRound = round;
+    try {
+      const res = await apiGet('getResults');
+      if (!res?.ok) return;
+      const allKo = [...(res.knockout?.r32||[]),...(res.knockout?.r16||[]),...(res.knockout?.qf||[]),...(res.knockout?.sf||[]),...(res.knockout?.final||[])];
+      koData = {};
+      allKo.forEach(m => { koData[String(m.matchNo)] = m; });
+    } catch(e) {}
+    renderKoMatches(round);
   }
-});
 
-document.getElementById('clearGroupBtn').addEventListener('click', () => {
-  const teams = groupTeams[activeGroup] || [];
-  teams.forEach(t => { groupPositions[t] = null; });
-  renderGroupPicker(teams);
-});
-
-/* ══ KNOCKOUT SECTION ══ */
-function buildRoundTabs() {
-  const bar = document.getElementById('roundTabBar');
-  bar.innerHTML = ROUNDS.map(r =>
-    `<button class="round-tab-btn${r === 'r32' ? ' active' : ''}" data-r="${r}">${ROUND_LABELS[r]}</button>`
-  ).join('');
-  bar.addEventListener('click', e => {
-    const btn = e.target.closest('.round-tab-btn');
-    if (!btn) return;
-    bar.querySelectorAll('.round-tab-btn').forEach(b => b.classList.remove('active'));
+  function setKoRound(round, btn) {
+    document.querySelectorAll('.ko-round-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    activeRound = btn.dataset.r;
-    activeMatchIdx = 0;
-    loadKoForm();
-  });
-}
-
-function getRoundFixtures() {
-  const sheetLabel = ROUND_SHEET_LABELS[activeRound];
-  const found = fixtures.filter(f => f.round === sheetLabel);
-  if (found.length) return found;
-  return Array.from({ length: ROUND_COUNTS[activeRound] }, () => ({
-    matchNo: null, round: sheetLabel, date: '', kickOffGmt: '', description: '', _placeholder: true
-  }));
-}
-
-function loadKoForm() {
-  const matches = getRoundFixtures();
-  const total = matches.length;
-  activeMatchIdx = Math.max(0, Math.min(activeMatchIdx, total - 1));
-
-  const m = matches[activeMatchIdx];
-  const matchNo = m.matchNo ? String(m.matchNo) : null;
-  const saved = matchNo ? (koData[matchNo] || {}) : {};
-
-  document.getElementById('matchNavLabel').textContent =
-    matchNo ? `Match ${activeMatchIdx + 1} of ${total} (no. ${matchNo})` : `Match ${activeMatchIdx + 1} of ${total}`;
-
-  document.getElementById('prevMatchBtn').disabled = activeMatchIdx === 0;
-  document.getElementById('nextMatchBtn').disabled = activeMatchIdx === total - 1;
-
-  const isSaved = saved &&
-    saved.goals1 !== null && saved.goals1 !== undefined && saved.goals1 !== '' &&
-    saved.goals2 !== null && saved.goals2 !== undefined && saved.goals2 !== '';
-
-  const descEl = document.getElementById('fixtureDescText');
-  const metaEl = document.getElementById('fixtureMetaText');
-  const banner = document.getElementById('fixtureBanner');
-
-  const desc = m.description || '';
-  const meta = [m.date, m.kickOffGmt ? m.kickOffGmt + ' GMT' : ''].filter(Boolean).join(' · ');
-
-  if (desc || meta) {
-    descEl.textContent = desc || (matchNo ? `Match ${matchNo}` : '');
-    metaEl.textContent = meta;
-    banner.style.display = 'block';
-    banner.classList.toggle('saved', isSaved);
-  } else {
-    banner.style.display = 'none';
-    banner.classList.remove('saved');
+    loadKoMatches(round);
   }
 
-  const matchForm = document.getElementById('matchForm');
-  if (matchForm) matchForm.classList.toggle('saved', isSaved);
-  document.getElementById('matchNavLabel').classList.toggle('match-nav-label-saved', isSaved);
+  function renderKoMatches(round) {
+    const config = KO_ROUNDS[round];
+    if (!config) return;
+    const container = document.getElementById('koMatchList');
+    container.innerHTML = config.matchNos.map(matchNo => {
+      const m = koData[String(matchNo)] || {};
+      const team1 = m.team1 || '';
+      const team2 = m.team2 || '';
+      const g1 = m.goals1 !== null && m.goals1 !== undefined ? m.goals1 : '';
+      const g2 = m.goals2 !== null && m.goals2 !== undefined ? m.goals2 : '';
+      const winner = m.winner || '';
+      const live = m.live || false;
+      return `
+        <div class="ko-match" id="match-${matchNo}">
+          <div class="ko-match-label">Match ${matchNo} — ${config.label}</div>
+          <div class="ko-match-row">
+            <span class="ko-team">${esc(team1) || '<em style="color:var(--ink-3)">TBD</em>'}</span>
+            <input class="ko-score-input" type="number" min="0" id="score1-${matchNo}" value="${g1}" placeholder="0" />
+          </div>
+          <div class="ko-match-row">
+            <span class="ko-team">${esc(team2) || '<em style="color:var(--ink-3)">TBD</em>'}</span>
+            <input class="ko-score-input" type="number" min="0" id="score2-${matchNo}" value="${g2}" placeholder="0" />
+          </div>
+          <div class="ko-winner-row">
+            <button class="ko-winner-btn ${winner === team1 && team1 ? 'selected' : ''}" id="w1-${matchNo}" onclick="setWinner(${matchNo},'t1')">${esc(team1) || 'Team 1'}</button>
+            <button class="ko-winner-btn ${winner === team2 && team2 ? 'selected' : ''}" id="w2-${matchNo}" onclick="setWinner(${matchNo},'t2')">${esc(team2) || 'Team 2'}</button>
+          </div>
+          <label class="ko-live-toggle">
+            <input type="checkbox" id="live-${matchNo}" ${live ? 'checked' : ''} /> Live / in progress
+          </label>
+          <button class="ko-save-btn" onclick="saveKoMatch(${matchNo}, '${esc(config.label)}', '${esc(team1)}', '${esc(team2)}')">Save</button>
+        </div>`;
+    }).join('');
+  }
 
-  const teamOptions = `<option value="">TBD</option>` +
-    allTeams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  function setWinner(matchNo, side) {
+    const w1 = document.getElementById(`w1-${matchNo}`);
+    const w2 = document.getElementById(`w2-${matchNo}`);
+    if (side === 't1') { w1.classList.add('selected'); w2.classList.remove('selected'); }
+    else               { w2.classList.add('selected'); w1.classList.remove('selected'); }
+  }
 
-  document.getElementById('koTeam1').innerHTML = teamOptions;
-  document.getElementById('koTeam2').innerHTML = teamOptions;
-
-  let autoT1 = saved.team1 || '';
-  let autoT2 = saved.team2 || '';
-  if (matchNo) {
-    const matchNoNum = Number(matchNo);
-    if (activeRound === 'r32' && FIXED_R32[matchNoNum]) {
-      const rule = FIXED_R32[matchNoNum];
-      if (!autoT1) autoT1 = resolveFixedSlot(rule.team1);
-      if (!autoT2) autoT2 = resolveFixedSlot(rule.team2);
-    } else if (activeRound === 'r32' && FLEXIBLE_R32_TEAM1[matchNoNum]) {
-      if (!autoT1) autoT1 = resolveFixedSlot(FLEXIBLE_R32_TEAM1[matchNoNum]);
-    } else if (PROGRESSION[matchNoNum]) {
-      const prog = PROGRESSION[matchNoNum];
-      if (!autoT1) autoT1 = resolveProgressionTeam(prog.team1);
-      if (!autoT2) autoT2 = resolveProgressionTeam(prog.team2);
+  async function saveKoMatch(matchNo, round, team1, team2) {
+    const g1 = document.getElementById(`score1-${matchNo}`).value;
+    const g2 = document.getElementById(`score2-${matchNo}`).value;
+    const w1 = document.getElementById(`w1-${matchNo}`).classList.contains('selected');
+    const w2 = document.getElementById(`w2-${matchNo}`).classList.contains('selected');
+    const live = document.getElementById(`live-${matchNo}`).checked;
+    const winner = w1 ? team1 : w2 ? team2 : '';
+    const payload = {
+      matchNo,
+      round,
+      team1,
+      team2,
+      goals1: g1 !== '' ? Number(g1) : null,
+      goals2: g2 !== '' ? Number(g2) : null,
+      winner,
+      live
+    };
+    try {
+      const res = await apiPost('saveKnockoutResult', payload);
+      if (!res?.ok) throw new Error(res?.error || 'Failed');
+      toast(`Match ${matchNo} saved.`, 'success');
+    } catch(err) {
+      toast('Error: ' + err.message, 'error');
     }
   }
 
-  document.getElementById('koTeam1').value = autoT1;
-  document.getElementById('koTeam2').value = autoT2;
-
-  document.getElementById('koGoals1').value =
-    saved.goals1 !== null && saved.goals1 !== undefined ? saved.goals1 : '';
-  document.getElementById('koGoals2').value =
-    saved.goals2 !== null && saved.goals2 !== undefined ? saved.goals2 : '';
-
-  updateTeamLabels();
-}
-
-function updateTeamLabels() {
-  document.getElementById('koTeam1Label').textContent =
-    document.getElementById('koTeam1').value || 'Team 1';
-  document.getElementById('koTeam2Label').textContent =
-    document.getElementById('koTeam2').value || 'Team 2';
-}
-
-document.getElementById('koTeam1').addEventListener('change', updateTeamLabels);
-document.getElementById('koTeam2').addEventListener('change', updateTeamLabels);
-
-document.getElementById('prevMatchBtn').addEventListener('click', () => { activeMatchIdx--; loadKoForm(); });
-document.getElementById('nextMatchBtn').addEventListener('click', () => { activeMatchIdx++; loadKoForm(); });
-
-document.getElementById('saveKoBtn').addEventListener('click', async () => {
-  const matches = getRoundFixtures();
-  const m = matches[activeMatchIdx];
-  const matchNo = m.matchNo;
-
-  if (!matchNo) {
-    toast('No match number for this slot. Check your FIXTURES sheet.', 'error');
-    return;
-  }
-
-  const t1    = document.getElementById('koTeam1').value;
-  const t2    = document.getElementById('koTeam2').value;
-  const g1Raw = document.getElementById('koGoals1').value;
-  const g2Raw = document.getElementById('koGoals2').value;
-
-  let winner = '';
-  if (g1Raw !== '' && g2Raw !== '') {
-    const g1 = parseInt(g1Raw, 10);
-    const g2 = parseInt(g2Raw, 10);
-    if (g1 > g2) winner = t1;
-    else if (g2 > g1) winner = t2;
-  }
-
-  const payload = {
-    matchNo, round: m.round, team1: t1, team2: t2,
-    goals1: g1Raw !== '' ? parseInt(g1Raw, 10) : null,
-    goals2: g2Raw !== '' ? parseInt(g2Raw, 10) : null,
-    winner
+  /* ================================================================
+     SCORING REBUILD
+  ================================================================ */
+  const REBUILD_ACTIONS = {
+    all:    'rebuildWithRankCapture',
+    groups: 'rebuildGroups',
+    round:  'rebuildRound'
   };
 
-  const btn = document.getElementById('saveKoBtn');
-  btn.disabled = true;
-  btn.textContent = 'Saving…';
-
-  try {
-    const res = await apiPost('saveKnockoutResult', payload);
-    if (!res?.ok) throw new Error(res?.error || 'Save failed');
-    koData[String(matchNo)] = { ...payload, ...(res.saved || {}) };
-    toast(`Match ${matchNo} saved.`, 'success');
-    loadKoForm();
-  } catch(err) {
-    toast(err.message || 'Save failed.', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Save result';
-  }
-});
-
-/* ══ REBUILD ══ */
-const REBUILD_ACTIONS = {
-  groups: 'rebuildGroups',
-  r32:    'rebuildRound',
-  r16:    'rebuildRound',
-  qf:     'rebuildRound',
-  sf:     'rebuildRound',
-  final:  'rebuildRound',
-  all:    'rebuildWithRankCapture'
-};
-
-const REBUILD_LABELS = {
-  groups: 'groups', r32: 'R32', r16: 'R16', qf: 'QF', sf: 'SF', final: 'Final', all: 'everything'
-};
-
-const REBUILD_DEFAULT_TEXT = {
-  groups: 'Update groups', r32: 'Update R32', r16: 'Update R16',
-  qf: 'Update QF', sf: 'Update SF', final: 'Update Final', all: 'Update everything'
-};
-
-document.querySelectorAll('[data-rebuild]').forEach(btn => {
-  btn.addEventListener('click', async () => {
-    const key     = btn.dataset.rebuild;
-    const status  = document.getElementById('rebuildStatus');
-    const allBtns = document.querySelectorAll('[data-rebuild]');
-
-    allBtns.forEach(b => b.disabled = true);
+  async function runRebuild(btn) {
+    const key = btn.dataset.rebuild;
+    const action = REBUILD_ACTIONS[key];
+    if (!action) return;
+    const original = btn.textContent;
+    btn.disabled = true;
     btn.textContent = 'Running…';
-    status.textContent = `Updating ${REBUILD_LABELS[key]}…`;
-
+    const resultEl = document.getElementById('rebuildResult');
+    resultEl.style.display = 'none';
     try {
-      const payload = key === 'all' ? { clearCache: true } : { round: key, clearCache: true };
-      const res = await apiPost(REBUILD_ACTIONS[key], payload);
+      const res = await apiPost(action, {});
       if (!res?.ok) throw new Error(res?.error || 'Failed');
-      const dur = res.durationMs ? ` (${(res.durationMs / 1000).toFixed(1)}s)` : '';
-      status.textContent = `Done${dur}.`;
-      toast(`Updated ${REBUILD_LABELS[key]}.`, 'success');
+      resultEl.className = 'rebuild-result ok';
+      resultEl.textContent = 'Done.' + (res.durationMs ? ` (${res.durationMs}ms)` : '');
+      resultEl.style.display = 'block';
+      toast('Scores rebuilt.', 'success');
     } catch(err) {
-      status.textContent = `Error: ${err.message}`;
-      toast('Update failed.', 'error');
+      resultEl.className = 'rebuild-result error';
+      resultEl.textContent = err.message;
+      resultEl.style.display = 'block';
+      toast('Rebuild failed: ' + err.message, 'error');
     } finally {
-      allBtns.forEach(b => {
-        b.disabled = false;
-        b.textContent = REBUILD_DEFAULT_TEXT[b.dataset.rebuild];
-      });
+      btn.disabled = false;
+      btn.textContent = original;
     }
-  });
-});
+  }
 
-/* ── Nav toggle ── */
-document.getElementById('navToggle').addEventListener('click', () => {
-  document.getElementById('navMobile').classList.toggle('open');
-});
+  /* ================================================================
+     PAYMENTS
+  ================================================================ */
+  async function loadUnpaidEntries() {
+    const el = document.getElementById('unpaidList');
+    if (!el) return;
+    try {
+      const data = await apiGet('getUnpaidEntries');
+      if (!data?.ok || !data.entries?.length) {
+        el.innerHTML = '<div style="background:#dcfce7;color:#166534;border-radius:8px;padding:10px 14px;font-weight:600;">🎉 Everyone has paid!</div>';
+        return;
+      }
+      el.innerHTML = data.entries.map(e => `
+        <div id="paycard-${e.row}" class="pay-entry-card">
+          <div>
+            <div class="pay-entry-name">${esc(e.name || '—')}</div>
+            <div class="pay-entry-id">${esc(e.id)}</div>
+          </div>
+          <button class="btn-sm primary" onclick="markEntryPaid(${e.row}, '${(e.name||e.id).replace(/'/g,"\\'")}', this)">Mark paid</button>
+        </div>`).join('');
+    } catch(err) {
+      el.textContent = 'Failed to load.';
+    }
+  }
+
+  async function markEntryPaid(row, label, btn) {
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      const res = await apiPost('markEntryPaid', { row });
+      if (!res?.ok) throw new Error(res?.error || 'Failed');
+      document.getElementById('paycard-' + row)?.remove();
+      toast(label + ' marked as paid.', 'success');
+      if (!document.querySelector('[id^="paycard-"]')) {
+        document.getElementById('unpaidList').innerHTML =
+          '<div style="background:#dcfce7;color:#166534;border-radius:8px;padding:10px 14px;font-weight:600;">🎉 Everyone has paid!</div>';
+      }
+    } catch(err) {
+      btn.disabled = false;
+      btn.textContent = 'Mark paid';
+      toast('Failed: ' + err.message, 'error');
+    }
+  }
+
+  async function recordPaymentByName() {
+    const input = document.getElementById('paymentNameInput');
+    const name  = input.value.trim();
+    if (!name) { toast('Enter a name first.', 'error'); return; }
+    const btn = document.getElementById('recordNameBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      const res = await apiPost('recordNameOnlyPayment', { name });
+      if (!res?.ok) throw new Error(res?.error || 'Failed');
+      input.value = '';
+      toast(name + ' recorded as paid.', 'success');
+    } catch(err) {
+      toast('Failed: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Record paid';
+    }
+  }
 </script>
 </body>
 </html>
