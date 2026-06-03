@@ -78,26 +78,21 @@
     .prog-round-chevron { font-size:11px; color:rgba(255,255,255,.5); transition:transform .2s; flex-shrink:0; }
     .prog-round.open .prog-round-chevron { transform:rotate(180deg); }
     .prog-round-label { font-family:var(--font-head); font-size:14px; font-weight:800; flex:1; }
-    .prog-round-meta { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .prog-round-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .prog-bar-wrap { width:48px; height:4px; background:rgba(255,255,255,.15); border-radius:2px; overflow:hidden; }
+    .prog-bar { height:4px; background:var(--pitch); border-radius:2px; transition:width .3s; }
     .prog-round-hitmiss { font-size:11px; font-weight:700; color:rgba(255,255,255,.55); white-space:nowrap; }
     .prog-round-pts { font-family:var(--font-head); font-size:15px; font-weight:800; color:var(--gold); white-space:nowrap; }
-    .prog-body { display:none; }
-    .prog-round.open .prog-body { display:block; }
-    .prog-table { width:100%; border-collapse:collapse; font-size:13px; }
-    .prog-table-head th { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-3); padding:7px 14px 5px; text-align:left; border-bottom:1px solid var(--surface-3); }
-    .prog-table-head th:last-child { text-align:right; padding-right:14px; }
-    .prog-tr { border-bottom:1px solid var(--surface-3); }
-    .prog-tr:last-child { border-bottom:none; }
-    .prog-td { padding:7px 14px; vertical-align:middle; }
-    .prog-td-pts { text-align:right; padding-right:14px; }
-    .prog-team-name { display:flex; align-items:center; gap:5px; font-size:13px; color:var(--ink); }
-    .prog-team-name.hit { color:#16a34a; font-weight:700; }
-    .prog-team-name.miss { color:var(--ink-3); }
-    .prog-actual-team { display:flex; align-items:center; gap:5px; font-size:13px; color:var(--ink-3); }
-    .prog-team-pts { font-family:var(--font-head); font-size:11px; font-weight:800; padding:2px 7px; border-radius:10px; white-space:nowrap; }
-    .prog-team-pts.hit { background:#dcfce7; color:#166534; }
-    .prog-team-pts.miss { background:var(--surface-3); color:var(--ink-3); }
-    .prog-team-pts.pending { background:var(--surface-3); color:var(--ink-3); opacity:.6; }
+    .prog-body { display:none; padding:10px 14px; flex-wrap:wrap; gap:6px; }
+    .prog-round.open .prog-body { display:flex; }
+    .prog-chip { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px; border:1px solid var(--border); white-space:nowrap; }
+    .prog-chip.hit { background:#dcfce7; border-color:#86efac; color:#166534; }
+    .prog-chip.miss { background:var(--surface-2); color:var(--ink-3); }
+    .prog-chip.pending { background:var(--surface-2); color:var(--ink-3); border-style:dashed; opacity:.7; }
+    .prog-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .prog-dot.hit { background:#16a34a; }
+    .prog-dot.miss { background:var(--ink-3); }
+    .prog-dot.pending { background:var(--border); }
 
     .match-section { margin-bottom:20px; }
     .match-section-head { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--ink-3); padding:6px 0; border-bottom:2px solid var(--surface-3); margin-bottom:8px; }
@@ -203,13 +198,11 @@
 </footer>
 
 <script src="../site.js"></script>
-  <script>
+<script>
   function esc(s) {
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
   }
-</script>
-<script>
-  // ── Flag helper ──────────────────────────────────────────────────────────────
+
   const FLAG_CODES = {
     'Czechia':'CZ','Mexico':'MX','South Africa':'ZA','South Korea':'KR',
     'Bosnia-Herzegovina':'BA','Canada':'CA','Qatar':'QA','Switzerland':'CH',
@@ -237,6 +230,7 @@
     'Armenia':'AM','Georgia':'GE','Iceland':'IS','Kosovo':'XK',
     'North Macedonia':'MK','Montenegro':'ME','Kenya':'KE','Tanzania':'TZ','Czech Republic':'CZ','USA':'US',
   };
+
   function flagImg(name, cls) {
     const code = FLAG_CODES[name];
     if (!code) return '';
@@ -479,57 +473,44 @@
       const hasActual = r.actual.length > 0;
       const hits = hasActual ? (r.teamDetail||[]).filter(td => td.hit).length : null;
       const total = (r.teamDetail||[]).length;
-      const hitMissHtml = hasActual && total ? `<span class="prog-round-hitmiss">${hits}/${total}</span>` : '';
+      const barPct = hasActual && total ? Math.round((hits/total)*100) : 0;
+      const barHtml = hasActual && total
+        ? `<span class="prog-bar-wrap"><span class="prog-bar" style="width:${barPct}%"></span></span><span class="prog-round-hitmiss">${hits}/${total}</span>`
+        : '';
       html += `<div class="prog-round open">
         <div class="prog-round-head" onclick="this.closest('.prog-round').classList.toggle('open')">
           <span class="prog-round-chevron">▼</span>
           <span class="prog-round-label">${esc(r.label)}</span>
-          <span class="prog-round-meta">${hitMissHtml}<span class="prog-round-pts">${r.pts} pts</span></span>
+          <span class="prog-round-right">${barHtml}<span class="prog-round-pts">${r.pts} pts</span></span>
         </div>
-        <div class="prog-body">
-          <table class="prog-table">
-            <thead class="prog-table-head"><tr>
-              <th>Your pick</th><th>Actual</th><th>Pts</th>
-            </tr></thead>
-            <tbody>`;
+        <div class="prog-body">`;
       if (r.teamDetail && r.teamDetail.length) {
-        r.teamDetail.forEach((td, i) => {
-          const statusClass = !hasActual ? '' : td.hit ? 'hit' : 'miss';
-          const chipClass   = !hasActual ? 'pending' : td.hit ? 'hit' : 'miss';
-          const chipLabel   = !hasActual ? '?' : td.hit ? `+${td.pts}` : '0';
-          const actual      = hasActual ? (r.actual[i] || '—') : '—';
-          html += `<tr class="prog-tr">
-            <td class="prog-td"><span class="prog-team-name ${statusClass}">${flagImg(td.team,'lk-flag')}${esc(td.team)}</span></td>
-            <td class="prog-td"><span class="prog-actual-team">${hasActual ? flagImg(actual,'lk-flag') : ''}${esc(actual)}</span></td>
-            <td class="prog-td prog-td-pts"><span class="prog-team-pts ${chipClass}">${chipLabel}</span></td>
-          </tr>`;
+        r.teamDetail.forEach(td => {
+          const chipClass = !hasActual ? 'pending' : td.hit ? 'hit' : 'miss';
+          const dotClass  = !hasActual ? 'pending' : td.hit ? 'hit' : 'miss';
+          html += `<span class="prog-chip ${chipClass}"><span class="prog-dot ${dotClass}"></span>${flagImg(td.team,'lk-flag')}${esc(td.team)}</span>`;
         });
       } else {
-        html += `<tr class="prog-tr"><td class="prog-td" colspan="3"><span class="prog-team-name miss">No prediction</span></td></tr>`;
+        html += `<span class="prog-chip miss">No prediction</span>`;
       }
-      html += `</tbody></table></div></div>`;
+      html += `</div></div>`;
     });
 
     const w = d.winnerDetail||{};
     const wHit = w.actualWinner && w.predictedWinner===w.actualWinner;
     const wChipClass = !w.actualWinner ? 'pending' : wHit ? 'hit' : 'miss';
-    const wChipLabel = !w.actualWinner ? '?' : wHit ? `+${w.pts}` : '0';
-    const wHitMiss   = w.actualWinner ? `<span class="prog-round-hitmiss">${wHit?'1':'0'}/1</span>` : '';
+    const wDotClass  = !w.actualWinner ? 'pending' : wHit ? 'hit' : 'miss';
+    const wBarHtml   = w.actualWinner
+      ? `<span class="prog-bar-wrap"><span class="prog-bar" style="width:${wHit?100:0}%"></span></span><span class="prog-round-hitmiss">${wHit?'1':'0'}/1</span>`
+      : '';
     html += `<div class="prog-round open">
       <div class="prog-round-head" onclick="this.closest('.prog-round').classList.toggle('open')">
         <span class="prog-round-chevron">▼</span>
         <span class="prog-round-label">Winner</span>
-        <span class="prog-round-meta">${wHitMiss}<span class="prog-round-pts">${w.pts} pts</span></span>
+        <span class="prog-round-right">${wBarHtml}<span class="prog-round-pts">${w.pts} pts</span></span>
       </div>
       <div class="prog-body">
-        <table class="prog-table">
-          <thead class="prog-table-head"><tr><th>Your pick</th><th>Actual</th><th>Pts</th></tr></thead>
-          <tbody><tr class="prog-tr">
-            <td class="prog-td"><span class="prog-team-name ${w.actualWinner?(wHit?'hit':'miss'):''}">${flagImg(w.predictedWinner||'','lk-flag')}${esc(w.predictedWinner||'—')}</span></td>
-            <td class="prog-td"><span class="prog-actual-team">${flagImg(w.actualWinner||'','lk-flag')}${esc(w.actualWinner||'Not yet known')}</span></td>
-            <td class="prog-td prog-td-pts"><span class="prog-team-pts ${wChipClass}">${wChipLabel}</span></td>
-          </tr></tbody>
-        </table>
+        <span class="prog-chip ${wChipClass}"><span class="prog-dot ${wDotClass}"></span>${flagImg(w.predictedWinner||'','lk-flag')}${esc(w.predictedWinner||'—')}</span>
       </div>
     </div></div>`;
 
