@@ -204,6 +204,41 @@
 
     .full-width-card { grid-column:1/-1; }
     .api-warning { background:#fef3c7; border:1px solid #fcd34d; border-radius:var(--radius); padding:10px 14px; font-size:12px; color:#92400e; margin-bottom:16px; display:none; }
+
+    /* ── Payments ── */
+    .payments-search {
+      width:100%; padding:10px 14px; box-sizing:border-box;
+      border:1px solid var(--border); border-radius:var(--radius);
+      font-size:14px; font-family:var(--font-body); color:var(--ink);
+      background:var(--surface-2); margin-bottom:12px;
+      outline:none; transition:border-color .15s;
+    }
+    .payments-search:focus { border-color:var(--pitch); }
+
+    .payments-list { display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto; margin-bottom:16px; }
+
+    .payment-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 12px; border-radius:var(--radius);
+      border:1px solid var(--border); background:var(--surface-2);
+      gap:10px;
+    }
+    .payment-row.paid { background:#f0faf4; border-color:var(--pitch); }
+    .payment-row-info { flex:1; min-width:0; }
+    .payment-row-name { font-size:14px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .payment-row-id   { font-size:11px; color:var(--ink-3); margin-top:1px; }
+    .payment-row-status { font-size:11px; font-weight:700; color:var(--pitch); white-space:nowrap; }
+
+    .payments-divider { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-3); margin:8px 0 4px; padding:0 2px; }
+
+    .name-only-row { display:flex; gap:8px; margin-top:4px; }
+    .name-only-row input {
+      flex:1; padding:9px 12px;
+      border:1px solid var(--border); border-radius:var(--radius);
+      font-size:14px; font-family:var(--font-body); color:var(--ink);
+      background:var(--surface-2); outline:none; transition:border-color .15s;
+    }
+    .name-only-row input:focus { border-color:var(--pitch); }
   </style>
 </head>
 <body>
@@ -313,53 +348,68 @@
     </div>
 
     <!-- SCORING REBUILD -->
-   <div class="admin-card full-width-card">
-  <div class="admin-card-head"><h2>Scoring rebuild</h2></div>
-  <div class="admin-card-body">
-    <p class="rebuild-info">Run after saving results. Each button rescores all entries and updates the leaderboard.</p>
+    <div class="admin-card full-width-card">
+      <div class="admin-card-head"><h2>Scoring rebuild</h2></div>
+      <div class="admin-card-body">
+        <p class="rebuild-info">Run after saving results. Each button rescores all entries and updates the leaderboard.</p>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,auto));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,auto));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;">
 
-      <div style="background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="groups" style="width:100%;">Update groups</button>
-        <span style="font-size:10px;color:var(--ink-3);">Group scores + leaderboard</span>
+          <div style="background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+            <button class="btn-sm primary" data-rebuild="groups" style="width:100%;">Update groups</button>
+            <span style="font-size:10px;color:var(--ink-3);">Group scores + leaderboard</span>
+          </div>
+
+          <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;border-left:2px solid var(--border);">
+            <button class="btn-sm primary" data-rebuild="r32" style="width:100%;">Update R32</button>
+            <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+          </div>
+
+          <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+            <button class="btn-sm primary" data-rebuild="r16" style="width:100%;">Update R16</button>
+            <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+          </div>
+
+          <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+            <button class="btn-sm primary" data-rebuild="qf" style="width:100%;">Update QF</button>
+            <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+          </div>
+
+          <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+            <button class="btn-sm primary" data-rebuild="sf" style="width:100%;">Update SF</button>
+            <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+          </div>
+
+          <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
+            <button class="btn-sm primary" data-rebuild="final" style="width:100%;">Update Final</button>
+            <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
+          </div>
+
+          <div style="background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:5px;border-left:2px solid var(--border);">
+            <button class="btn-sm danger" data-rebuild="all" style="width:100%;">Update everything</button>
+            <span style="font-size:10px;color:var(--ink-3);">All scores + progression + leaderboard</span>
+          </div>
+
+        </div>
+        <div id="rebuildStatus" style="font-size:13px;color:var(--ink-3);"></div>
       </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;border-left:2px solid var(--border);">
-        <button class="btn-sm primary" data-rebuild="r32" style="width:100%;">Update R32</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="r16" style="width:100%;">Update R16</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="qf" style="width:100%;">Update QF</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="sf" style="width:100%;">Update SF</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:#f8f9fb;padding:12px 14px;display:flex;flex-direction:column;gap:5px;">
-        <button class="btn-sm primary" data-rebuild="final" style="width:100%;">Update Final</button>
-        <span style="font-size:10px;color:var(--ink-3);">Matches + progression + leaderboard</span>
-      </div>
-
-      <div style="background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:5px;border-left:2px solid var(--border);">
-        <button class="btn-sm danger" data-rebuild="all" style="width:100%;">Update everything</button>
-        <span style="font-size:10px;color:var(--ink-3);">All scores + progression + leaderboard</span>
-      </div>
-
     </div>
-    <div id="rebuildStatus" style="font-size:13px;color:var(--ink-3);"></div>
-  </div>
-</div>
-</div><!-- end scoring rebuild card -->
+
+    <!-- PAYMENTS -->
+    <div class="admin-card full-width-card">
+      <div class="admin-card-head"><h2>Payments</h2></div>
+      <div class="admin-card-body">
+        <input class="payments-search" id="paymentsSearch" type="text" placeholder="Search by name or entry ID…" />
+        <div class="payments-list" id="paymentsList">
+          <div style="font-size:13px;color:var(--ink-3);">Loading…</div>
+        </div>
+        <div class="payments-divider">No entry yet — name only</div>
+        <div class="name-only-row">
+          <input type="text" id="nameOnlyInput" placeholder="Enter name…" />
+          <button class="btn-sm primary" id="nameOnlyBtn">Mark paid</button>
+        </div>
+      </div>
+    </div>
 
   </div><!-- end admin-grid -->
 </div><!-- end adminScreen -->
@@ -390,7 +440,7 @@ let activeRound    = 'r32';
 let activeMatchIdx = 0;
 let groupPositions = {};
 let actualGroups   = {};
-let groupLocked    = {};  // tracks locked state per group letter
+let groupLocked    = {};
 
 const FIXED_R32 = {
   73: { team1: { type:'RUNNER_UP', group:'A' }, team2: { type:'RUNNER_UP', group:'B' } },
@@ -435,7 +485,7 @@ const PROGRESSION = {
 function resolveFixedSlot(slot) {
   const g = actualGroups[slot.group];
   if (!g) return '';
-  if (!groupLocked[slot.group]) return '';  // only resolve if group is locked
+  if (!groupLocked[slot.group]) return '';
   return slot.type === 'WINNER' ? (g.pos1 || '') : (g.pos2 || '');
 }
 
@@ -575,6 +625,7 @@ async function initAdmin() {
   refreshGroupTabStyles();
   loadGroupForm(activeGroup);
   loadKoForm();
+  loadPayments();
 }
 
 /* ══ GROUP SECTION ══ */
@@ -677,13 +728,12 @@ document.getElementById('saveGroupBtn').addEventListener('click', async () => {
   const pos = [1,2,3,4].map(p =>
     Object.keys(groupPositions).find(t => groupPositions[t] === p) || ''
   );
- const finalStandings = document.getElementById('finalStandingsCheck').checked;
+  const finalStandings = document.getElementById('finalStandingsCheck').checked;
   if (pos.some(p => !p) && finalStandings) {
     toast('Assign all 4 positions first.', 'error');
     return;
   }
   if (pos.some(p => !p) && !finalStandings) {
-    // Unlocking — just save the lock state without requiring positions
     const btn = document.getElementById('saveGroupBtn');
     btn.disabled = true;
     btn.textContent = 'Saving…';
@@ -732,7 +782,6 @@ document.getElementById('saveGroupBtn').addEventListener('click', async () => {
       loadKoForm();
     }
 
-    // if locking, auto-run group scoring rebuild
     if (finalStandings) {
       btn.textContent = 'Rebuilding…';
       try {
@@ -968,6 +1017,126 @@ document.querySelectorAll('[data-rebuild]').forEach(btn => {
       });
     }
   });
+});
+
+/* ══ PAYMENTS ══ */
+let allEntries = [];
+
+async function loadPayments() {
+  const list = document.getElementById('paymentsList');
+  list.innerHTML = '<div style="font-size:13px;color:var(--ink-3);">Loading…</div>';
+  try {
+    const [unpaidRes, lbRes] = await Promise.all([
+      apiGet('getUnpaidEntries'),
+      apiGet('getLeaderboard')
+    ]);
+
+    const unpaid = (unpaidRes?.ok && Array.isArray(unpaidRes.entries)) ? unpaidRes.entries : [];
+    const paid = [];
+    if (lbRes?.ok && Array.isArray(lbRes.entries)) {
+      lbRes.entries.forEach(e => {
+        if (e.paymentStatus === 'PAID') paid.push({ id: e.entryId, name: e.displayName, paid: true });
+      });
+    }
+
+    allEntries = [
+      ...unpaid.map(e => ({ id: e.id, name: e.name, paid: false })),
+      ...paid
+    ];
+
+    renderPaymentsList(allEntries);
+  } catch(err) {
+    list.innerHTML = `<div style="font-size:13px;color:#dc2626;">Failed to load: ${esc(err.message)}</div>`;
+  }
+}
+
+function renderPaymentsList(entries) {
+  const list = document.getElementById('paymentsList');
+  const unpaid = entries.filter(e => !e.paid);
+  const paid   = entries.filter(e => e.paid);
+
+  if (!entries.length) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--ink-3);">No entries found.</div>';
+    return;
+  }
+
+  let html = '';
+
+  if (unpaid.length) {
+    html += `<div class="payments-divider">Unpaid (${unpaid.length})</div>`;
+    html += unpaid.map(e => `
+      <div class="payment-row" data-id="${esc(e.id)}">
+        <div class="payment-row-info">
+          <div class="payment-row-name">${esc(e.name)}</div>
+          <div class="payment-row-id">${esc(e.id)}</div>
+        </div>
+        <button class="btn-sm primary mark-paid-btn" data-id="${esc(e.id)}" data-name="${esc(e.name)}">Mark paid</button>
+      </div>`).join('');
+  }
+
+  if (paid.length) {
+    html += `<div class="payments-divider">Paid (${paid.length})</div>`;
+    html += paid.map(e => `
+      <div class="payment-row paid">
+        <div class="payment-row-info">
+          <div class="payment-row-name">${esc(e.name)}</div>
+          <div class="payment-row-id">${esc(e.id)}</div>
+        </div>
+        <span class="payment-row-status">✓ Paid</span>
+      </div>`).join('');
+  }
+
+  list.innerHTML = html;
+
+  list.querySelectorAll('.mark-paid-btn').forEach(btn => {
+    btn.addEventListener('click', () => markPaid(btn.dataset.id, btn.dataset.name, btn));
+  });
+}
+
+async function markPaid(id, name, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  try {
+    const res = await apiPost('markEntryPaid', { id, name });
+    if (!res?.ok) throw new Error(res?.error || 'Failed');
+    toast(`${name} marked as paid.`, 'success');
+    await loadPayments();
+    const search = document.getElementById('paymentsSearch').value.trim();
+    if (search) filterPayments(search);
+  } catch(err) {
+    toast(err.message || 'Failed to mark paid.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Mark paid'; }
+  }
+}
+
+function filterPayments(query) {
+  const q = query.toLowerCase();
+  const filtered = allEntries.filter(e =>
+    e.name.toLowerCase().includes(q) || e.id.toLowerCase().includes(q)
+  );
+  renderPaymentsList(filtered);
+}
+
+document.getElementById('paymentsSearch').addEventListener('input', e => {
+  filterPayments(e.target.value.trim());
+});
+
+document.getElementById('nameOnlyBtn').addEventListener('click', async () => {
+  const input = document.getElementById('nameOnlyInput');
+  const name = input.value.trim();
+  if (!name) { toast('Enter a name first.', 'error'); return; }
+  const btn = document.getElementById('nameOnlyBtn');
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const res = await apiPost('recordNameOnlyPayment', { name });
+    if (!res?.ok) throw new Error(res?.error || 'Failed');
+    toast(`${name} recorded as paid.`, 'success');
+    input.value = '';
+    await loadPayments();
+  } catch(err) {
+    toast(err.message || 'Failed.', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Mark paid';
+  }
 });
 
 /* ── Nav toggle ── */
