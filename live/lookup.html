@@ -231,8 +231,8 @@
     'North Macedonia':'MK','Montenegro':'ME','Kenya':'KE','Tanzania':'TZ','Czech Republic':'CZ','USA':'US',
   };
 
-  function flagImg(name, cls) {
-    const code = FLAG_CODES[name];
+function flagImg(name, cls) {
+    const code = FLAG_CODES[name] || FLAG_CODES[name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')];
     if (!code) return '';
     let url;
     if (code === 'GB-SCT') url = 'https://flagcdn.com/w40/gb-sct.png';
@@ -469,7 +469,11 @@
         </div>
       </div>`;
 
-    (d.progressionDetail||[]).forEach(r => {
+const ROUND_ORDER = ['Round of 32','Round of 16','Quarter-final','Semi-final','Final'];
+    (d.progressionDetail||[]).slice().sort((a,b) => {
+      const ai = ROUND_ORDER.indexOf(a.label), bi = ROUND_ORDER.indexOf(b.label);
+      return (ai===-1?99:ai) - (bi===-1?99:bi);
+    }).forEach(r => {
       const hasActual = r.actual.length > 0;
       const hits = hasActual ? (r.teamDetail||[]).filter(td => td.hit).length : null;
       const total = (r.teamDetail||[]).length;
