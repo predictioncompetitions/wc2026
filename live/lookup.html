@@ -203,6 +203,11 @@
 </footer>
 
 <script src="../site.js"></script>
+  <script>
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+</script>
 <script>
   // ── Flag helper ──────────────────────────────────────────────────────────────
   const FLAG_CODES = {
