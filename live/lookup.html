@@ -93,6 +93,8 @@
     .prog-dot.hit { background:#16a34a; }
     .prog-dot.miss { background:var(--ink-3); }
     .prog-dot.pending { background:var(--border); }
+    .prog-note { font-size:11px; color:var(--ink-3); margin:0 0 6px; width:100%; line-height:1.5; }
+    .prog-note a { color:var(--pitch); font-weight:600; }
 
     .match-section { margin-bottom:20px; }
     .match-section-head { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--ink-3); padding:6px 0; border-bottom:2px solid var(--surface-3); margin-bottom:8px; }
@@ -228,11 +230,13 @@
     'Vietnam':'VN','Indonesia':'ID','China PR':'CN','China':'CN',
     'Tajikistan':'TJ','Kyrgyzstan':'KG','Kazakhstan':'KZ','Azerbaijan':'AZ',
     'Armenia':'AM','Georgia':'GE','Iceland':'IS','Kosovo':'XK',
-    'North Macedonia':'MK','Montenegro':'ME','Kenya':'KE','Tanzania':'TZ','Czech Republic':'CZ','USA':'US',
+    'North Macedonia':'MK','Montenegro':'ME','Kenya':'KE','Tanzania':'TZ',
+    'Czech Republic':'CZ','USA':'US','Bosnia-Herzegovina':'BA',
   };
 
-function flagImg(name, cls) {
-    const code = FLAG_CODES[name] || FLAG_CODES[name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')];
+  function flagImg(name, cls) {
+    const titleCase = name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    const code = FLAG_CODES[name] || FLAG_CODES[titleCase];
     if (!code) return '';
     let url;
     if (code === 'GB-SCT') url = 'https://flagcdn.com/w40/gb-sct.png';
@@ -268,6 +272,8 @@ function flagImg(name, cls) {
     if (s==='DUE')  return '<span class="badge-due">DUE</span>';
     return '';
   }
+
+  const ROUND_ORDER = ['Round of 32','Round of 16','Quarter-final','Semi-final','Final'];
 
   let allEntries = [], currentScrollY = 0;
 
@@ -469,7 +475,6 @@ function flagImg(name, cls) {
         </div>
       </div>`;
 
-const ROUND_ORDER = ['Round of 32','Round of 16','Quarter-final','Semi-final','Final'];
     (d.progressionDetail||[]).slice().sort((a,b) => {
       const ai = ROUND_ORDER.indexOf(a.label), bi = ROUND_ORDER.indexOf(b.label);
       return (ai===-1?99:ai) - (bi===-1?99:bi);
@@ -479,17 +484,18 @@ const ROUND_ORDER = ['Round of 32','Round of 16','Quarter-final','Semi-final','F
       const total = (r.teamDetail||[]).length;
       const barPct = hasActual && total ? Math.round((hits/total)*100) : 0;
       const barHtml = hasActual && total
-        ? `<span class="prog-bar-wrap"><span class="prog-bar" style="width:${barPct}%"></span></span><span class="prog-round-hitmiss">${hits}/${total}</span>`
-        : '';
+        ? `<span class="prog-bar-wrap"><span class="prog-bar" style="width:${barPct}%"></span></span><span class="prog-round-hitmiss">${hits}/${total} correct</span>`
+        : `<span class="prog-round-hitmiss" style="opacity:.5;">${total} picks</span>`;
       html += `<div class="prog-round open">
         <div class="prog-round-head" onclick="this.closest('.prog-round').classList.toggle('open')">
           <span class="prog-round-chevron">▼</span>
           <span class="prog-round-label">${esc(r.label)}</span>
           <span class="prog-round-right">${barHtml}<span class="prog-round-pts">${r.pts} pts</span></span>
         </div>
-        <div class="prog-body">`;
+        <div class="prog-body">
+          <p class="prog-note">Only your ${total} picked teams are shown, sorted alphabetically. Green = progressed. <a href="results.html">Check fixtures/results</a> to see all teams that qualified.</p>`;
       if (r.teamDetail && r.teamDetail.length) {
-        r.teamDetail.forEach(td => {
+        r.teamDetail.slice().sort((a,b) => a.team.localeCompare(b.team)).forEach(td => {
           const chipClass = !hasActual ? 'pending' : td.hit ? 'hit' : 'miss';
           const dotClass  = !hasActual ? 'pending' : td.hit ? 'hit' : 'miss';
           html += `<span class="prog-chip ${chipClass}"><span class="prog-dot ${dotClass}"></span>${flagImg(td.team,'lk-flag')}${esc(td.team)}</span>`;
@@ -505,8 +511,8 @@ const ROUND_ORDER = ['Round of 32','Round of 16','Quarter-final','Semi-final','F
     const wChipClass = !w.actualWinner ? 'pending' : wHit ? 'hit' : 'miss';
     const wDotClass  = !w.actualWinner ? 'pending' : wHit ? 'hit' : 'miss';
     const wBarHtml   = w.actualWinner
-      ? `<span class="prog-bar-wrap"><span class="prog-bar" style="width:${wHit?100:0}%"></span></span><span class="prog-round-hitmiss">${wHit?'1':'0'}/1</span>`
-      : '';
+      ? `<span class="prog-bar-wrap"><span class="prog-bar" style="width:${wHit?100:0}%"></span></span><span class="prog-round-hitmiss">${wHit?'1':'0'}/1 correct</span>`
+      : `<span class="prog-round-hitmiss" style="opacity:.5;">1 pick</span>`;
     html += `<div class="prog-round open">
       <div class="prog-round-head" onclick="this.closest('.prog-round').classList.toggle('open')">
         <span class="prog-round-chevron">▼</span>
@@ -514,6 +520,7 @@ const ROUND_ORDER = ['Round of 32','Round of 16','Quarter-final','Semi-final','F
         <span class="prog-round-right">${wBarHtml}<span class="prog-round-pts">${w.pts} pts</span></span>
       </div>
       <div class="prog-body">
+        <p class="prog-note">Your predicted winner. Green = correct.</p>
         <span class="prog-chip ${wChipClass}"><span class="prog-dot ${wDotClass}"></span>${flagImg(w.predictedWinner||'','lk-flag')}${esc(w.predictedWinner||'—')}</span>
       </div>
     </div></div>`;
