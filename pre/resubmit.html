@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resubmit Knockout Predictions — Mick's World Cup 2026</title>
+  <link rel="stylesheet" href="../style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --pitch: #0d5c2e;
+      --gold:  #d4a843;
+      --ink:   #1a1f2e;
+    }
+
+    body { font-family: 'Barlow', sans-serif; background: #f0f2f5; color: var(--ink); margin: 0; }
+
+    .page-hero {
+      background: var(--ink);
+      padding: 32px 20px 28px;
+      text-align: center;
+      border-bottom: 4px solid var(--gold);
+    }
+    .page-hero h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+      margin: 0 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .page-hero p { color: #8fa3cc; margin: 0; font-size: 0.95rem; }
+
+    .container { max-width: 720px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    /* States */
+    #state-loading, #state-error, #state-closed, #state-success { display: none; }
+    #state-loading.active, #state-error.active, #state-closed.active, #state-success.active, #state-form.active { display: block; }
+    #state-form { display: none; }
+
+    .spinner-wrap { text-align: center; padding: 60px 0; }
+    .spinner {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 4px solid #dde; border-top-color: var(--pitch);
+      animation: spin 0.8s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .alert {
+      padding: 16px 20px; border-radius: 6px; margin-bottom: 20px;
+      font-size: 0.95rem; line-height: 1.5;
+    }
+    .alert-error   { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
+    .alert-warning { background: #fffbeb; border: 1px solid #fcd34d; color: #78350f; }
+    .alert-success { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #dde1ea;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .card-header {
+      background: #f4f5f9;
+      border-bottom: 1px solid #dde1ea;
+      padding: 12px 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--ink);
+    }
+    .card-body { padding: 16px; }
+
+    /* Group summary table */
+    .group-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .group-table th {
+      text-align: left; padding: 6px 10px;
+      background: #f4f5f9; border-bottom: 1px solid #dde1ea;
+      font-weight: 700; color: #6b748f; font-size: 0.78rem; text-transform: uppercase;
+    }
+    .group-table td { padding: 7px 10px; border-bottom: 1px solid #f0f2f5; }
+    .group-table tr:last-child td { border-bottom: none; }
+    .grp-badge {
+      display: inline-block; background: var(--pitch); color: #fff;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.8rem; padding: 2px 7px; border-radius: 3px;
+    }
+
+    /* Third rank list */
+    .third-rank-list { list-style: none; margin: 0; padding: 0; }
+    .third-rank-list li {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 0; border-bottom: 1px solid #f0f2f5; font-size: 0.9rem;
+    }
+    .third-rank-list li:last-child { border-bottom: none; }
+    .rank-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--ink); color: #fff;
+      font-size: 0.75rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Match score inputs */
+    .round-section { margin-bottom: 28px; }
+    .round-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.2rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--ink);
+      margin: 0 0 12px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--pitch);
+    }
+    .match-card {
+      background: #fff; border: 1px solid #dde1ea; border-radius: 6px;
+      margin-bottom: 10px; overflow: hidden;
+    }
+    .match-header {
+      background: #f4f5f9; padding: 7px 14px;
+      font-size: 0.78rem; font-weight: 700; color: #6b748f;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid #dde1ea;
+    }
+    .match-body {
+      padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .team-name {
+      flex: 1; min-width: 100px; font-weight: 600; font-size: 0.95rem;
+    }
+    .team-name.away { text-align: right; }
+    .score-input {
+      width: 52px; height: 42px; text-align: center;
+      border: 2px solid #dde1ea; border-radius: 6px;
+      font-size: 1.2rem; font-weight: 700; color: var(--ink);
+      background: #f9fafb;
+      -moz-appearance: textfield;
+    }
+    .score-input::-webkit-outer-spin-button,
+    .score-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .score-input:focus { outline: none; border-color: var(--pitch); background: #fff; }
+    .score-input.error { border-color: #ef4444; background: #fef2f2; }
+    .vs-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 1rem; color: #9ba3b5;
+    }
+
+    .winner-indicator {
+      width: 100%; text-align: center;
+      font-size: 0.8rem; color: #6b748f; padding-top: 4px;
+    }
+    .winner-indicator span {
+      background: var(--pitch); color: #fff;
+      padding: 2px 10px; border-radius: 12px; font-weight: 700;
+    }
+
+    /* Submit */
+    .submit-section { margin-top: 28px; text-align: center; }
+    .btn-submit {
+      background: var(--pitch); color: #fff;
+      border: none; border-radius: 6px;
+      padding: 14px 40px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; font-family: 'Barlow', sans-serif;
+      width: 100%; max-width: 360px;
+      transition: background 0.15s;
+    }
+    .btn-submit:hover { background: #0a4a24; }
+    .btn-submit:disabled { background: #9ba3b5; cursor: not-allowed; }
+
+    .deadline-note {
+      font-size: 0.85rem; color: #6b748f; margin-top: 10px;
+    }
+
+    @media (max-width: 500px) {
+      .team-name { min-width: 70px; font-size: 0.82rem; }
+      .score-input { width: 44px; height: 38px; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../">
+      <img src="../soccerball.png" alt="" width="28" height="28"/>
+      Mick's WC2026
+    </a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>Resubmit Knockout Predictions</h1>
+  <p>Correct your bracket using your original group and third-place picks</p>
+</div>
+
+<div class="container">
+
+  <div id="state-loading" class="active">
+    <div class="spinner-wrap"><div class="spinner"></div><p style="color:#6b748f;margin-top:14px;">Loading your entry...</p></div>
+  </div>
+
+  <div id="state-error">
+    <div class="alert alert-error" id="error-msg">Something went wrong.</div>
+  </div>
+
+  <div id="state-closed">
+    <div class="alert alert-warning">
+      <strong>The resubmit window has closed.</strong> The deadline was 18:00 on 11 June 2026. Your original knockout predictions are in place.
+    </div>
+  </div>
+
+  <div id="state-success">
+    <div class="alert alert-success">
+      <strong>Done — your knockout predictions have been updated.</strong> You'll find your updated entry on the score lookup page once the tournament starts.
+    </div>
+  </div>
+
+  <div id="state-form">
+
+    <div class="alert alert-warning" style="margin-bottom:20px;">
+      <strong>Action needed.</strong> Your group predictions and third-place rankings below are unchanged. Fill in your knockout scores and submit before 18:00 on 11 June.
+    </div>
+
+    <!-- Group summary -->
+    <div class="card">
+      <div class="card-header">Your group predictions (unchanged)</div>
+      <div class="card-body" style="padding:0;">
+        <table class="group-table">
+          <thead><tr><th>Group</th><th>1st</th><th>2nd</th><th>3rd</th></tr></thead>
+          <tbody id="group-summary-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Third place ranking -->
+    <div class="card">
+      <div class="card-header">Your third-place ranking (unchanged)</div>
+      <div class="card-body">
+        <ul class="third-rank-list" id="third-rank-list"></ul>
+      </div>
+    </div>
+
+    <!-- Knockout scores -->
+    <div id="knockout-rounds"></div>
+
+    <div class="submit-section">
+      <div id="submit-error" class="alert alert-error" style="display:none;margin-bottom:14px;"></div>
+      <button class="btn-submit" id="btn-submit" onclick="handleSubmit()">Submit my knockout predictions</button>
+      <p class="deadline-note">Deadline: 18:00 on Wednesday 11 June 2026</p>
+    </div>
+
+  </div>
+</div>
+
+<script src="../site.js"></script>
+<script>
+  let _entryId  = '';
+  let _token    = '';
+  let _bracket  = null;
+
+  const ROUNDS = [
+    { key: 'roundOf32',     label: 'Round of 32',   matchCount: 16 },
+    { key: 'roundOf16',     label: 'Round of 16',   matchCount: 8  },
+    { key: 'quarterFinals', label: 'Quarter-finals', matchCount: 4 },
+    { key: 'semiFinals',    label: 'Semi-finals',   matchCount: 2  },
+    { key: 'final',         label: 'Final',         matchCount: 1, isFinal: true }
+  ];
+
+  function showState(id) {
+    ['state-loading','state-error','state-closed','state-success','state-form']
+      .forEach(s => {
+        const el = document.getElementById(s);
+        el.classList.remove('active');
+        el.style.display = 'none';
+      });
+    const el = document.getElementById(id);
+    el.classList.add('active');
+    el.style.display = 'block';
+  }
+
+  function showError(msg) {
+    document.getElementById('error-msg').textContent = msg;
+    showState('state-error');
+  }
+
+  async function init() {
+    const params = new URLSearchParams(window.location.search);
+    _entryId = params.get('id')   || '';
+    _token   = params.get('token') || '';
+
+    if (!_entryId || !_token) {
+      showError('This link is invalid. Check the email you received and try again.');
+      return;
+    }
+
+    try {
+      const data = await apiFetch('getResubmitData', { entryId: _entryId, token: _token });
+      if (!data.ok) {
+        if (data.error && data.error.includes('closed')) { showState('state-closed'); return; }
+        showError(data.error || 'Failed to load your entry.');
+        return;
+      }
+
+      _bracket = data.bracket;
+      renderGroupSummary(data.groupSummary);
+      renderThirdRank(data.thirdRank);
+      renderKnockoutRounds(data.bracket);
+      showState('state-form');
+
+    } catch(e) {
+      showError('Could not connect to the server. Try refreshing the page.');
+    }
+  }
+
+  function renderGroupSummary(groups) {
+    const tbody = document.getElementById('group-summary-body');
+    tbody.innerHTML = groups.map(g => `
+      <tr>
+        <td><span class="grp-badge">${g.group}</span></td>
+        <td>${g.first}</td>
+        <td>${g.second}</td>
+        <td>${g.third}</td>
+      </tr>`).join('');
+  }
+
+  function renderThirdRank(thirdRank) {
+    const ul = document.getElementById('third-rank-list');
+    ul.innerHTML = thirdRank.filter(t => t).map((team, i) => `
+      <li>
+        <span class="rank-num">${i + 1}</span>
+        <span>${team}</span>
+      </li>`).join('');
+  }
+
+  function renderKnockoutRounds(bracket) {
+    const container = document.getElementById('knockout-rounds');
+    container.innerHTML = '';
+
+    ROUNDS.forEach(round => {
+      const matches = round.isFinal ? [bracket.final] : bracket[round.key];
+      if (!matches || !matches.length) return;
+
+      const section = document.createElement('div');
+      section.className = 'round-section';
+      section.innerHTML = `<div class="round-title">${round.label}</div>`;
+
+      matches.forEach((match, idx) => {
+        const matchNo = match.matchNo || '';
+        const team1   = match.team1 || 'TBD';
+        const team2   = match.team2 || 'TBD';
+        const uid     = `match_${matchNo || (round.key + '_' + idx)}`;
+
+        const card = document.createElement('div');
+        card.className = 'match-card';
+        card.innerHTML = `
+          <div class="match-header">Match ${matchNo}${match.date ? ' &middot; ' + match.date : ''}</div>
+          <div class="match-body">
+            <span class="team-name">${team1}</span>
+            <input class="score-input" id="${uid}_s1" type="number" min="0" max="20" placeholder="0"
+              oninput="updateWinner('${uid}','${team1}','${team2}')"/>
+            <span class="vs-label">—</span>
+            <input class="score-input" id="${uid}_s2" type="number" min="0" max="20" placeholder="0"
+              oninput="updateWinner('${uid}','${team1}','${team2}')"/>
+            <span class="team-name away">${team2}</span>
+          </div>
+          <div class="winner-indicator" id="${uid}_winner"></div>`;
+        section.appendChild(card);
+      });
+
+      container.appendChild(section);
+    });
+  }
+
+  function updateWinner(uid, team1, team2) {
+    const s1 = parseInt(document.getElementById(uid + '_s1').value, 10);
+    const s2 = parseInt(document.getElementById(uid + '_s2').value, 10);
+    const el = document.getElementById(uid + '_winner');
+    if (!isNaN(s1) && !isNaN(s2) && s1 !== s2) {
+      const winner = s1 > s2 ? team1 : team2;
+      el.innerHTML = `<span>&#9654; ${winner}</span>`;
+      el.style.paddingBottom = '10px';
+    } else {
+      el.innerHTML = '';
+      el.style.paddingBottom = '0';
+    }
+  }
+
+  function collectKnockoutData() {
+    const errors = [];
+    const result = { roundOf32: [], roundOf16: [], quarterFinals: [], semiFinals: [], final: null, predictedChampion: '', top8Thirds: _bracket.top8Thirds, thirdPlaceAssignments: _bracket.thirdPlaceAssignments };
+
+    ROUNDS.forEach(round => {
+      const matches = round.isFinal ? [_bracket.final] : _bracket[round.key];
+      if (!matches) return;
+
+      const collected = [];
+      matches.forEach((match, idx) => {
+        const matchNo = match.matchNo || (round.key + '_' + idx);
+        const uid     = `match_${matchNo}`;
+        const team1   = match.team1 || '';
+        const team2   = match.team2 || '';
+        const s1raw   = document.getElementById(uid + '_s1').value;
+        const s2raw   = document.getElementById(uid + '_s2').value;
+        const s1      = parseInt(s1raw, 10);
+        const s2      = parseInt(s2raw, 10);
+
+        document.getElementById(uid + '_s1').classList.remove('error');
+        document.getElementById(uid + '_s2').classList.remove('error');
+
+        if (s1raw === '' || s2raw === '' || isNaN(s1) || isNaN(s2)) {
+          errors.push(`Match ${matchNo}: score is incomplete.`);
+          document.getElementById(uid + '_s1').classList.add('error');
+          document.getElementById(uid + '_s2').classList.add('error');
+          return;
+        }
+        if (s1 < 0 || s2 < 0) {
+          errors.push(`Match ${matchNo}: scores cannot be negative.`);
+          return;
+        }
+        if (s1 === s2) {
+          errors.push(`Match ${matchNo}: knockout matches cannot end in a draw.`);
+          document.getElementById(uid + '_s1').classList.add('error');
+          document.getElementById(uid + '_s2').classList.add('error');
+          return;
+        }
+
+        const winner = s1 > s2 ? team1 : team2;
+        const entry  = { matchNo, team1, team2, score1: s1, score2: s2, winner };
+        collected.push(entry);
+
+        if (round.isFinal) {
+          result.final = entry;
+          result.predictedChampion = winner;
+        }
+      });
+
+      if (!round.isFinal) result[round.key] = collected;
+    });
+
+    return { errors, data: result };
+  }
+
+  async function handleSubmit() {
+    const btn = document.getElementById('btn-submit');
+    const errEl = document.getElementById('submit-error');
+    errEl.style.display = 'none';
+
+    const { errors, data } = collectKnockoutData();
+    if (errors.length) {
+      errEl.textContent = errors[0];
+      errEl.style.display = 'block';
+      window.scrollTo({ top: errEl.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      const res = await apiFetch('submitResubmitEntry', {
+        entryId:      _entryId,
+        token:        _token,
+        knockoutData: data
+      }, 'POST');
+
+      if (!res.ok) {
+        errEl.textContent = res.error || res.message || 'Submission failed. Try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Submit my knockout predictions';
+        return;
+      }
+
+      showState('state-success');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch(e) {
+      errEl.textContent = 'Could not connect to the server. Try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Submit my knockout predictions';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
