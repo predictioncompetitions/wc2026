@@ -1164,8 +1164,12 @@ function renderPaymentsList(entries) {
   }
 
   if (paid.length) {
-    html += `<div class="payments-divider">Paid (${paid.length})</div>`;
-    html += `<div class="paid-list">`;
+    html += `
+      <div class="payments-divider" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" id="paidToggle">
+        <span>Paid (${paid.length})</span>
+        <span id="paidToggleIcon" style="font-size:10px;">▼ show</span>
+      </div>
+      <div class="paid-list" id="paidList" style="display:none;">`;
     html += paid.map(e => `
       <div class="payment-row paid">
         <div class="payment-row-info">
@@ -1182,6 +1186,17 @@ function renderPaymentsList(entries) {
   container.querySelectorAll('.mark-paid-btn').forEach(btn => {
     btn.addEventListener('click', () => markPaid(btn.dataset.id, btn.dataset.name, btn));
   });
+
+  const paidToggle = document.getElementById('paidToggle');
+  const paidList   = document.getElementById('paidList');
+  const paidIcon   = document.getElementById('paidToggleIcon');
+  if (paidToggle && paidList) {
+    paidToggle.addEventListener('click', () => {
+      const open = paidList.style.display !== 'none';
+      paidList.style.display = open ? 'none' : 'flex';
+      paidIcon.textContent = open ? '▼ show' : '▲ hide';
+    });
+  }
 }
 
 async function markPaid(id, name, btn) {
@@ -1189,13 +1204,21 @@ async function markPaid(id, name, btn) {
   try {
     const res = await apiPost('markEntryPaid', { id, name });
     if (!res?.ok) throw new Error(res?.error || 'Failed');
-    toast(`${name} marked as paid.`, 'success');
+    toast(`${name} marked as paid. Updating leaderboard…`, 'info');
     await loadPayments();
     const search = document.getElementById('paymentsSearch').value.trim();
     if (search) filterPayments(search);
+    const rb = await apiPost('rebuildGroups', { clearCache: true });
+    if (rb?.ok) {
+      const lb = await apiGet('getLeaderboard');
+      if (lb?.lastRebuilt) setLastRebuilt(lb.lastRebuilt);
+      toast(`${name} marked as paid. Leaderboard updated.`, 'success');
+    } else {
+      toast(`${name} marked as paid. Leaderboard update failed — run manually.`, 'error');
+    }
   } catch(err) {
     toast(err.message || 'Failed to mark paid.', 'error');
-    if (btn) { btn.disabled = false; btn.textContent = 'Mark paid'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Paid'; }
   }
 }
 
