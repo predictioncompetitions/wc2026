@@ -476,6 +476,47 @@ const FLEXIBLE_R32_TEAM1 = {
   87: { type:'WINNER', group:'K' }
 };
 
+// Eligible groups for the 3rd-place team slot in each flexible R32 match
+const FLEXIBLE_R32_ELIGIBLE_GROUPS = {
+  74: ['A','B','C','D','F'],
+  77: ['C','D','F','G','H'],
+  79: ['C','E','F','H','I'],
+  80: ['E','H','I','J','K'],
+  81: ['B','E','F','I','J'],
+  82: ['A','E','H','I','J'],
+  85: ['E','F','G','I','J'],
+  87: ['D','E','I','J','L']
+};
+
+// Returns set of 3rd-place teams already assigned as Team 2 in other flexible R32 matches
+function getAssignedThirdTeams(excludeMatchNo) {
+  const assigned = new Set();
+  Object.keys(FLEXIBLE_R32_ELIGIBLE_GROUPS).forEach(mn => {
+    if (Number(mn) === excludeMatchNo) return;
+    const saved = koData[mn];
+    if (saved && saved.team2) assigned.add(saved.team2);
+  });
+  return assigned;
+}
+
+// Returns filtered team options for the 3rd-place slot of a flexible R32 match
+function getThirdPlaceOptions(matchNoNum, currentTeam2) {
+  const eligibleGroups = FLEXIBLE_R32_ELIGIBLE_GROUPS[matchNoNum];
+  if (!eligibleGroups) return null; // not a flexible match
+  const assigned = getAssignedThirdTeams(matchNoNum);
+  const options = [];
+  eligibleGroups.forEach(g => {
+    if (!groupLocked[g]) return; // group not yet locked
+    const team = actualGroups[g] && actualGroups[g].pos3;
+    if (!team) return;
+    // Include if not assigned elsewhere, or if it's the current selection for this match
+    if (!assigned.has(team) || team === currentTeam2) {
+      options.push({ team, group: g });
+    }
+  });
+  return options;
+}
+
 const PROGRESSION = {
   89:  { team1: 74, team2: 77 },
   90:  { team1: 73, team2: 75 },
@@ -906,8 +947,26 @@ function loadKoForm() {
       const rule = FIXED_R32[matchNoNum];
       if (!autoT1) autoT1 = resolveFixedSlot(rule.team1);
       if (!autoT2) autoT2 = resolveFixedSlot(rule.team2);
+      // Fixed matches — lock both dropdowns to resolved teams
+      document.getElementById('koTeam1').innerHTML = `<option value="${esc(autoT1)}">${autoT1 || 'TBD'}</option>`;
+      document.getElementById('koTeam2').innerHTML = `<option value="${esc(autoT2)}">${autoT2 || 'TBD'}</option>`;
     } else if (activeRound === 'r32' && FLEXIBLE_R32_TEAM1[matchNoNum]) {
       if (!autoT1) autoT1 = resolveFixedSlot(FLEXIBLE_R32_TEAM1[matchNoNum]);
+      // Team 1 is a known group winner — lock it
+      document.getElementById('koTeam1').innerHTML = `<option value="${esc(autoT1)}">${autoT1 || 'TBD'}</option>`;
+      // Team 2 — restrict to eligible locked 3rd-place teams not already assigned elsewhere
+      const thirdOptions = getThirdPlaceOptions(matchNoNum, autoT2);
+      if (thirdOptions !== null) {
+        let t2Html = `<option value="">Select 3rd-place team</option>`;
+        if (thirdOptions.length === 0) {
+          t2Html = `<option value="">No eligible teams locked yet</option>`;
+        } else {
+          t2Html += thirdOptions.map(o =>
+            `<option value="${esc(o.team)}">${esc(o.team)} (3rd Group ${o.group})</option>`
+          ).join('');
+        }
+        document.getElementById('koTeam2').innerHTML = t2Html;
+      }
     } else if (PROGRESSION[matchNoNum]) {
       const prog = PROGRESSION[matchNoNum];
       if (!autoT1) autoT1 = resolveProgressionTeam(prog.team1);
