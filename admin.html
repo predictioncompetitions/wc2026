@@ -215,21 +215,31 @@
     }
     .payments-search:focus { border-color:var(--pitch); }
 
-    .payments-list { display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto; margin-bottom:16px; }
+    .payments-divider { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-3); margin:8px 0 6px; padding:0 2px; }
+
+    .payments-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+      gap:6px;
+      margin-bottom:16px;
+      max-height:420px;
+      overflow-y:auto;
+    }
 
     .payment-row {
       display:flex; align-items:center; justify-content:space-between;
-      padding:10px 12px; border-radius:var(--radius);
+      padding:8px 10px; border-radius:var(--radius);
       border:1px solid var(--border); background:var(--surface-2);
-      gap:10px;
+      gap:8px; min-width:0;
     }
     .payment-row.paid { background:#f0faf4; border-color:var(--pitch); }
-    .payment-row-info { flex:1; min-width:0; }
-    .payment-row-name { font-size:14px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .payment-row-id   { font-size:11px; color:var(--ink-3); margin-top:1px; }
-    .payment-row-status { font-size:11px; font-weight:700; color:var(--pitch); white-space:nowrap; }
+    .payment-row-info { flex:1; min-width:0; overflow:hidden; }
+    .payment-row-id   { font-size:12px; font-weight:800; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .payment-row-name { font-size:11px; color:var(--ink-3); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .payment-row-status { font-size:11px; font-weight:700; color:var(--pitch); white-space:nowrap; flex-shrink:0; }
 
-    .payments-divider { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-3); margin:8px 0 4px; padding:0 2px; }
+    .paid-list { display:flex; flex-direction:column; gap:4px; max-height:200px; overflow-y:auto; margin-bottom:16px; }
+    .paid-list .payment-row { padding:6px 10px; }
 
     .name-only-row { display:flex; gap:8px; margin-top:4px; }
     .name-only-row input {
@@ -400,7 +410,7 @@
       <div class="admin-card-head"><h2>Payments</h2></div>
       <div class="admin-card-body">
         <input class="payments-search" id="paymentsSearch" type="text" placeholder="Search by name or entry ID…" />
-        <div class="payments-list" id="paymentsList">
+        <div id="paymentsList">
           <div style="font-size:13px;color:var(--ink-3);">Loading…</div>
         </div>
         <div class="payments-divider">No entry yet — name only</div>
@@ -1051,12 +1061,12 @@ async function loadPayments() {
 }
 
 function renderPaymentsList(entries) {
-  const list = document.getElementById('paymentsList');
+  const container = document.getElementById('paymentsList');
   const unpaid = entries.filter(e => !e.paid);
   const paid   = entries.filter(e => e.paid);
 
   if (!entries.length) {
-    list.innerHTML = '<div style="font-size:13px;color:var(--ink-3);">No entries found.</div>';
+    container.innerHTML = '<div style="font-size:13px;color:var(--ink-3);">No entries found.</div>';
     return;
   }
 
@@ -1064,31 +1074,35 @@ function renderPaymentsList(entries) {
 
   if (unpaid.length) {
     html += `<div class="payments-divider">Unpaid (${unpaid.length})</div>`;
+    html += `<div class="payments-grid">`;
     html += unpaid.map(e => `
       <div class="payment-row" data-id="${esc(e.id)}">
         <div class="payment-row-info">
-          <div class="payment-row-name">${esc(e.name)}</div>
           <div class="payment-row-id">${esc(e.id)}</div>
+          <div class="payment-row-name">${esc(e.name)}</div>
         </div>
-        <button class="btn-sm primary mark-paid-btn" data-id="${esc(e.id)}" data-name="${esc(e.name)}">Mark paid</button>
+        <button class="btn-sm primary mark-paid-btn" data-id="${esc(e.id)}" data-name="${esc(e.name)}" style="padding:5px 10px;font-size:11px;flex-shrink:0;">Paid</button>
       </div>`).join('');
+    html += `</div>`;
   }
 
   if (paid.length) {
     html += `<div class="payments-divider">Paid (${paid.length})</div>`;
+    html += `<div class="paid-list">`;
     html += paid.map(e => `
       <div class="payment-row paid">
         <div class="payment-row-info">
-          <div class="payment-row-name">${esc(e.name)}</div>
           <div class="payment-row-id">${esc(e.id)}</div>
+          <div class="payment-row-name">${esc(e.name)}</div>
         </div>
-        <span class="payment-row-status">✓ Paid</span>
+        <span class="payment-row-status">✓</span>
       </div>`).join('');
+    html += `</div>`;
   }
 
-  list.innerHTML = html;
+  container.innerHTML = html;
 
-  list.querySelectorAll('.mark-paid-btn').forEach(btn => {
+  container.querySelectorAll('.mark-paid-btn').forEach(btn => {
     btn.addEventListener('click', () => markPaid(btn.dataset.id, btn.dataset.name, btn));
   });
 }
