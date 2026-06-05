@@ -41,8 +41,16 @@ async function initNav() {
   }
 }
 
-// ── API ───────────────────────────────────────────────────────────────────────
-async function apiFetch(action, params = {}) {
+async function apiFetch(action, params = {}, method = 'GET') {
+  if (method === 'POST') {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, payload: params })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
   const url = new URL(SCRIPT_URL);
   url.searchParams.set('action', action);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
