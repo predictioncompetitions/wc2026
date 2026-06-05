@@ -381,7 +381,7 @@
         <div id="submitLocked" style="padding:14px;background:var(--surface-2);border:1.5px dashed var(--border-2);border-radius:var(--radius);text-align:center;color:var(--ink-3);font-size:14px;">The Submit button appears once every knockout score is complete.</div>
         <div id="submitReady" class="hidden">
           <button type="button" class="btn btn-gold" id="submitBtn" onclick="handleSubmit()">Submit my knockout predictions</button>
-          <p class="submit-note">Deadline: 18:00 on Wednesday 11 June 2026. You can only submit once.</p>
+          <p class="submit-note">Deadline: 18:00 on Thursday 11 June 2026. You can only submit once.</p>
         </div>
         <div class="status-msg" id="submitStatus" style="margin-top:12px;"></div>
       </div>
@@ -874,7 +874,7 @@ function buildOldScoreMap(data) {
       const data=await apiFetch('getResubmitData',{entryId:_entryId,token:_token});
       if(!data.ok){
         if(data.error&&data.error.toLowerCase().includes('closed')){showState('state-closed');return;}
-        if(data.error&&data.error.toLowerCase().includes('already been used')){showError('Link already used','This resubmit link has already been used. Contact Mick directly if you need to resubmit again.');return;}
+        if(data.error&&data.error.toLowerCase().includes('already been used')){showError('Link already used','This resubmit link has already been used. Contact Mick on predictioncompetitionworldcup@gmail.com if you need to resubmit again. ');return;}
         showError('Could not load entry',data.error||'Please try again.');return;
       }
       renderGroupSummary(data.groupSummary);
