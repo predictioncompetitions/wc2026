@@ -103,12 +103,18 @@
     .group-table tr:last-child td { border-bottom: none; }
     .grp-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--pitch); color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 13px; border-radius: 6px; }
 
-    .third-rank-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; }
-    @media (max-width: 480px) { .third-rank-grid { grid-template-columns: 1fr; } }
-    .tr-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
-    .tr-item.qualifying { border-color: #bbf7d0; background: #f0fdf4; color: var(--success); }
-    .tr-num { width: 22px; height: 22px; border-radius: 50%; font-family: var(--font-head); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--border); color: var(--ink-3); }
-    .tr-item.qualifying .tr-num { background: var(--pitch); color: #fff; }
+    /* Third-place drag list */
+    .third-rank-list-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; color:var(--ink-2); background:var(--surface); cursor:grab; user-select:none; transition:box-shadow .15s, border-color .15s; }
+    .third-rank-list-item:active { cursor:grabbing; }
+    .third-rank-list-item.dragging { opacity:0.4; }
+    .third-rank-list-item.drag-over { border-color:var(--pitch); box-shadow:0 0 0 2px rgba(13,92,46,.18); }
+    .third-rank-list-item.qualifying { border-color:#bbf7d0; background:#f0fdf4; color:var(--success); }
+    .third-rank-list-item .tr-num { width:22px; height:22px; border-radius:50%; font-family:var(--font-head); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--border); color:var(--ink-3); }
+    .third-rank-list-item.qualifying .tr-num { background:var(--pitch); color:#fff; }
+    .third-rank-list-item .tr-drag { color:var(--ink-3); font-size:14px; margin-left:auto; flex-shrink:0; }
+    .third-rank-list-item .tr-qual-label { font-size:11px; font-weight:600; }
+    .third-rank-list-item.qualifying .tr-qual-label { color:var(--success); }
+    .third-rank-list-item:not(.qualifying) .tr-qual-label { color:var(--ink-3); }
 
     /* Round/match styles */
     .round-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--surface); margin-bottom: 10px; }
@@ -140,8 +146,6 @@
     .match-card.round-qf    { background: #f5f3ff; border-color: #c4b5fd; border-left-color: #8b5cf6; }
     .match-card.round-sf    { background: #fff7ed; border-color: #fdba74; border-left-color: #f97316; }
     .match-card.round-final { background: #fefce8; border-color: #fde68a; border-left-color: #eab308; }
-
-    /* Changed match highlight */
     .match-card.team-changed { border-left-color: #f59e0b !important; background: #fffbeb !important; border-color: #fcd34d !important; }
 
     .match-meta { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
@@ -153,23 +157,11 @@
     .match-card.team-changed .match-meta-num { color: #b45309; }
     .match-meta-rest { font-size: 11px; color: var(--ink-2); font-weight: 500; }
 
-    /* Changed team label */
-    .team-change-label {
-      display: flex; align-items: center; gap: 6px;
-      padding: 3px 8px; margin-bottom: 4px;
-      background: #fef3c7; border-radius: 4px;
-      font-size: 11px; color: #92400e;
-    }
+    .team-change-label { display: flex; align-items: center; gap: 6px; padding: 3px 8px; margin-bottom: 4px; background: #fef3c7; border-radius: 4px; font-size: 11px; color: #92400e; }
     .team-old { text-decoration: line-through; color: #b45309; opacity: 0.7; font-weight: 600; }
     .team-new { color: var(--pitch); font-weight: 700; }
     .team-arrow { color: #b45309; font-size: 10px; }
-
-    /* Wiped score notice */
-    .score-wiped-note {
-      font-size: 10px; color: #b45309; font-weight: 600;
-      text-align: center; padding: 2px 0 4px;
-      letter-spacing: 0.3px;
-    }
+    .score-wiped-note { font-size: 10px; color: #b45309; font-weight: 600; text-align: center; padding: 2px 0 4px; letter-spacing: 0.3px; }
 
     .match-score-row { display: grid; grid-template-columns: minmax(0,1fr) 76px minmax(0,1fr); align-items: center; gap: 3px; }
     .match-team-left  { text-align: right; font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 3px; }
@@ -214,6 +206,9 @@
     .btn-gold { background: var(--gold); color: var(--ink); font-weight: 700; width: 100%; justify-content: center; }
     .btn-gold:hover { background: var(--gold-d); }
     .btn-gold:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; }
+    .btn-pitch { background: var(--pitch); color: #fff; }
+    .btn-pitch:hover { background: var(--pitch-d); }
+    .btn-pitch:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; }
     .submit-note { font-size: 13px; color: var(--ink-3); margin-top: 10px; line-height: 1.4; }
 
     .hidden { display: none !important; }
@@ -280,8 +275,8 @@
   <div class="progress-bar-wrap">
     <div class="progress-steps">
       <div class="ps-item done" id="ps1"><div class="ps-dot" data-n="1"></div><span>Groups</span></div>
-      <div class="ps-item done" id="ps2"><div class="ps-dot" data-n="2"></div><span>3rd place</span></div>
-      <div class="ps-item active" id="ps3"><div class="ps-dot" data-n="3"></div><span>Knockout</span></div>
+      <div class="ps-item active" id="ps2"><div class="ps-dot" data-n="2"></div><span>3rd place</span></div>
+      <div class="ps-item" id="ps3"><div class="ps-dot" data-n="3"></div><span>Knockout</span></div>
       <div class="ps-item" id="ps4"><div class="ps-dot" data-n="4"></div><span>Submit</span></div>
     </div>
   </div>
@@ -301,7 +296,7 @@
   <div class="container">
 
     <div class="alert-banner warn">
-    ⚠️ <span>Your Round of 32 scores have been carried over. Matches highlighted in amber have a corrected third-place team — please re-enter those scores. All rounds from the Round of 16 onwards are blank, please fill them in fresh.</span>
+      ⚠️ <span>Your group predictions are locked. Re-rank your third-place teams if needed, regenerate your bracket, then fill in your knockout scores.</span>
     </div>
 
     <!-- Group predictions (read-only) -->
@@ -320,16 +315,24 @@
       </div>
     </div>
 
-    <!-- Third-place ranking (read-only) -->
-    <div class="card collapsed" id="card-third">
+    <!-- Third-place ranking (re-rankable) -->
+    <div class="card" id="card-third">
       <div class="card-header collapsable" id="card-third-header">
-        <div class="card-number green">✓</div>
-        <div class="card-title-wrap"><h2>Third-place ranking</h2><p>Unchanged — shown for reference.</p></div>
-        <div class="section-complete-badge visible">✓ Locked</div>
+        <div class="card-number" id="third-card-num">2</div>
+        <div class="card-title-wrap">
+          <h2>Third-place ranking</h2>
+          <p id="third-card-desc">Drag to re-rank if needed, then regenerate your bracket.</p>
+        </div>
+        <div class="section-complete-badge" id="badge-third">✓ Bracket generated</div>
         <div class="collapse-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
       <div class="card-body">
-        <div class="third-rank-grid" id="third-rank-grid"></div>
+        <p style="font-size:13px;color:var(--ink-3);margin-bottom:10px;">The top 8 qualify for your bracket. Drag to reorder if you want to change the ranking, then hit Regenerate. If your ranking is unchanged, just hit Regenerate to load your bracket.</p>
+        <div id="third-rank-list" style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px;"></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-pitch" id="regenBtn" onclick="handleRegen()">↻ Regenerate bracket</button>
+          <div class="status-msg" id="regenStatus" style="flex:1;min-width:180px;margin:0;"></div>
+        </div>
       </div>
     </div>
 
@@ -339,13 +342,13 @@
         <div class="card-number">3</div>
         <div class="card-title-wrap">
           <h2>Knockout scores</h2>
-          <p>Round of 32 scores carried over. Amber matches need re-entering. R16 onwards is blank please fill in fresh.</p>
+          <p>Regenerate your bracket above first. Amber matches have a corrected third-place team — re-enter those scores.</p>
         </div>
         <div class="section-complete-badge" id="badge-bracket">✓ Complete</div>
       </div>
       <div class="card-body">
         <div style="display:flex;flex-direction:column;gap:10px;" id="bracket-section">
-          <div class="round-wrap round-r32" id="roundOf32Wrap">
+          <div class="round-wrap round-r32 hidden" id="roundOf32Wrap">
             <div class="round-header" id="rh-R32"><div class="round-title">Round of 32</div><span class="round-progress-chip" id="r32Chip">0 / 16</span><div class="round-chevron"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
             <div class="round-body"><div class="matches-list" id="roundOf32Container"></div></div>
           </div>
@@ -419,7 +422,6 @@
   const QF_ORDER  = [97,98,99,100];
   const SF_ORDER  = [101,102];
 
-  // R32 match → R16 match pairing (which R16 match does each R32 match feed?)
   const R32_TO_R16 = {74:89,77:89,73:90,75:90,76:91,78:91,79:92,80:92,83:93,84:93,81:94,82:94,86:95,88:95,85:96,87:96};
   const R16_TO_QF  = {89:97,90:97,93:98,94:98,91:99,92:99,95:100,96:100};
   const QF_TO_SF   = {97:101,98:101,99:102,100:102};
@@ -429,10 +431,12 @@
   let roundOf32Matches = [], roundOf16Matches = [], quarterFinalMatches = [], semiFinalMatches = [];
   let finalMatch = null, predictedChampion = null;
 
-  // Track which R32 matches have changed teams
   let _changedR32Matches = new Set();
-  // Track which downstream matches need wiping due to changed upstream
   let _wipedMatches = new Set();
+  let _currentThirdRank = [];
+  let _bracketGenerated = false;
+  let _dragSrcIdx = null;
+  let _oldScoreMap = {};
 
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
@@ -454,6 +458,7 @@
     showState('state-error');
   }
 
+  // Only groups card is collapsable; third card has chevron for collapse too
   function initCollapsable(hId, cId) {
     const h = $(hId), c = $(cId); if (!h || !c) return;
     h.addEventListener('click', () => c.classList.toggle('collapsed'));
@@ -473,55 +478,159 @@
 
   document.addEventListener('click', () => document.querySelectorAll('.match-info-btn.tip-open').forEach(el => el.classList.remove('tip-open')));
 
+  // ---- Third-place drag-to-rerank ----
+
+  function renderThirdRankList(rank) {
+    const list = $('third-rank-list');
+    list.innerHTML = '';
+    rank.forEach((team, i) => {
+      const item = document.createElement('div');
+      item.className = `third-rank-list-item${i < 8 ? ' qualifying' : ''}`;
+      item.draggable = true;
+      item.dataset.idx = i;
+      item.innerHTML = `
+        <span class="tr-num">${i + 1}</span>
+        <span style="flex:1;">${esc(team)}</span>
+        <span class="tr-qual-label">${i < 8 ? 'Qualifies' : 'Out'}</span>
+        <span class="tr-drag">⠿</span>`;
+
+      item.addEventListener('dragstart', e => {
+        _dragSrcIdx = i;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        document.querySelectorAll('.third-rank-list-item').forEach(el => el.classList.remove('drag-over'));
+      });
+      item.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        document.querySelectorAll('.third-rank-list-item').forEach(el => el.classList.remove('drag-over'));
+        item.classList.add('drag-over');
+      });
+      item.addEventListener('drop', e => {
+        e.preventDefault();
+        if (_dragSrcIdx === null || _dragSrcIdx === i) return;
+        const moved = _currentThirdRank.splice(_dragSrcIdx, 1)[0];
+        _currentThirdRank.splice(i, 0, moved);
+        _dragSrcIdx = null;
+        renderThirdRankList(_currentThirdRank);
+        markThirdRankDirty();
+      });
+      list.appendChild(item);
+    });
+  }
+
+  function markThirdRankDirty() {
+    _bracketGenerated = false;
+    $('badge-third').classList.remove('visible');
+    const num = $('third-card-num');
+    num.classList.remove('green');
+    num.textContent = '2';
+    $('regenStatus').textContent = '';
+    $('regenStatus').className = 'status-msg';
+    // Wipe all bracket rounds
+    roundOf32Matches = []; roundOf16Matches = []; quarterFinalMatches = []; semiFinalMatches = [];
+    finalMatch = null; predictedChampion = null;
+    ['roundOf32Container','roundOf16Container','quarterFinalsContainer','semiFinalsContainer','finalContainer'].forEach(id => { const el=$(id); if(el) el.innerHTML=''; });
+    ['roundOf32Wrap','roundOf16Wrap','quarterFinalsWrap','semiFinalsWrap','finalWrap','championWrap'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+    updateRoundChip('r32Chip',[]); updateRoundChip('r16Chip',[]); updateRoundChip('qfChip',[]);
+    updateRoundChip('sfChip',[]); updateRoundChip('finalChip',[]);
+    // Reset progress steps
+    $('ps2').classList.remove('done'); $('ps2').classList.add('active');
+    $('ps3').classList.remove('done','active');
+    $('ps4').classList.remove('active');
+    updateSubmitVisibility();
+  }
+
+  async function handleRegen() {
+    const btn = $('regenBtn'), statusEl = $('regenStatus');
+    btn.disabled = true;
+    statusEl.textContent = 'Regenerating…';
+    statusEl.className = 'status-msg visible info';
+    try {
+      const res = await apiFetch('getBracketPreview', { entryId: _entryId, token: _token, thirdRank: _currentThirdRank });
+      if (!res.ok) {
+        statusEl.textContent = res.error || 'Could not regenerate. Try again.';
+        statusEl.className = 'status-msg visible error';
+        btn.disabled = false;
+        return;
+      }
+
+      _bracket = res.bracket;
+
+      // Diff new bracket against original stored teams
+      const { changed, wiped } = computeChangedAndWiped({ oldTsTeams: _data.oldTsTeams }, res.bracket);
+      _changedR32Matches = changed;
+      _wipedMatches = wiped;
+
+      roundOf32Matches = (res.bracket.roundOf32 || []).map(f => ({
+        matchNo: f.matchNo, round: f.round, date: f.date, kickOffGMT: f.kickOffGMT || '',
+        team1: f.team1, team2: f.team2, score1: '', score2: '', winner: ''
+      }));
+
+      $('roundOf32Wrap').classList.remove('hidden');
+      renderRound(roundOf32Matches, $('roundOf32Container'), 'R32', _oldScoreMap);
+      updateRoundChip('r32Chip', roundOf32Matches);
+      setRoundCollapsed('roundOf32Wrap', false);
+      updateProgression();
+
+      _bracketGenerated = true;
+      $('badge-third').classList.add('visible');
+      const num = $('third-card-num');
+      num.classList.add('green');
+      num.textContent = '✓';
+      statusEl.textContent = 'Bracket updated.';
+      statusEl.className = 'status-msg visible success';
+
+      // Progress bar
+      $('ps2').classList.add('done'); $('ps2').classList.remove('active');
+      $('ps3').classList.add('active');
+
+      setTimeout(() => {
+        const el = $('roundOf32Wrap');
+        if (el) { const top = el.getBoundingClientRect().top + window.scrollY - 110; window.scrollTo({ top, behavior: 'smooth' }); }
+      }, 300);
+
+    } catch(e) {
+      statusEl.textContent = 'Connection problem. Try again.';
+      statusEl.className = 'status-msg visible error';
+    }
+    btn.disabled = false;
+  }
+
   // ---- Score pre-fill logic ----
 
-function buildOldScoreMap(data) {
-  const map = {};
-  (data.oldR32 || []).forEach(m => {
-    map[m.matchNo] = { score1: m.score1, score2: m.score2, winner: m.winner };
-  });
-  return map;
-}
+  function buildOldScoreMap(data) {
+    const map = {};
+    (data.oldR32 || []).forEach(m => {
+      map[m.matchNo] = { score1: m.score1, score2: m.score2, winner: m.winner };
+    });
+    return map;
+  }
 
   function computeChangedAndWiped(data, newBracket) {
-    // Find which flexible R32 matches have a different team
     const changed = new Set();
     const oldTs = data.oldTsTeams || {};
-    const flexibleMatchNos = [74,77,79,80,81,82,85,87];
 
-    newBracket.roundOf32.forEach(f => {
+    (newBracket.roundOf32 || []).forEach(f => {
       if (!FLEXIBLE_MATCH_NOS.has(f.matchNo)) return;
       const oldTeam = oldTs[f.matchNo] || '';
       const newTeam = f.team2 || '';
       if (oldTeam !== newTeam) changed.add(f.matchNo);
     });
 
-    // For each changed R32 match, find which old winner it had
-    // and trace downstream to mark wiped matches
     const wiped = new Set();
-    const oldScoreMap = buildOldScoreMap(data);
-
-    // For each changed R32 match, its downstream chain needs wiping
-    // if the old predicted winner of that match was used downstream
     changed.forEach(r32MatchNo => {
-      // Mark the R32 match itself as wiped (scores cleared)
       wiped.add(r32MatchNo);
-
-      // Find which R16 match this feeds
-      const r16MatchNo = R32_TO_R16[r32MatchNo];
-      if (!r16MatchNo) return;
+      const r16MatchNo = R32_TO_R16[r32MatchNo]; if (!r16MatchNo) return;
       wiped.add(r16MatchNo);
-
-      const qfMatchNo = R16_TO_QF[r16MatchNo];
-      if (!qfMatchNo) return;
+      const qfMatchNo = R16_TO_QF[r16MatchNo]; if (!qfMatchNo) return;
       wiped.add(qfMatchNo);
-
-      const sfMatchNo = QF_TO_SF[qfMatchNo];
-      if (!sfMatchNo) return;
+      const sfMatchNo = QF_TO_SF[qfMatchNo]; if (!sfMatchNo) return;
       wiped.add(sfMatchNo);
-
-      const finalMatchNo = SF_TO_FINAL[sfMatchNo];
-      if (!finalMatchNo) return;
+      const finalMatchNo = SF_TO_FINAL[sfMatchNo]; if (!finalMatchNo) return;
       wiped.add(finalMatchNo);
     });
 
@@ -547,6 +656,7 @@ function buildOldScoreMap(data) {
 
   function isKnockoutComplete() {
     return !!(
+      _bracketGenerated &&
       validateRoundComplete(roundOf32Matches) &&
       validateRoundComplete(roundOf16Matches) &&
       validateRoundComplete(quarterFinalMatches) &&
@@ -563,7 +673,7 @@ function buildOldScoreMap(data) {
     $('badge-bracket').classList.toggle('visible', complete);
     $('card-bracket').classList.toggle('is-complete', complete);
     if (complete) { $('ps3').classList.add('done'); $('ps3').classList.remove('active'); $('ps4').classList.add('active'); }
-    else { $('ps3').classList.remove('done'); $('ps3').classList.add('active'); $('ps4').classList.remove('active'); }
+    else if (_bracketGenerated) { $('ps3').classList.remove('done'); $('ps3').classList.add('active'); $('ps4').classList.remove('active'); }
   }
 
   function checkForDraws() {
@@ -596,11 +706,8 @@ function buildOldScoreMap(data) {
 
       const isChanged = _changedR32Matches.has(match.matchNo);
       const isWiped   = _wipedMatches.has(match.matchNo);
-
-      // Get old team for changed flexible R32 matches
       const oldAwayTeam = isChanged && _data.oldTsTeams ? (_data.oldTsTeams[match.matchNo]||'') : '';
 
-      // Pre-fill or wipe
       const oldScore = oldScoreMap && oldScoreMap[match.matchNo];
       let prefillS1 = '', prefillS2 = '', prefillWinner = '';
       if (!isWiped && oldScore) {
@@ -609,7 +716,6 @@ function buildOldScoreMap(data) {
         prefillWinner = oldScore.winner || '';
       }
 
-      // Build team-change label for changed flexible R32 matches
       const teamChangeHtml = isChanged && oldAwayTeam && oldAwayTeam !== match.team2 ? `
         <div class="team-change-label">
           <span>3rd place corrected:</span>
@@ -619,7 +725,6 @@ function buildOldScoreMap(data) {
         </div>` : '';
 
       const wipedNote = isWiped && !isChanged ? `<div class="score-wiped-note"></div>` : '';
-
       const cardClass = `match-card ${roundClass}${isChanged?' team-changed':''}`;
 
       const card = document.createElement('div');
@@ -644,7 +749,6 @@ function buildOldScoreMap(data) {
         <div class="match-error" id="${rk}_${i}_ERROR"></div>`;
       container.appendChild(card);
 
-      // Pre-fill winner state into match object
       match.score1 = prefillS1;
       match.score2 = prefillS2;
       if (prefillS1 !== '' && prefillS2 !== '' && prefillS1 !== prefillS2) {
@@ -664,8 +768,6 @@ function buildOldScoreMap(data) {
       }
 
       const s1el = $(`${rk}_${i}_S1`), s2el = $(`${rk}_${i}_S2`);
-
-      // Apply initial colours
       updateTeamColours(matches, i, rk);
 
       function wireInput(el, isS1) {
@@ -772,8 +874,6 @@ function buildOldScoreMap(data) {
     updateSubmitVisibility();
   }
 
-  let _oldScoreMap = {};
-
   function updateProgression(){
     updateRoundChip('r32Chip',roundOf32Matches);
     if(!validateRoundComplete(roundOf32Matches)){setRoundCollapsed('roundOf32Wrap',false);resetFrom('R16');return;}
@@ -804,44 +904,12 @@ function buildOldScoreMap(data) {
     tbody.innerHTML=groups.map(g=>`<tr><td><span class="grp-badge">${esc(g.group)}</span></td><td>${esc(g.first)}</td><td>${esc(g.second)}</td><td>${esc(g.third)}</td></tr>`).join('');
   }
 
-  function renderThirdRank(thirdRank){
-    const grid=$('third-rank-grid');
-    grid.innerHTML=thirdRank.filter(t=>t).map((team,i)=>`
-      <div class="tr-item ${i<8?'qualifying':''}">
-        <span class="tr-num">${i+1}</span>
-        <span>${esc(team)}</span>
-        ${i<8?'<span style="margin-left:auto;font-size:11px;font-weight:600;color:var(--success);">Qualifies</span>':'<span style="margin-left:auto;font-size:11px;color:var(--ink-3);">Out</span>'}
-      </div>`).join('');
-  }
-
   function initBracket(data){
     _bracket = data.bracket;
     _data = data;
     _oldScoreMap = buildOldScoreMap(data);
-
-    const { changed, wiped } = computeChangedAndWiped(data, data.bracket);
-    _changedR32Matches = changed;
-    _wipedMatches = wiped;
-
-    roundOf32Matches = (data.bracket.roundOf32||[]).map(f=>({
-      matchNo:f.matchNo,round:f.round,date:f.date,kickOffGMT:f.kickOffGMT||'',
-      team1:f.team1,team2:f.team2,score1:'',score2:'',winner:''
-    }));
-
-    renderRound(roundOf32Matches,$('roundOf32Container'),'R32',_oldScoreMap);
-    updateRoundChip('r32Chip',roundOf32Matches);
-    setRoundCollapsed('roundOf32Wrap',false);
-
-    // After rendering, check if all R32 are pre-filled and trigger progression
-    updateProgression();
-
-    // Focus first empty score input
-    setTimeout(()=>{
-      const inputs = document.querySelectorAll('.score-input');
-      for(const inp of inputs){
-        if(inp.value===''){inp.focus();inp.select();break;}
-      }
-    },300);
+    _currentThirdRank = [...(data.thirdRank || [])];
+    renderThirdRankList(_currentThirdRank);
   }
 
   async function handleSubmit(){
@@ -854,6 +922,7 @@ function buildOldScoreMap(data) {
     const knockoutData={
       top8Thirds:_bracket.top8Thirds||[],
       thirdPlaceAssignments:_bracket.thirdPlaceAssignments||{},
+      thirdRank:_currentThirdRank,
       roundOf32:roundOf32Matches,roundOf16:roundOf16Matches,
       quarterFinals:quarterFinalMatches,semiFinals:semiFinalMatches,
       final:finalMatch,predictedChampion:predictedChampion||''
@@ -874,11 +943,10 @@ function buildOldScoreMap(data) {
       const data=await apiFetch('getResubmitData',{entryId:_entryId,token:_token});
       if(!data.ok){
         if(data.error&&data.error.toLowerCase().includes('closed')){showState('state-closed');return;}
-        if(data.error&&data.error.toLowerCase().includes('already been used')){showError('Link already used','This resubmit link has already been used. Contact Mick on predictioncompetitionworldcup@gmail.com if you need to resubmit again. ');return;}
+        if(data.error&&data.error.toLowerCase().includes('already been used')){showError('Link already used','This resubmit link has already been used. Contact Mick on predictioncompetitionworldcup@gmail.com if you need to resubmit again.');return;}
         showError('Could not load entry',data.error||'Please try again.');return;
       }
       renderGroupSummary(data.groupSummary);
-      renderThirdRank(data.thirdRank);
       $('hero-name').textContent=data.displayName||'';
       initBracket(data);
       showState('state-form');
