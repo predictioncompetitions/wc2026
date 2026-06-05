@@ -475,16 +475,13 @@
 
   // ---- Score pre-fill logic ----
 
-  function buildOldScoreMap(data) {
-    // Returns matchNo → {score1, score2, winner}
-    const map = {};
-    (data.oldR32 || []).forEach(m => { map[m.matchNo] = {score1: m.score1, score2: m.score2, winner: m.winner}; });
-    (data.oldR16 || []).forEach(m => { map[m.matchNo] = {score1: m.score1, score2: m.score2, winner: m.winner}; });
-    (data.oldQF  || []).forEach(m => { map[m.matchNo] = {score1: m.score1, score2: m.score2, winner: m.winner}; });
-    (data.oldSF  || []).forEach(m => { map[m.matchNo] = {score1: m.score1, score2: m.score2, winner: m.winner}; });
-    if (data.oldFinal) map[104] = {score1: data.oldFinal.score1, score2: data.oldFinal.score2, winner: data.oldFinal.winner};
-    return map;
-  }
+function buildOldScoreMap(data) {
+  const map = {};
+  (data.oldR32 || []).forEach(m => {
+    map[m.matchNo] = { score1: m.score1, score2: m.score2, winner: m.winner };
+  });
+  return map;
+}
 
   function computeChangedAndWiped(data, newBracket) {
     // Find which flexible R32 matches have a different team
