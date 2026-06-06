@@ -550,7 +550,7 @@
     statusEl.textContent = 'Regenerating…';
     statusEl.className = 'status-msg visible info';
     try {
-      const res = await apiFetch('getBracketPreview', { entryId: _entryId, token: _token, thirdRank: _currentThirdRank });
+      const res = await apiFetch('getBracketPreview', { entryId: _entryId, token: _token, thirdRank: _currentThirdRank }, 'POST');
       if (!res.ok) {
         statusEl.textContent = res.error || 'Could not regenerate. Try again.';
         statusEl.className = 'status-msg visible error';
