@@ -910,7 +910,13 @@
     _oldScoreMap = buildOldScoreMap(data);
     _currentThirdRank = [...(data.thirdRank || [])];
     renderThirdRankList(_currentThirdRank);
+    // If bracket failed to build, prompt them to re-rank before continuing
+  if (data.bracketError) {
+    const statusEl = $('regenStatus');
+    statusEl.textContent = 'Your original 3rd place team ranking produced an invalid knockout fixtures — re-rank your third-place teams and hit Regenerate. You can blame FIFA.';
+    statusEl.className = 'status-msg visible warn';
   }
+}
 
   async function handleSubmit(){
     const btn=$('submitBtn'),statusEl=$('submitStatus');
