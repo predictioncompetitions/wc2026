@@ -1162,8 +1162,8 @@ function renderPaymentsList(entries) {
     html += unpaid.map(e => `
       <div class="payment-row" data-id="${esc(e.id)}">
         <div class="payment-row-info">
-          <div class="payment-row-id">${esc(e.id)}</div>
-          <div class="payment-row-name">${esc(e.name)}</div>
+          <div class="payment-row-id">${esc(e.name)}</div>
+          <div class="payment-row-name">${esc(e.id)}</div>
         </div>
         <button class="btn-sm primary mark-paid-btn" data-id="${esc(e.id)}" data-name="${esc(e.name)}" style="padding:5px 10px;font-size:11px;flex-shrink:0;">Paid</button>
       </div>`).join('');
@@ -1180,8 +1180,8 @@ function renderPaymentsList(entries) {
     html += paid.map(e => `
       <div class="payment-row paid">
         <div class="payment-row-info">
-          <div class="payment-row-id">${esc(e.id)}</div>
-          <div class="payment-row-name">${esc(e.name)}</div>
+          <div class="payment-row-id">${esc(e.name)}</div>
+          <div class="payment-row-name">${esc(e.id)}</div>
         </div>
         <span class="payment-row-status">✓</span>
       </div>`).join('');
