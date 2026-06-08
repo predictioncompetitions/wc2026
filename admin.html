@@ -409,8 +409,10 @@
 
     <!-- PAYMENTS -->
     <div class="admin-card full-width-card">
-      <div class="admin-card-head"><h2>Payments</h2></div>
-      <div class="admin-card-body">
+<div class="admin-card-head">
+  <h2>Payments</h2>
+  <button class="btn-sm neutral" id="refreshPaymentsBtn" style="font-size:11px;padding:4px 10px;">↻ Refresh</button>
+</div>      <div class="admin-card-body">
         <input class="payments-search" id="paymentsSearch" type="text" placeholder="Search by name or entry ID…" />
         <div id="paymentsList">
           <div style="font-size:13px;color:var(--ink-3);">Loading…</div>
@@ -1126,10 +1128,15 @@ async function loadPayments() {
       });
     }
 
-    allEntries = [
-      ...unpaid.map(e => ({ id: e.id, name: e.name, paid: false })),
-      ...paid
-    ];
+const unpaidMapped = unpaid
+      .map(e => ({ id: e.id, name: e.name, paid: false }))
+      .sort((a, b) => {
+        const numA = parseInt((a.id || '').replace(/\D/g, ''), 10) || 0;
+        const numB = parseInt((b.id || '').replace(/\D/g, ''), 10) || 0;
+        return numB - numA;
+      });
+
+    allEntries = [...unpaidMapped, ...paid];
 
     renderPaymentsList(allEntries);
   } catch(err) {
@@ -1252,7 +1259,19 @@ document.getElementById('nameOnlyBtn').addEventListener('click', async () => {
     btn.disabled = false; btn.textContent = 'Mark paid';
   }
 });
-
+document.getElementById('refreshPaymentsBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('refreshPaymentsBtn');
+  btn.disabled = true;
+  btn.textContent = '↻ Loading…';
+  try {
+    await loadPayments();
+    const search = document.getElementById('paymentsSearch').value.trim();
+    if (search) filterPayments(search);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '↻ Refresh';
+  }
+});
 /* ── Nav toggle ── */
 document.getElementById('navToggle').addEventListener('click', () => {
   document.getElementById('navMobile').classList.toggle('open');
