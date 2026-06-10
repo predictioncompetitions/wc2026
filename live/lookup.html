@@ -96,8 +96,13 @@
     .prog-note { font-size:11px; color:var(--ink-3); margin:0 0 6px; width:100%; line-height:1.5; }
     .prog-note a { color:var(--pitch); font-weight:600; }
 
-    .match-section { margin-bottom:20px; }
-    .match-section-head { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--ink-3); padding:6px 0; border-bottom:2px solid var(--surface-3); margin-bottom:8px; }
+	.match-section { margin-bottom:20px; }
+	.match-section-head { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:#fff; background:var(--ink); padding:10px 14px; border-radius:var(--radius); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; }
+	.match-section-head:hover { background:#2a2f3e; }
+	.match-section-chevron { font-size:11px; color:rgba(255,255,255,.5); transition:transform .2s; }
+	.match-section.open .match-section-chevron { transform:rotate(180deg); }
+	.match-section-body { display:none; }
+	.match-section.open .match-section-body { display:block; }
     .match-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:8px; box-shadow:var(--shadow-sm); position:relative; }
     .match-card.pending { opacity:.65; }
     .match-card-head { display:flex; justify-content:space-between; align-items:center; padding:7px 12px; background:var(--surface-2); font-size:11px; color:var(--ink-3); font-weight:600; }
@@ -553,7 +558,7 @@
 
     matchSections.forEach(section => {
       if (!section.matches.length) return;
-      html += `<div class="match-section"><div class="match-section-head">${esc(section.label)}</div>`;
+	html += `<div class="match-section open"><div class="match-section-head" onclick="this.closest('.match-section').classList.toggle('open')"><span>${esc(section.label)}</span><span class="match-section-chevron">▼</span></div><div class="match-section-body">`;
       section.matches.forEach(m => {
         const hasPred  = m.predHome&&m.predAway&&m.predScore1!==null&&m.predScore2!==null;
         const cardClass= !m.played?'pending':'';
@@ -603,7 +608,7 @@
           </div>
         </div>`;
       });
-      html += '</div>';
+		html += '</div></div>';
     });
 
     html += '</div>';
