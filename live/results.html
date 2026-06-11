@@ -708,6 +708,7 @@
         if (!matchesByGroup[k]) matchesByGroup[k] = [];
         matchesByGroup[k].push(m);
       }
+      console.log(JSON.stringify((mData.matches || []).slice(0,3), null, 2));
       const standings = (sData.standings || []).sort((a,b) =>
         (a.group||'').localeCompare(b.group||'')
       );
