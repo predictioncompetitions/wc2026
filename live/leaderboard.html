@@ -302,8 +302,8 @@
 
     let html = '';
 
-    const top10 = entries.slice().sort((a,b) => getRank(a,0) - getRank(b,0)).slice(0,10);
-    if (top10.length) {
+const top10 = entries.slice().sort((a,b) => getRank(a,0) - getRank(b,0)).slice(0,10);
+if (top10.length && hasScores) {
       const podiumClasses = ['rb-1','rb-2','rb-3','rb-4','rb-5','rb-6','rb-7','rb-8','rb-9','rb-10'];
 
       html += '<div class="prize-winners-section">';
