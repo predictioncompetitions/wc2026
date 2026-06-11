@@ -457,6 +457,8 @@ if (top10.length && hasScores) {
             : `<span class="prize-chip prize-chip-tba">Prize TBA</span>`;
         } else if (is20th) {
           prizeChip = `<span class="prize-chip prize-chip-20th">€${PRIZE_20TH}</span>`;
+        } else if (r === prizes.lastPlace) {
+          prizeChip = `<span class="prize-chip" style="background:#fee2e2;color:#991b1b;">💀 €10</span>`;
         }
       }
 
