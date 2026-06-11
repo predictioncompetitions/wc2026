@@ -272,8 +272,8 @@
     const fixedTotal   = flatPlaces.length * PRIZE_20TH;
     const top10Pot     = Math.max(0, totalPot - fixedTotal);
     const top10Amounts = TOP10_PRIZES; // use confirmed amounts
-    return { totalPot, fixedTotal, top10Pot, top10Amounts, flatPlaces, lastPlace };
-  }
+const lastPlace = totalCount;
+return { totalPot, fixedTotal, top10Pot, top10Amounts, flatPlaces, lastPlace };  }
 
   function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
