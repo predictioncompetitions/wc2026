@@ -434,12 +434,14 @@
         : '<span class="badge-due">Due</span>';
 
       let prizeChip = '';
-      if (isTop10) {
-        prizeChip = prizesConfirmed
-          ? `<span class="prize-chip prize-chip-top">€${prizes.top10Amounts[r-1]}</span>`
-          : `<span class="prize-chip prize-chip-tba">Prize TBA</span>`;
-      } else if (is20th) {
-        prizeChip = `<span class="prize-chip prize-chip-20th">€${PRIZE_20TH}</span>`;
+      if (hasScores) {
+        if (isTop10) {
+          prizeChip = prizesConfirmed
+            ? `<span class="prize-chip prize-chip-top">€${prizes.top10Amounts[r-1]}</span>`
+            : `<span class="prize-chip prize-chip-tba">Prize TBA</span>`;
+        } else if (is20th) {
+          prizeChip = `<span class="prize-chip prize-chip-20th">€${PRIZE_20TH}</span>`;
+        }
       }
 
       html += `
