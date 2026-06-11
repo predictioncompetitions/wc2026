@@ -488,8 +488,8 @@
           } else {
             scoreHtml = `<div class="fx-score tbd">${fmtDate(m.utcDate)}</div>`;
           }
-          const dateBelow = (isFinished||isMatchLive) ? `<div class="fx-date">${fmtDate(m.utcDate)}</div>` : '';
-
+      const dateBelow = '';
+          
           return `<div class="fixture-row">
             <div class="fixture-home"><div class="fx-team">${flagImg(home,'fx-flag')}<span title="${esc(home)}">${esc(shortName(home))}</span></div></div>
             <div class="fx-score-box">${scoreHtml}${dateBelow}</div>
