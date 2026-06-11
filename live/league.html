@@ -23,18 +23,6 @@
     }
     .league-meta strong { color: var(--ink-2); }
 
-    .top3-section { background: var(--surface); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-    .top3-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--pitch); margin-bottom: 10px; }
-    .top3-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .top3-card { background: var(--surface-2); border-radius: 8px; padding: 10px 8px; text-align: center; border-top: 2px solid transparent; }
-    .top3-card.p-1 { border-top-color: var(--gold); }
-    .top3-card.p-2 { border-top-color: #94a3b8; }
-    .top3-card.p-3 { border-top-color: #cd7c4a; }
-    .top3-medal  { font-size: 18px; margin-bottom: 3px; }
-    .top3-name   { font-family: var(--font-head); font-size: 13px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
-    .top3-pts    { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--pitch); line-height: 1; }
-    .top3-ptslbl { font-size: 9px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .3px; }
-
     .lb-table-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
     table.lb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     table.lb-table th { background: var(--surface-2); color: var(--ink-3); padding: 8px 10px; font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; white-space: nowrap; border-bottom: 2px solid var(--pitch); cursor: pointer; user-select: none; }
@@ -168,23 +156,6 @@
       `${entries.length} member${entries.length === 1 ? '' : 's'} ranked against each other. Global ranking shown for context.`;
 
     let html = '';
-
-    // Top 3 podium
-    const top3 = entries.slice().sort((a, b) => getLgRank(a) - getLgRank(b)).slice(0, 3);
-    if (top3.length) {
-      const medals = ['🥇','🥈','🥉'];
-      html += '<div class="top3-section"><div class="top3-label">🏆 League leaders</div><div class="top3-grid">';
-      top3.forEach((e, i) => {
-        html += `
-          <div class="top3-card p-${i+1}">
-            <div class="top3-medal">${medals[i]}</div>
-            <div class="top3-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
-            <div class="top3-pts">${hasScores ? getTotal(e) : '—'}</div>
-            <div class="top3-ptslbl">pts</div>
-          </div>`;
-      });
-      html += '</div></div>';
-    }
 
     html += `
       <div class="league-meta">
