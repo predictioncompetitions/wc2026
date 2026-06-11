@@ -12,23 +12,28 @@
   <style>
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    .prize-10th-note { font-size: 11px; color: var(--ink-3); padding: 8px 12px; background: var(--surface-2); border-radius: 6px; border-left: 3px solid var(--pitch); }
-    .prize-10th-note strong { color: var(--pitch); }
+    .prize-20th-note { font-size: 11px; color: var(--ink-3); padding: 8px 12px; background: var(--surface-2); border-radius: 6px; border-left: 3px solid var(--pitch); }
+    .prize-20th-note strong { color: var(--pitch); }
 
-    .top5-section { background: var(--surface); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-    .top5-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--pitch); margin-bottom: 10px; }
-    .top5-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-    .top5-card { background: var(--surface-2); border-radius: 8px; padding: 10px 8px; text-align: center; border-top: 3px solid transparent; }
-    .top5-card.p-1 { background: #fdf8ec; border-top-color: var(--gold); }
-    .top5-card.p-2 { background: #f4f6f9; border-top-color: #94a3b8; }
-    .top5-card.p-3 { background: #fdf3ec; border-top-color: #cd7c4a; }
-    .top5-card.p-4 { background: #ecf8fb; border-top-color: #0891b2; }
-    .top5-card.p-5 { background: #f4ecfd; border-top-color: #7c3aed; }
-    .top5-name   { font-family: var(--font-head); font-size: 15px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
-    .top5-pts    { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--pitch); line-height: 1; }
-    .top5-ptslbl { font-size: 9px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .3px; }
-    .top5-prize  { font-size: 11px; font-weight: 700; color: var(--success); margin-top: 4px; }
-    .top5-prize.tba { color: var(--ink-3); font-size: 10px; }
+    .top10-section { background: var(--surface); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .top10-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--pitch); margin-bottom: 10px; }
+    .top10-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px; }
+    .top10-card { background: var(--surface-2); border-radius: 8px; padding: 10px 8px; text-align: center; border-top: 3px solid transparent; }
+    .top10-card.p-1  { background: #fdf8ec; border-top-color: var(--gold); }
+    .top10-card.p-2  { background: #f4f6f9; border-top-color: #94a3b8; }
+    .top10-card.p-3  { background: #fdf3ec; border-top-color: #cd7c4a; }
+    .top10-card.p-4  { background: #ecf8fb; border-top-color: #0891b2; }
+    .top10-card.p-5  { background: #f4ecfd; border-top-color: #7c3aed; }
+    .top10-card.p-6  { background: #f0fdf4; border-top-color: #16a34a; }
+    .top10-card.p-7  { background: #fdf2f8; border-top-color: #db2777; }
+    .top10-card.p-8  { background: #fff7ed; border-top-color: #ea580c; }
+    .top10-card.p-9  { background: #f0f9ff; border-top-color: #0284c7; }
+    .top10-card.p-10 { background: #fefce8; border-top-color: #ca8a04; }
+    .top10-name   { font-family: var(--font-head); font-size: 15px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .top10-pts    { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--pitch); line-height: 1; }
+    .top10-ptslbl { font-size: 9px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .3px; }
+    .top10-prize  { font-size: 11px; font-weight: 700; color: var(--success); margin-top: 4px; }
+    .top10-prize.tba { color: var(--ink-3); font-size: 10px; }
 
     .lb-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; font-size: 12px; color: var(--ink-3); }
     .lb-meta strong { color: var(--ink-2); }
@@ -62,9 +67,9 @@
     table.lb-table tr:last-child td { border-bottom: none; }
     table.lb-table tr:hover td { background: var(--surface-2); cursor: pointer; }
     table.lb-table tr.prize-row-top td  { background: #d8f5e4; }
-    table.lb-table tr.prize-row-10  td  { background: #d8f5e4; }
-    table.lb-table tr.prize-row-top:hover td { background: #bfedcf; }
-    table.lb-table tr.prize-row-10:hover  td { background: #bfedcf; }
+    table.lb-table tr.prize-row-20th td { background: #d8f5e4; }
+    table.lb-table tr.prize-row-top:hover td  { background: #bfedcf; }
+    table.lb-table tr.prize-row-20th:hover td { background: #bfedcf; }
     table.lb-table tr.prize-row-due td        { background: #fee2e2; }
     table.lb-table tr.prize-row-due:hover td  { background: #fecaca; }
 
@@ -75,12 +80,17 @@
       font-family: var(--font-head); font-size: 12px; font-weight: 800;
       flex-shrink: 0; color: #fff;
     }
-    .rb-1 { background: var(--gold); }
-    .rb-2 { background: #94a3b8; }
-    .rb-3 { background: #cd7c4a; }
-    .rb-4 { background: #0891b2; }
-    .rb-5 { background: #7c3aed; }
-    .rb-n { background: var(--pitch); font-size: 11px; }
+    .rb-1  { background: var(--gold); }
+    .rb-2  { background: #94a3b8; }
+    .rb-3  { background: #cd7c4a; }
+    .rb-4  { background: #0891b2; }
+    .rb-5  { background: #7c3aed; }
+    .rb-6  { background: #16a34a; }
+    .rb-7  { background: #db2777; }
+    .rb-8  { background: #ea580c; }
+    .rb-9  { background: #0284c7; }
+    .rb-10 { background: #ca8a04; }
+    .rb-n  { background: var(--pitch); font-size: 11px; }
 
     .rank-arrow { font-size: 0.6rem; line-height: 1; flex-shrink: 0; font-weight: 700; }
     .rank-arrow.up   { color: #16a34a; }
@@ -95,9 +105,9 @@
     .badge-due  { background: #fee2e2; color: #991b1b; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
 
     .prize-chip { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
-    .prize-chip-top { background: #fef3c7; color: #92400e; }
-    .prize-chip-10  { background: #dcfce7; color: #166534; }
-    .prize-chip-tba { background: #f1f5f9; color: #475569; font-style: italic; }
+    .prize-chip-top  { background: #fef3c7; color: #92400e; }
+    .prize-chip-20th { background: #dcfce7; color: #166534; }
+    .prize-chip-tba  { background: #f1f5f9; color: #475569; font-style: italic; }
 
     .lb-view-btn { font-size: 11px; color: var(--pitch); font-weight: 600; text-decoration: none; }
     .lb-view-btn:hover { text-decoration: underline; }
@@ -141,7 +151,7 @@
     #stickyHeaderClone th:hover { background: #2a2f3e; }
 
     @media (max-width: 640px) {
-      .top5-section { display: none; }
+      .top10-section { display: none; }
       .table-scroll-hint { display: block; }
       table.lb-table td, table.lb-table th { padding: 6px 7px; }
       .lb-name { max-width: 100px; }
@@ -184,7 +194,7 @@
     <div class="page-hero-eyebrow">Live standings</div>
     <h1>Leader<span>board</span></h1>
     <p class="page-hero-sub">Updated after every matchday. Click any row to view that entry in full.</p>
-    <p id="heroLastUpdated" style="display:none;font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);margin-top:10px;padding:5px 12px;background:rgba(255,255,255,0.12);border-radius:6px;display:none;"></p>
+    <p id="heroLastUpdated" style="display:none;font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);margin-top:10px;padding:5px 12px;background:rgba(255,255,255,0.12);border-radius:6px;"></p>
   </div>
   <div class="page-hero-rainbow"></div>
 </div>
@@ -209,9 +219,11 @@
 
 <script src="../site.js"></script>
 <script>
-  const ENTRY_FEE   = 10;
-  const TOP5_PCTS   = [0.40, 0.25, 0.15, 0.12, 0.08];
-  const PRIZE_10TH  = 20;
+  const ENTRY_FEE    = 10;
+  // PLACEHOLDER — update percentages and amounts once final entry count confirmed
+  const TOP10_PCTS   = [0.35, 0.20, 0.13, 0.10, 0.08, 0.05, 0.03, 0.02, 0.02, 0.02];
+  const TOP10_PRIZES = [1150, 660, 430, 330, 265, 165, 100, 65, 65, 65]; // € amounts — update after final count
+  const PRIZE_20TH   = 20; // flat prize for 20th, 30th, 40th...
 
   let sortCol         = 'rank';
   let sortAsc         = true;
@@ -226,13 +238,14 @@
   let _wrapScrollFn   = null;
 
   function calcPrizes(paidCount, totalCount) {
-    const totalPot    = paidCount * ENTRY_FEE;
-    const tenthCount  = Math.floor(totalCount / 10);
-    const fixedTotal  = tenthCount * PRIZE_10TH;
-    const top5Pot     = Math.max(0, totalPot - fixedTotal);
-    const top5Amounts = TOP5_PCTS.map(p => Math.round(top5Pot * p));
-    const tenthPlaces = Array.from({length: tenthCount}, (_, i) => (i + 1) * 10);
-    return { totalPot, fixedTotal, top5Pot, top5Amounts, tenthPlaces, tenthCount };
+    const totalPot     = paidCount * ENTRY_FEE;
+    // flat prizes: every 10th place from 20th onward
+    const flatPlaces   = [];
+    for (let i = 20; i <= totalCount; i += 10) flatPlaces.push(i);
+    const fixedTotal   = flatPlaces.length * PRIZE_20TH;
+    const top10Pot     = Math.max(0, totalPot - fixedTotal);
+    const top10Amounts = TOP10_PRIZES; // use confirmed amounts
+    return { totalPot, fixedTotal, top10Pot, top10Amounts, flatPlaces };
   }
 
   function esc(s) {
@@ -261,32 +274,51 @@
     _lastPrizesConf = prizesConfirmed;
     if (data) _lastData = data;
 
-    const prizes   = calcPrizes(paidCount, entries.length);
-    const tenthSet = new Set(prizes.tenthPlaces);
+    const prizes    = calcPrizes(paidCount, entries.length);
+    const flatSet   = new Set(prizes.flatPlaces);
 
     let html = '';
 
-    const top5 = entries.slice().sort((a,b) => getRank(a,0) - getRank(b,0)).slice(0,5);
-    if (top5.length) {
-      html += '<div class="top5-section"><div class="top5-label">🏆 Top 5</div><div class="top5-grid">';
-      top5.forEach((e, i) => {
-        const prizeAmt    = prizesConfirmed ? `€${prizes.top5Amounts[i]}` : 'Prize TBA';
-        const prizeClass  = prizesConfirmed ? '' : ' tba';
-        const podiumClass = ['rb-1','rb-2','rb-3','rb-4','rb-5'][i];
+    const top10 = entries.slice().sort((a,b) => getRank(a,0) - getRank(b,0)).slice(0,10);
+    if (top10.length) {
+      const podiumClasses = ['rb-1','rb-2','rb-3','rb-4','rb-5','rb-6','rb-7','rb-8','rb-9','rb-10'];
+      html += '<div class="top10-section"><div class="top10-label">🏆 Top 10</div>';
+      // first row: places 1-5
+      html += '<div class="top10-grid">';
+      top10.slice(0,5).forEach((e, i) => {
+        const prizeAmt   = prizesConfirmed ? `€${prizes.top10Amounts[i]}` : 'Prize TBA';
+        const prizeClass = prizesConfirmed ? '' : ' tba';
         html += `
-          <div class="top5-card p-${i+1}">
-            <div class="rank-badge ${podiumClass}" style="margin:0 auto 6px;">${i+1}</div>
-            <div class="top5-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
-            <div class="top5-pts">${hasScores ? getTotal(e) : '—'}</div>
-            <div class="top5-ptslbl">pts</div>
-            <div class="top5-prize${prizeClass}">${prizeAmt}</div>
+          <div class="top10-card p-${i+1}">
+            <div class="rank-badge ${podiumClasses[i]}" style="margin:0 auto 6px;">${i+1}</div>
+            <div class="top10-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
+            <div class="top10-pts">${hasScores ? getTotal(e) : '—'}</div>
+            <div class="top10-ptslbl">pts</div>
+            <div class="top10-prize${prizeClass}">${prizeAmt}</div>
           </div>`;
       });
       html += '</div>';
-      const tenthNote = prizes.tenthCount > 0
-        ? `Every 10th place wins a flat <strong>€${PRIZE_10TH}</strong> — positions: ${prizes.tenthPlaces.map(p => `${p}th`).join(', ')}`
-        : `Every 10th place (10th, 20th, 30th…) wins a flat <strong>€${PRIZE_10TH}</strong>`;
-      html += `<div class="prize-10th-note" style="margin-top:10px;">${tenthNote}</div>`;
+      // second row: places 6-10
+      html += '<div class="top10-grid" style="margin-top:8px;">';
+      top10.slice(5,10).forEach((e, i) => {
+        const idx        = i + 5;
+        const prizeAmt   = prizesConfirmed ? `€${prizes.top10Amounts[idx]}` : 'Prize TBA';
+        const prizeClass = prizesConfirmed ? '' : ' tba';
+        html += `
+          <div class="top10-card p-${idx+1}">
+            <div class="rank-badge ${podiumClasses[idx]}" style="margin:0 auto 6px;">${idx+1}</div>
+            <div class="top10-name" title="${esc(getName(e))}">${esc(getName(e))}</div>
+            <div class="top10-pts">${hasScores ? getTotal(e) : '—'}</div>
+            <div class="top10-ptslbl">pts</div>
+            <div class="top10-prize${prizeClass}">${prizeAmt}</div>
+          </div>`;
+      });
+      html += '</div>';
+
+      const flatNote = prizes.flatPlaces.length > 0
+        ? `Every 10th place from 20th onward wins a flat <strong>€${PRIZE_20TH}</strong> — positions: ${prizes.flatPlaces.map(p => `${p}th`).join(', ')}`
+        : `Every 10th place from 20th onward (20th, 30th, 40th…) wins a flat <strong>€${PRIZE_20TH}</strong>`;
+      html += `<div class="prize-20th-note" style="margin-top:10px;">${flatNote}</div>`;
       html += '</div>';
     }
 
@@ -326,24 +358,25 @@
     html += '</tr></thead><tbody>';
 
     entries.forEach((e, i) => {
-      const r          = getRank(e, i);
-      const isTop5     = r <= 5;
-      const is10th     = tenthSet.has(r);
-      const isDue      = String(getPayment(e)).toUpperCase() === 'DUE';
-      const prizeClass = isDue ? 'prize-row-due' : isTop5 ? 'prize-row-top' : is10th ? 'prize-row-10' : '';
-      const rbClass    = r === 1 ? 'rb-1' : r === 2 ? 'rb-2' : r === 3 ? 'rb-3' : r === 4 ? 'rb-4' : r === 5 ? 'rb-5' : 'rb-n';
-      const payStr     = String(getPayment(e)).toUpperCase();
-      const payBadge   = payStr === 'PAID'
+      const r           = getRank(e, i);
+      const isTop10     = r <= 10;
+      const is20th      = flatSet.has(r);
+      const isDue       = String(getPayment(e)).toUpperCase() === 'DUE';
+      const prizeClass  = isDue ? 'prize-row-due' : isTop10 ? 'prize-row-top' : is20th ? 'prize-row-20th' : '';
+      const rbClassMap  = { 1:'rb-1',2:'rb-2',3:'rb-3',4:'rb-4',5:'rb-5',6:'rb-6',7:'rb-7',8:'rb-8',9:'rb-9',10:'rb-10' };
+      const rbClass     = rbClassMap[r] || 'rb-n';
+      const payStr      = String(getPayment(e)).toUpperCase();
+      const payBadge    = payStr === 'PAID'
         ? '<span class="badge-paid">Paid</span>'
         : '<span class="badge-due">Due</span>';
 
       let prizeChip = '';
-      if (isTop5) {
+      if (isTop10) {
         prizeChip = prizesConfirmed
-          ? `<span class="prize-chip prize-chip-top">€${prizes.top5Amounts[r-1]}</span>`
+          ? `<span class="prize-chip prize-chip-top">€${prizes.top10Amounts[r-1]}</span>`
           : `<span class="prize-chip prize-chip-tba">Prize TBA</span>`;
-      } else if (is10th) {
-        prizeChip = `<span class="prize-chip prize-chip-10">€${PRIZE_10TH}</span>`;
+      } else if (is20th) {
+        prizeChip = `<span class="prize-chip prize-chip-20th">€${PRIZE_20TH}</span>`;
       }
 
       html += `
@@ -500,11 +533,11 @@
 
       if (data.lastRebuilt) {
         const el = document.getElementById('heroLastUpdated');
-    const d = new Date(data.lastRebuilt);
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const pad = n => String(n).padStart(2,'0');
-    el.textContent = `🕐 Last updated: ${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        const d = new Date(data.lastRebuilt);
+        const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const pad = n => String(n).padStart(2,'0');
+        el.textContent = `🕐 Last updated: ${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
         el.style.display = 'inline-block';
       }
 
@@ -516,14 +549,6 @@
   }
 
   loadLeaderboard();
-
-  function togglePrizePanel() {
-    const body    = document.getElementById('prizePanelBody');
-    const chevron = document.getElementById('prizePanelChevron');
-    const hidden  = body.style.display === 'none';
-    body.style.display  = hidden ? 'block' : 'none';
-    chevron.textContent = hidden ? '▲ Hide' : '▼ Show';
-  }
 </script>
 </body>
 </html>
