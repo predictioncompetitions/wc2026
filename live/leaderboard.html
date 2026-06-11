@@ -12,10 +12,15 @@
   <style>
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    .prize-20th-note { font-size: 11px; color: var(--ink-3); padding: 8px 12px; background: var(--surface-2); border-radius: 6px; border-left: 3px solid var(--pitch); }
-    .prize-20th-note strong { color: var(--pitch); }
+    .prize-winners-section { background: var(--surface); border-radius: var(--radius-lg); margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .prize-winners-header { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; cursor: pointer; user-select: none; background: var(--ink); color: #fff; gap: 10px; }
+    .prize-winners-header:hover { background: #2a2f3e; }
+    .prize-winners-title { font-family: var(--font-head); font-size: 15px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .prize-winners-toggle { font-size: 11px; color: var(--gold); font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+    .prize-winners-hint { font-size: 11px; color: rgba(255,255,255,.5); padding: 8px 16px; background: var(--ink); border-top: 1px solid rgba(255,255,255,.08); text-align: center; font-style: italic; }
+    .prize-winners-body { padding: 16px; display: none; }
+    .prize-winners-body.open { display: block; }
 
-    .top10-section { background: var(--surface); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
     .top10-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--pitch); margin-bottom: 10px; }
     .top10-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px; }
     .top10-card { background: var(--surface-2); border-radius: 8px; padding: 10px 8px; text-align: center; border-top: 3px solid transparent; }
@@ -150,8 +155,26 @@
     #stickyHeaderClone th.sorted .sort-arrow { opacity: 1; color: var(--gold); }
     #stickyHeaderClone th:hover { background: #2a2f3e; }
 
+    .lb-search-wrap { position: relative; margin-bottom: 10px; }
+    .lb-search-input { width: 100%; box-sizing: border-box; padding: 10px 16px 10px 40px; border: 1px solid var(--border); border-radius: var(--radius-lg); font-size: 14px; font-family: var(--font-body); color: var(--ink); background: var(--surface); outline: none; transition: border-color var(--trans), box-shadow var(--trans); }
+    .lb-search-input:focus { border-color: var(--pitch); box-shadow: 0 0 0 3px rgba(13,92,46,.12); }
+    .lb-search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 14px; pointer-events: none; }
+    .lb-search-noresult { text-align: center; padding: 16px; font-size: 13px; color: var(--ink-3); font-style: italic; }
+
+    .flat-prize-list { margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 12px; }
+    .flat-prize-list-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+    .flat-prize-rows { display: flex; flex-direction: column; gap: 4px; }
+    .flat-prize-row { display: flex; align-items: center; gap: 10px; padding: 5px 8px; background: var(--surface-2); border-radius: 6px; font-size: 13px; }
+    .flat-prize-row-rank { font-family: var(--font-head); font-weight: 800; color: var(--pitch); min-width: 36px; font-size: 13px; }
+    .flat-prize-row-name { flex: 1; color: var(--ink); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .flat-prize-row-name.placeholder { color: var(--ink-3); font-style: italic; font-weight: 400; }
+    .flat-prize-row-amt { font-family: var(--font-head); font-weight: 800; color: #166534; font-size: 13px; flex-shrink: 0; }
+
     @media (max-width: 640px) {
-      .top10-section { display: none; }
+      .prize-winners-section { font-size: 13px; }
+      .top10-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+      .top10-name { font-size: 12px; }
+      .top10-pts  { font-size: 16px; }
       .table-scroll-hint { display: block; }
       table.lb-table td, table.lb-table th { padding: 6px 7px; }
       .lb-name { max-width: 100px; }
@@ -282,8 +305,21 @@
     const top10 = entries.slice().sort((a,b) => getRank(a,0) - getRank(b,0)).slice(0,10);
     if (top10.length) {
       const podiumClasses = ['rb-1','rb-2','rb-3','rb-4','rb-5','rb-6','rb-7','rb-8','rb-9','rb-10'];
-      html += '<div class="top10-section"><div class="top10-label">🏆 Top 10</div>';
-      // first row: places 1-5
+
+      html += '<div class="prize-winners-section">';
+
+      // collapsible header
+      html += `
+        <div class="prize-winners-header" onclick="togglePrizeWinners()">
+          <div class="prize-winners-title">🏆 Current prize winners</div>
+          <div class="prize-winners-toggle" id="prizeWinnersToggle">▼ Expand to see prize winners</div>
+        </div>`;
+
+      // collapsible body (closed by default)
+      html += '<div class="prize-winners-body" id="prizeWinnersBody">';
+
+      // top 10 cards — row 1
+      html += '<div class="top10-label" style="margin-top:4px;">Top 10</div>';
       html += '<div class="top10-grid">';
       top10.slice(0,5).forEach((e, i) => {
         const prizeAmt   = prizesConfirmed ? `€${prizes.top10Amounts[i]}` : 'Prize TBA';
@@ -298,7 +334,8 @@
           </div>`;
       });
       html += '</div>';
-      // second row: places 6-10
+
+      // top 10 cards — row 2
       html += '<div class="top10-grid" style="margin-top:8px;">';
       top10.slice(5,10).forEach((e, i) => {
         const idx        = i + 5;
@@ -315,11 +352,30 @@
       });
       html += '</div>';
 
-      const flatNote = prizes.flatPlaces.length > 0
-        ? `Every 10th place from 20th onward wins a flat <strong>€${PRIZE_20TH}</strong> — positions: ${prizes.flatPlaces.map(p => `${p}th`).join(', ')}`
-        : `Every 10th place from 20th onward (20th, 30th, 40th…) wins a flat <strong>€${PRIZE_20TH}</strong>`;
-      html += `<div class="prize-20th-note" style="margin-top:10px;">${flatNote}</div>`;
-      html += '</div>';
+      // flat €20 prize winners list
+      html += '<div class="flat-prize-list">';
+      html += `<div class="flat-prize-list-label">€${PRIZE_20TH} flat prizes (every 10th place from 20th)</div>`;
+      html += '<div class="flat-prize-rows">';
+      if (prizes.flatPlaces.length === 0) {
+        html += `<div class="flat-prize-row"><span class="flat-prize-row-name placeholder">No flat prize positions yet — positions fill as more entries are confirmed</span></div>`;
+      } else {
+        const byRank = {};
+        entries.forEach((e, i) => { byRank[getRank(e, i)] = e; });
+        prizes.flatPlaces.forEach(pos => {
+          const e = byRank[pos];
+          const name = e ? esc(getName(e)) : null;
+          html += `
+            <div class="flat-prize-row">
+              <span class="flat-prize-row-rank">${pos}th</span>
+              <span class="flat-prize-row-name${name ? '' : ' placeholder'}">${name || 'Position not yet filled'}</span>
+              <span class="flat-prize-row-amt">€${PRIZE_20TH}</span>
+            </div>`;
+        });
+      }
+      html += '</div></div>';
+
+      html += '</div>'; // end prize-winners-body
+      html += '</div>'; // end prize-winners-section
     }
 
     html += `
@@ -327,6 +383,13 @@
         <span><strong>${entries.length}</strong> entr${entries.length === 1 ? 'y' : 'ies'} &middot; <strong>${paidCount}</strong> paid</span>
         <a href="lookup.html" class="btn btn-outline" style="min-height:32px;font-size:12px;">🔍 Look up my scores</a>
       </div>`;
+
+    html += `
+      <div class="lb-search-wrap">
+        <input type="text" id="lbNameSearch" class="lb-search-input" placeholder="Search by name…" oninput="filterTable(this.value)" autocomplete="off" />
+        <span class="lb-search-icon">🔍</span>
+      </div>
+      <div id="lbSearchNoResult" class="lb-search-noresult" style="display:none;">No entries found matching that name.</div>`;
 
     if (!hasScores) {
       html += `<div class="card" style="margin-bottom:12px;"><div class="card-body" style="padding:12px;font-size:13px;color:var(--ink-3);">
@@ -546,6 +609,32 @@
       document.getElementById('lbMain').innerHTML =
         '<div class="status-msg status-error">Could not load leaderboard. Please try again shortly.</div>';
     }
+  }
+
+  function filterTable(query) {
+    const q = query.trim().toLowerCase();
+    const rows = document.querySelectorAll('table.lb-table tbody tr[data-name]');
+    let visible = 0;
+    rows.forEach(row => {
+      const name = (row.dataset.name || '').toLowerCase();
+      const show = !q || name.includes(q);
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    const noResult = document.getElementById('lbSearchNoResult');
+    if (noResult) noResult.style.display = (q && visible === 0) ? 'block' : 'none';
+    if (q && visible === 1) {
+      const visibleRow = [...rows].find(r => r.style.display !== 'none');
+      if (visibleRow) visibleRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function togglePrizeWinners() {
+    const body    = document.getElementById('prizeWinnersBody');
+    const toggle  = document.getElementById('prizeWinnersToggle');
+    if (!body || !toggle) return;
+    const isOpen  = body.classList.toggle('open');
+    toggle.textContent = isOpen ? '▲ Collapse' : '▼ Expand to see prize winners';
   }
 
   loadLeaderboard();
