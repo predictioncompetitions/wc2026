@@ -272,7 +272,7 @@
     const fixedTotal   = flatPlaces.length * PRIZE_20TH;
     const top10Pot     = Math.max(0, totalPot - fixedTotal);
     const top10Amounts = TOP10_PRIZES; // use confirmed amounts
-    return { totalPot, fixedTotal, top10Pot, top10Amounts, flatPlaces };
+    return { totalPot, fixedTotal, top10Pot, top10Amounts, flatPlaces, lastPlace };
   }
 
   function esc(s) {
@@ -365,18 +365,26 @@ if (top10.length && hasScores) {
       } else {
         const byRank = {};
         entries.forEach((e, i) => { byRank[getRank(e, i)] = e; });
-        prizes.flatPlaces.forEach(pos => {
-          const e = byRank[pos];
-          const name = e ? esc(getName(e)) : null;
-          html += `
-            <div class="flat-prize-row">
-              <span class="flat-prize-row-rank">${pos}th</span>
-              <span class="flat-prize-row-name${name ? '' : ' placeholder'}">${name || 'Position not yet filled'}</span>
-              <span class="flat-prize-row-amt">€${PRIZE_20TH}</span>
-            </div>`;
-        });
-      }
-      html += '</div></div>';
+  prizes.flatPlaces.forEach(pos => {
+        const e = byRank[pos];
+        const name = e ? esc(getName(e)) : null;
+        html += `
+          <div class="flat-prize-row">
+            <span class="flat-prize-row-rank">${pos}th</span>
+            <span class="flat-prize-row-name${name ? '' : ' placeholder'}">${name || 'Position not yet filled'}</span>
+            <span class="flat-prize-row-amt">€${PRIZE_20TH}</span>
+          </div>`;
+      });
+      const lastEntry = byRank[prizes.lastPlace];
+      const lastName  = lastEntry ? esc(getName(lastEntry)) : null;
+      html += `
+        <div class="flat-prize-row" style="margin-top:8px;border-top:1px dashed var(--border);padding-top:8px;">
+          <span class="flat-prize-row-rank">💀</span>
+          <span class="flat-prize-row-name${lastName ? '' : ' placeholder'}">Dead last${lastName ? ' — ' + lastName : ' — position not yet filled'}</span>
+          <span class="flat-prize-row-amt">€10</span>
+        </div>`;
+    }
+    html += '</div></div>';
 
       html += '</div>'; // end prize-winners-body
       html += '</div>'; // end prize-winners-section
