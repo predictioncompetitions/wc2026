@@ -379,10 +379,14 @@ if (top10.length && hasScores) {
     }
 
     html += `
-      <div class="lb-meta">
-        <span><strong>${entries.length}</strong> entr${entries.length === 1 ? 'y' : 'ies'} &middot; <strong>${paidCount}</strong> paid</span>
-        <a href="lookup.html" class="btn btn-outline" style="min-height:32px;font-size:12px;">🔍 Look up my scores</a>
-      </div>`;
+  <div class="lb-meta">
+    <span><strong>${entries.length}</strong> entr${entries.length === 1 ? 'y' : 'ies'} &middot; <strong>${paidCount}</strong> paid
+      <button class="unpaid-toggle" id="unpaidToggle" onclick="toggleUnpaid()" title="Show unpaid entries">
+        · <span id="unpaidCount">${entries.length - paidCount}</span> unpaid
+      </button>
+    </span>
+    <a href="lookup.html" class="btn btn-outline" style="min-height:32px;font-size:12px;">🔍 Look up my scores</a>
+  </div>`;
 
     html += `
       <div class="lb-search-wrap">
