@@ -198,8 +198,7 @@
         const amtEl = document.getElementById('prizeAmount');
         const lblEl = document.getElementById('prizeAmountLabel');
         if (amtEl) amtEl.textContent = '€' + pot.toLocaleString();
-        if (lblEl) lblEl.textContent = data.entryCount + ' paid entr' + (data.entryCount === 1 ? 'y' : 'ies') + ' × €' + ENTRY_FEE;
-      }
+        if (lblEl) lblEl.textContent = data.entryCount + ' entr' + (data.entryCount === 1 ? 'y' : 'ies') + ' × €' + ENTRY_FEE;      }
     } catch(e) {}
   }
 
