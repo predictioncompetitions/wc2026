@@ -77,7 +77,11 @@
     table.lb-table tr.prize-row-20th:hover td { background: #bfedcf; }
     table.lb-table tr.prize-row-due td        { background: #fee2e2; }
     table.lb-table tr.prize-row-due:hover td  { background: #fecaca; }
-
+    
+    .unpaid-toggle { background: none; border: none; cursor: pointer; font-size: 12px; color: #991b1b; font-weight: 700; padding: 2px 6px; border-radius: 4px; transition: background var(--trans); font-family: var(--font-body); }
+    .unpaid-toggle:hover { background: #fee2e2; }
+    .unpaid-toggle.active { background: #fee2e2; color: #7f1d1d; }
+    
     .rank-cell { display: flex; align-items: center; gap: 3px; }
     .rank-badge {
       width: 26px; height: 26px; border-radius: 6px;
@@ -634,7 +638,23 @@ if (top10.length && hasScores) {
       if (visibleRow) visibleRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
+let _showingUnpaid = false;
 
+function toggleUnpaid() {
+  _showingUnpaid = !_showingUnpaid;
+  const btn = document.getElementById('unpaidToggle');
+  if (btn) btn.classList.toggle('active', _showingUnpaid);
+  const rows = document.querySelectorAll('table.lb-table tbody tr[data-name]');
+  rows.forEach(row => {
+    if (!_showingUnpaid) { row.style.display = ''; return; }
+    row.style.display = row.classList.contains('prize-row-due') ? '' : 'none';
+  });
+  const noResult = document.getElementById('lbSearchNoResult');
+  if (noResult) noResult.style.display = 'none';
+  const search = document.getElementById('lbNameSearch');
+  if (search) search.value = '';
+}
+  
   function togglePrizeWinners() {
     const body    = document.getElementById('prizeWinnersBody');
     const toggle  = document.getElementById('prizeWinnersToggle');
