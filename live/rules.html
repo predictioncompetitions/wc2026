@@ -46,15 +46,31 @@
     .rules-note ul { list-style:none; display:flex; flex-direction:column; gap:5px; }
     .rules-note li { font-size:13px; color:#78350f; padding-left:14px; position:relative; line-height:1.4; }
     .rules-note li::before { content:'→'; position:absolute; left:0; color:#d97706; }
-    .prize-split-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:10px 0; }
-    .prize-split-card { background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:8px 6px; text-align:center; }
-    .prize-split-pos  { font-size:11px; color:#92400e; font-weight:700; margin-bottom:2px; }
-    .prize-split-pct  { font-family:var(--font-head); font-size:20px; font-weight:900; color:#92400e; line-height:1; }
-    .prize-split-lbl  { font-size:10px; color:#b45309; margin-top:2px; }
+
+    .prize-split-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .prize-split-card {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+    .prize-split-pos  { font-size: 11px; color: #92400e; font-weight: 700; margin-bottom: 2px; }
+    .prize-split-pct  { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: #92400e; line-height: 1; }
+    .prize-split-amt  { font-family: var(--font-head); font-size: 14px; font-weight: 800; color: #b45309; line-height: 1; margin-top: 3px; }
+    .prize-split-lbl  { font-size: 10px; color: #b45309; margin-top: 2px; }
+    .prize-placeholder { font-size: 10px; color: #b45309; font-style: italic; margin-top: 2px; }
+
     @media (max-width:600px) {
       .scoring-grid { grid-template-columns:1fr; }
-      .prize-split-grid { grid-template-columns:repeat(5,1fr); gap:4px; }
-      .prize-split-pct { font-size:16px; }
+      .prize-split-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+      .prize-split-pct { font-size: 16px; }
+      .prize-split-amt { font-size: 12px; }
     }
   </style>
 </head>
@@ -201,23 +217,77 @@
         <div class="score-card-title">Prize money</div>
       </div>
       <div class="score-card-body">
-        <p class="score-note" style="margin-bottom:8px;">The entry fee is €10 per entry. Every cent goes into the prize pool. The total pot depends on the number of paid entries.</p>
-        <div class="score-row">
-          <span class="score-pts" style="background:#fffbeb;color:#92400e;">Top 5</span>
-          <span class="score-desc">The top 5 finishers share a percentage of the prize pot after the fixed 10th-place prizes are set aside.</span>
+        <p class="score-note" style="margin-bottom:8px;">Entry fee is €10 per entry. Every cent goes into the prize pool. The amounts below are based on the final entry count and are confirmed.</p>
+
+        <div class="score-row" style="margin-bottom:6px;">
+          <span class="score-pts" style="background:#fffbeb;color:#92400e;">Top 10</span>
+          <span class="score-desc">The top 10 finishers each receive a percentage of the prize pot after the flat 20th-place prizes are set aside.</span>
         </div>
+
+        <!-- Top 10 prize grid: row 1 (places 1-5) -->
+        <!-- PLACEHOLDER amounts — update after final entry count confirmed -->
         <div class="prize-split-grid">
-          <div class="prize-split-card"><div class="prize-split-pos">1st</div><div class="prize-split-pct">40%</div><div class="prize-split-lbl">of top-5 pot</div></div>
-          <div class="prize-split-card"><div class="prize-split-pos">2nd</div><div class="prize-split-pct">25%</div><div class="prize-split-lbl">of top-5 pot</div></div>
-          <div class="prize-split-card"><div class="prize-split-pos">3rd</div><div class="prize-split-pct">15%</div><div class="prize-split-lbl">of top-5 pot</div></div>
-          <div class="prize-split-card"><div class="prize-split-pos">4th</div><div class="prize-split-pct">12%</div><div class="prize-split-lbl">of top-5 pot</div></div>
-          <div class="prize-split-card"><div class="prize-split-pos">5th</div><div class="prize-split-pct">8%</div><div class="prize-split-lbl">of top-5 pot</div></div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">1st</div>
+            <div class="prize-split-pct">35%</div>
+            <div class="prize-split-amt">€1,150</div>
+          </div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">2nd</div>
+            <div class="prize-split-pct">20%</div>
+            <div class="prize-split-amt">€660</div>
+          </div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">3rd</div>
+            <div class="prize-split-pct">13%</div>
+            <div class="prize-split-amt">€430</div>
+          </div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">4th</div>
+            <div class="prize-split-pct">10%</div>
+            <div class="prize-split-amt">€330</div>
+          </div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">5th</div>
+            <div class="prize-split-pct">8%</div>
+            <div class="prize-split-amt">€265</div>
+          </div>
         </div>
-        <div class="score-row">
-          <span class="score-pts" style="background:#f0fdf4;color:#166534;">10th</span>
-          <span class="score-desc">Every 10th-place finisher (10th, 20th, 30th and so on) receives a flat €20 prize — fixed regardless of the total pot size.</span>
+        <!-- Row 2 (places 6-10) -->
+        <div class="prize-split-grid" style="margin-top:0;">
+          <div class="prize-split-card">
+            <div class="prize-split-pos">6th</div>
+            <div class="prize-split-pct">5%</div>
+            <div class="prize-split-amt">€165</div>
+          </div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">7th</div>
+            <div class="prize-split-pct">3%</div>
+            <div class="prize-split-amt">€100</div>
+          </div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">8th</div>
+            <div class="prize-split-pct">2%</div>
+            <div class="prize-split-amt">€65</div>
+          </div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">9th</div>
+            <div class="prize-split-pct">2%</div>
+            <div class="prize-split-amt">€65</div>
+          </div>
+          <div class="prize-split-card">
+            <div class="prize-split-pos">10th</div>
+            <div class="prize-split-pct">2%</div>
+            <div class="prize-split-amt">€65</div>
+          </div>
         </div>
-        <p class="score-note" style="margin-top:8px;">Prize money is paid out after the Final. The leaderboard shows confirmed prize amounts once entries close.</p>
+
+        <div class="score-row" style="margin-top:10px;">
+          <span class="score-pts" style="background:#f0fdf4;color:#166534;">20th+</span>
+          <span class="score-desc">Every 10th-place finisher from 20th onward (20th, 30th, 40th and so on) receives a flat €20 prize.</span>
+        </div>
+
+        <p class="score-note" style="margin-top:8px;">Prize money is paid out after the Final.</p>
       </div>
     </div>
   </div>
