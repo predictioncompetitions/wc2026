@@ -374,9 +374,13 @@
   function renderDetail(d) {
     const main = document.getElementById('lookupMain');
     const champFlag = flagImg(d.predictedChampion||'', 'lk-flag');
-    let html = `
-      <button class="back-btn" id="backBtn">← Back to all entries</button>
-      <div class="detail-header">
+	let html = `
+	      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+	        <a class="back-btn" href="leaderboard.html">← Back to Leaderboard</a>
+	        <button class="back-btn" id="backBtn">← Back to all entries</button>
+	      </div>
+				
+		<div class="detail-header">
         <div class="detail-header-top">
           <div>
             <div class="detail-name">${esc(d.displayName)}</div>
