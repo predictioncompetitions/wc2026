@@ -174,17 +174,17 @@
     .flat-prize-row-name.placeholder { color: var(--ink-3); font-style: italic; font-weight: 400; }
     .flat-prize-row-amt { font-family: var(--font-head); font-weight: 800; color: #166534; font-size: 13px; flex-shrink: 0; }
 
-    @media (max-width: 640px) {
-      .prize-winners-section { font-size: 13px; }
-      .top10-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
-      .top10-name { font-size: 12px; }
-      .top10-pts  { font-size: 16px; }
-      .table-scroll-hint { display: block; }
-      table.lb-table td, table.lb-table th { padding: 6px 7px; }
-      .lb-name { max-width: 100px; }
-      .rank-cell { flex-direction: column; align-items: center; gap: 1px; }
-      .rank-arrow { font-size: 0.55rem; }
-    }
+@media (max-width: 640px) {
+  .prize-winners-section { font-size: 13px; }
+  .top10-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .top10-name { font-size: 12px; }
+  .top10-pts  { font-size: 16px; }
+  .table-scroll-hint { display: block; }
+  table.lb-table td, table.lb-table th { padding: 6px 7px; }
+  .lb-name { max-width: 100px; }
+  table.lb-table td:first-child,
+  table.lb-table th:first-child { min-width: 56px; }
+}
   </style>
 </head>
 <body>
