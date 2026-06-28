@@ -305,7 +305,10 @@
 
     <!-- GROUP STANDINGS -->
     <div class="admin-card">
-      <div class="admin-card-head"><h2>Group standings</h2></div>
+      <div class="admin-card-head" style="cursor:pointer;" onclick="toggleAdminCard(this)">
+      <h2>Group standings</h2>
+      <span style="font-size:12px;color:#9ca3af;">▼</span>
+    </div>
       <div class="admin-card-body">
         <div class="group-tab-bar" id="groupTabBar"></div>
         <div id="groupTeamPicker" class="group-team-picker"></div>
@@ -1276,6 +1279,14 @@ document.getElementById('refreshPaymentsBtn').addEventListener('click', async ()
 document.getElementById('navToggle').addEventListener('click', () => {
   document.getElementById('navMobile').classList.toggle('open');
 });
+function toggleAdminCard(head) {
+  const body = head.nextElementSibling;
+  const icon = head.querySelector('span');
+  const collapsed = body.style.display === 'none';
+  body.style.display = collapsed ? '' : 'none';
+  icon.textContent = collapsed ? '▼' : '▶';
+}
+  
 </script>
 </body>
 </html>
