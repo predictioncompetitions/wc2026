@@ -648,8 +648,8 @@
       const la = m.score?.currentScore?.away ?? '?';
       scoreHtml = `<span class="ko-score live">${lh} – ${la}</span>`;
     } else {
-      scoreHtml = `<span class="ko-score pending">vs</span>`;
-    }
+const dateStr = m.date ? `<span style="font-size:9px;color:var(--ink-3);display:block;margin-top:2px;">${esc(m.date)}${m.kickOffGMT ? ' · ' + esc(m.kickOffGMT) : ''}</span>` : '';
+   scoreHtml = `<span class="ko-score pending">vs</span>${dateStr}`;    }
 
     return `<div class="ko-row ${cls}">
       <div class="ko-match-no">${live ? '<span class="live-dot"></span>' : ''}M${esc(String(m.matchNo||''))}</div>
