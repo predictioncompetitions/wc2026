@@ -450,43 +450,34 @@ function esc(str) {
 async function initAdmin() {
   const warnings = [];
 
-  try {
-    const d = await apiGet('getGroupTeams');
-    if (d?.ok && d.groups) {
-      groupTeams = d.groups;
-      allTeams = Object.values(groupTeams).flat().sort();
-    } else {
-      warnings.push('Could not load group teams — dropdowns may be empty.');
-    }
-  } catch(e) {
-    warnings.push('getGroupTeams failed: ' + e.message);
+  const [teamsRes, fixturesRes, resultsRes] = await Promise.allSettled([
+    apiGet('getGroupTeams'),
+    apiGet('getFixtures'),
+    apiGet('getResults')
+  ]);
+
+  if (teamsRes.status === 'fulfilled' && teamsRes.value?.ok && teamsRes.value.groups) {
+    groupTeams = teamsRes.value.groups;
+    allTeams = Object.values(groupTeams).flat().sort();
+  } else {
+    warnings.push('Could not load group teams — dropdowns may be empty.');
   }
 
-  try {
-    const d = await apiGet('getFixtures');
-    if (d?.ok && Array.isArray(d.fixtures)) {
-      fixtures = d.fixtures;
-    } else {
-      warnings.push('Could not load fixtures — match info will be missing.');
-    }
-  } catch(e) {
-    warnings.push('getFixtures failed: ' + e.message);
+  if (fixturesRes.status === 'fulfilled' && fixturesRes.value?.ok && Array.isArray(fixturesRes.value.fixtures)) {
+    fixtures = fixturesRes.value.fixtures;
+  } else {
+    warnings.push('Could not load fixtures — match info will be missing.');
   }
 
-  try {
-    const d = await apiGet('getResults');
-    if (d?.ok) {
-      if (d.knockout) {
-        Object.values(d.knockout).forEach(matches => {
-          if (!Array.isArray(matches)) return;
-          matches.forEach(m => {
-            if (m.matchNo) koData[String(m.matchNo)] = m;
-          });
-        });
-      }
-    }
-  } catch(e) {
-    warnings.push('getResults failed: ' + e.message);
+  if (resultsRes.status === 'fulfilled' && resultsRes.value?.ok && resultsRes.value.knockout) {
+    Object.values(resultsRes.value.knockout).forEach(matches => {
+      if (!Array.isArray(matches)) return;
+      matches.forEach(m => {
+        if (m.matchNo) koData[String(m.matchNo)] = m;
+      });
+    });
+  } else if (resultsRes.status === 'rejected') {
+    warnings.push('getResults failed: ' + resultsRes.reason?.message);
   }
 
   if (warnings.length) {
@@ -497,11 +488,6 @@ async function initAdmin() {
 
   loadKoForm();
   loadPayments();
-  // Load last rebuilt timestamp
-  try {
-    const lb = await apiGet('getLeaderboard');
-    if (lb?.lastRebuilt) setLastRebuilt(lb.lastRebuilt);
-  } catch(_) {}
 }
 
 /* ══ KNOCKOUT SECTION ══ */
@@ -728,6 +714,7 @@ async function loadPayments() {
       apiGet('getLeaderboard')
     ]);
 
+    if (lbRes?.lastRebuilt) setLastRebuilt(lbRes.lastRebuilt);
     const unpaid = (unpaidRes?.ok && Array.isArray(unpaidRes.entries)) ? unpaidRes.entries : [];
     const paid = [];
     if (lbRes?.ok && Array.isArray(lbRes.entries)) {
