@@ -1,0 +1,392 @@
+<!-- FILE: live/wrap.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Damage Report Mick's World Cup Predictor 2026</title>
+  <link rel="stylesheet" href="../style.css?v=2" />
+  <link rel="icon" href="../soccerball.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .wrap-section { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 20px; overflow: hidden; }
+    .wrap-section-head { padding: 13px 16px; background: var(--ink); color: #fff; display: flex; align-items: center; gap: 8px; }
+    .wrap-section-title { font-family: var(--font-head); font-size: 15px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase; }
+    .wrap-section-body { padding: 16px; }
+    .wrap-sub { font-size: 12px; color: var(--ink-3); margin-bottom: 12px; }
+
+    /* ---------- full time scoreboard ---------- */
+    .ft-board { text-align: center; padding: 22px 16px 20px; }
+    .ft-scoreline { display: flex; align-items: baseline; justify-content: center; gap: 14px; font-family: var(--font-head); font-weight: 800; }
+    .ft-pts { font-size: clamp(48px, 12vw, 72px); line-height: 1; color: var(--ink); }
+    .ft-pts.win { color: var(--pitch); }
+    .ft-v { font-size: clamp(16px, 4vw, 22px); color: var(--ink-3); font-weight: 600; }
+    .ft-names { display: flex; justify-content: center; gap: 14px; margin-top: 4px; font-family: var(--font-head); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; font-size: 15px; }
+    .ft-names span { flex: 1; max-width: 200px; }
+    .ft-names .win { color: var(--pitch); }
+    .ft-names .lose { color: var(--ink-3); }
+    .ft-margin { display: inline-block; margin-top: 16px; background: var(--gold); color: #4a3a08; font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 999px; }
+    .ft-h2h { margin-top: 14px; font-size: 13px; color: var(--ink-2); max-width: 520px; margin-left: auto; margin-right: auto; }
+
+    /* ---------- money podium ---------- */
+    .podium-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .podium-card { background: var(--surface-2); border-radius: 8px; padding: 12px 8px; text-align: center; border-top: 3px solid transparent; }
+    .podium-card.p-1 { background: #fdf8ec; border-top-color: var(--gold); }
+    .podium-card.p-2 { background: #f4f6f9; border-top-color: #94a3b8; }
+    .podium-card.p-3 { background: #fdf3ec; border-top-color: #cd7c4a; }
+    .podium-pos { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--pitch); }
+    .podium-name { font-family: var(--font-head); font-size: 15px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 2px 0; }
+    .podium-cash { font-size: 13px; font-weight: 700; color: var(--success); }
+    .money-rest { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+    .money-rest b { color: var(--ink); }
+
+    /* ---------- honours cards ---------- */
+    .king-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 640px) { .king-grid { grid-template-columns: 1fr; } }
+    .king-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+    .king-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--pitch); margin-bottom: 6px; }
+    .king-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+    .king-name { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--ink); }
+    .king-pts { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--pitch); white-space: nowrap; }
+    .king-pts small { font-size: 10px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .3px; }
+    .king-joke { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+
+    /* ---------- hall of shame ---------- */
+    .shame-list { display: flex; flex-direction: column; gap: 8px; }
+    .shame-row { display: flex; gap: 10px; align-items: flex-start; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+    .shame-icon { flex-shrink: 0; font-size: 16px; line-height: 1.3; }
+    .shame-row b { color: var(--ink); }
+
+    /* ---------- movers ---------- */
+    .movers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 640px) { .movers-grid { grid-template-columns: 1fr; } }
+    .move-panel { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+    .move-panel h3 { font-family: var(--font-head); font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; margin: 0 0 8px; }
+    .move-panel h3.up { color: #16a34a; }
+    .move-panel h3.down { color: #dc2626; }
+    .move-row { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink); }
+    .move-row:first-of-type { border-top: none; }
+    .move-delta { font-weight: 700; white-space: nowrap; }
+    .move-delta.up { color: #16a34a; }
+    .move-delta.down { color: #dc2626; }
+    .move-empty { font-size: 13px; color: var(--ink-3); font-style: italic; padding: 4px 0; }
+
+    /* ---------- editorial ---------- */
+    .ed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 640px) { .ed-grid { grid-template-columns: 1fr; } }
+    .ed-card { border-radius: 8px; padding: 14px; border: 1px solid var(--border); }
+    .ed-card.good { background: #f0fdf4; border-color: #bbf7d0; }
+    .ed-card.bad { background: #fef2f2; border-color: #fecaca; }
+    .ed-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .ed-card.good .ed-tag { color: #166534; }
+    .ed-card.bad .ed-tag { color: #991b1b; }
+    .ed-name { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+    .ed-text { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+    .whatif-card { margin-top: 10px; background: var(--surface-2); border: 1px dashed var(--border); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+    .whatif-card b { color: var(--pitch); }
+
+    .wrap-cta { text-align: center; margin: 26px 0 6px; }
+    .wrap-generated { text-align: center; font-size: 11px; color: var(--ink-3); margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <span class="nav-brand-icon">
+      <img src="../soccerball.png" width="28" height="28" alt="" style="display:block;" />
+    </span>
+    <span class="nav-brand-text">Mick's <span>WC26</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="rules.html"><span class="nav-icon">📋</span> Rules</a></li>
+    <li><a href="stats.html"><span class="nav-icon">📊</span> Stats</a></li>
+    <li><a href="results.html"><span class="nav-icon">📰</span> Fixtures\Results</a></li>
+    <li><a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</nav>
+
+<nav class="nav-mobile" id="navMobile">
+  <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+  <a href="rules.html"><span class="nav-icon">📋</span> Rules & scoring</a>
+  <a href="stats.html"><span class="nav-icon">📊</span> Entry Stats</a>
+  <a href="results.html"><span class="nav-icon">📰</span> Fixtures\Results</a>
+  <a href="lookup.html"><span class="nav-icon">🔍</span> My Scores</a>
+  <a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-hero-eyebrow">Full time</div>
+    <h1>The Damage <span>Report</span></h1>
+    <p class="page-hero-sub" id="heroSub">104 matches. One champion. Several brackets that did not survive the group stage.</p>
+  </div>
+  <div class="page-hero-rainbow"></div>
+</div>
+
+<div class="main" id="wrapMain">
+  <div style="text-align:center;padding:40px;">
+    <img src="../soccerball.png" width="32" height="32" alt=""
+         style="display:block;margin:0 auto 10px;animation:spin 1s linear infinite;" />
+    Adding up the damage…
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-logo">Mick's <span>World Cup Predictor</span> 2026</div>
+    <p>A friendly competition between friends. 100% of entry fees go to the prize pool.</p>
+    <p style="margin-top:8px;"><a href="mailto:predictioncompetitionworldcup@gmail.com" style="color:rgba(255,255,255,.5);text-decoration:none;">predictioncompetitionworldcup@gmail.com</a></p>
+  </div>
+</footer>
+
+<script src="../site.js?v=2"></script>
+<script>
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function euro(n) { return '€' + Number(n).toLocaleString('en-IE'); }
+  function ordinal(n) {
+    const s = ['th','st','nd','rd'], v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  }
+  function first(name) { return String(name || '').split(' ')[0]; }
+
+  function h2hSentence(d) {
+    // one line on where the title was actually won between 1st and 2nd
+    const parts = [
+      { label: 'the groups', diff: d.headToHead.group },
+      { label: 'progression', diff: d.headToHead.prog },
+      { label: 'the knockout matches', diff: d.headToHead.match }
+    ];
+    const champ = first(d.champion.name);
+    const ru = first(d.runnerUp.name);
+    const bits = parts.map(function(p) {
+      if (p.diff > 0) return champ + ' took ' + p.label + ' by ' + p.diff;
+      if (p.diff < 0) return ru + ' took ' + p.label + ' by ' + Math.abs(p.diff);
+      return p.label + ' finished dead level';
+    });
+    let biggest = parts[0];
+    parts.forEach(function(p) { if (Math.abs(p.diff) > Math.abs(biggest.diff)) biggest = p; });
+    let closer = '';
+    if (biggest.diff !== 0) {
+      closer = ' The whole title lived in ' + biggest.label + '.';
+    }
+    return 'Head to head: ' + bits.join(', ') + '.' + closer;
+  }
+
+  function render(d) {
+    document.getElementById('heroSub').textContent =
+      d.entrantCount + ' entrants. 104 matches. One champion. Several brackets that did not survive the group stage.';
+
+    let html = '';
+
+    // ---------- full time scoreboard ----------
+    html += '<div class="wrap-section"><div class="wrap-section-head"><div class="wrap-section-title">🏆 Full Time</div></div>';
+    html += '<div class="ft-board">';
+    html += '<div class="ft-scoreline"><span class="ft-pts win">' + d.champion.total + '</span><span class="ft-v">v</span><span class="ft-pts">' + d.runnerUp.total + '</span></div>';
+    html += '<div class="ft-names"><span class="win">' + esc(d.champion.name) + '</span><span class="lose">' + esc(d.runnerUp.name) + '</span></div>';
+    html += '<div><span class="ft-margin">' + esc(first(d.champion.name)) + ' wins by ' + d.margin + (d.margin === 1 ? ' point' : ' points') + '</span></div>';
+    html += '<p class="ft-h2h">' + esc(h2hSentence(d)) + '</p>';
+    html += '</div></div>';
+
+    // ---------- where the money went ----------
+    html += '<div class="wrap-section"><div class="wrap-section-head"><div class="wrap-section-title">💰 Where The Money Went</div></div><div class="wrap-section-body">';
+    html += '<div class="podium-grid">';
+    d.winners.slice(0, 3).forEach(function(w) {
+      html += '<div class="podium-card p-' + w.position + '">' +
+        '<div class="podium-pos">' + ordinal(w.position) + '</div>' +
+        '<div class="podium-name" title="' + esc(w.name) + '">' + esc(w.name) + '</div>' +
+        '<div class="podium-cash">' + euro(w.amount) + '</div></div>';
+    });
+    html += '</div>';
+    const topRest = d.winners.filter(function(w) { return w.position > 3 && w.position <= 10; });
+    const spot = d.winners.filter(function(w) { return w.position > 10; });
+    html += '<div class="money-rest">';
+    if (topRest.length) {
+      html += topRest.map(function(w) {
+        return ordinal(w.position) + ' <b>' + esc(w.name) + '</b> ' + euro(w.amount);
+      }).join(' &nbsp;·&nbsp; ');
+    }
+    if (spot.length) {
+      html += '<br><br><b>' + spot.length + ' spot prizes</b> of ' + euro(spot[0].amount) +
+        ' went to every finishing position ending in zero. Finishing ' + ordinal(spot[spot.length - 1].position) +
+        ' got paid. Finishing 11th got nothing. This remains the fairest competition in world sport.';
+    }
+    html += '</div></div></div>';
+
+    // ---------- section honours ----------
+    html += '<div class="wrap-section"><div class="wrap-section-head"><div class="wrap-section-title">🎖️ Section Honours</div></div><div class="wrap-section-body">';
+    html += '<div class="wrap-sub">Most points in each part of the tournament. These people knew something.</div>';
+    html += '<div class="king-grid">';
+
+    html += kingCard('Group Stage King', d.kings.group,
+      'While the rest of you picked with your hearts, ' + esc(first(d.kings.group.name)) +
+      ' read all 12 groups like a bus timetable. ' + d.kings.group.value + ' points before a knockout ball was kicked.');
+
+    html += kingCard('Progression King', d.kings.prog,
+      esc(first(d.kings.prog.name)) + ' saw the bracket coming. ' + d.kings.prog.value +
+      ' points for knowing who would still be standing while everyone else\u2019s semi finalists were home by the last 16.');
+
+    html += kingCard('Knockout Points King', d.kings.match,
+      'Penalties, extra time, late equalisers. None of it rattled ' + esc(first(d.kings.match.name)) +
+      ', who top scored the knockout matches with ' + d.kings.match.value + '. Some people just know.');
+
+    html += kingCard('Exact Score King', d.kings.exact,
+      esc(first(d.kings.exact.name)) + ' called ' + d.kings.exact.value +
+      ' scorelines bang on. We inspected the entry for a modem connected to the future. Nothing found. Yet.', true);
+
+    html += '</div></div></div>';
+
+    // ---------- hall of shame ----------
+    html += '<div class="wrap-section"><div class="wrap-section-head"><div class="wrap-section-title">💀 Hall Of Shame</div></div><div class="wrap-section-body"><div class="shame-list">';
+    html += '<div class="shame-row"><span class="shame-icon">💀</span><span><b>' + esc(d.shame.last.name) +
+      '</b> finished dead last. ' + ordinal(d.shame.last.rank) + ' of ' + d.entrantCount +
+      '. Wins €10, the best points to euro ratio in the entire competition. Arguably the real winner.</span></div>';
+    if (d.shame.eleventh) {
+      html += '<div class="shame-row"><span class="shame-icon">🪦</span><span><b>' + esc(d.shame.eleventh.name) +
+        '</b> finished 11th. Top ten gets paid. Positions ending in zero get paid. 11th gets this paragraph.</span></div>';
+    }
+    if (d.shame.nearMissCount > 0) {
+      html += '<div class="shame-row"><span class="shame-icon">😬</span><span><b>' + d.shame.nearMissCount +
+        ' entrants</b> finished exactly one place away from a spot prize. We are not naming you. You know.</span></div>';
+    }
+    if (d.shame.zeroExactCount > 0) {
+      html += '<div class="shame-row"><span class="shame-icon">🎯</span><span><b>' + d.shame.zeroExactCount +
+        ' entrants</b> went the entire tournament without one exact scoreline. 104 matches. Not one.</span></div>';
+    }
+    html += '</div></div></div>';
+
+    // ---------- the final weekend ----------
+    html += '<div class="wrap-section"><div class="wrap-section-head"><div class="wrap-section-title">📈 The Final Weekend</div></div><div class="wrap-section-body">';
+    html += '<div class="wrap-sub">Movement between the semi finals and the final whistle.</div>';
+    html += '<div class="movers-grid">';
+    html += '<div class="move-panel"><h3 class="up">▲ Climbers</h3>' + moveRows(d.climbers, 'up', '▲') + '</div>';
+    html += '<div class="move-panel"><h3 class="down">▼ Fallers</h3>' + moveRows(d.fallers, 'down', '▼') + '</div>';
+    html += '</div></div></div>';
+
+    // ---------- best call, worst call, what if ----------
+    const ed = d.editorial || {};
+    const hasBest = ed.bestCall && ed.bestCall.name;
+    const hasWorst = ed.worstCall && ed.worstCall.name;
+    if (hasBest || hasWorst || ed.whatIf) {
+      html += '<div class="wrap-section"><div class="wrap-section-head"><div class="wrap-section-title">🔮 Calls Of The Tournament</div></div><div class="wrap-section-body">';
+      if (hasBest || hasWorst) {
+        html += '<div class="ed-grid">';
+        if (hasBest) {
+          html += '<div class="ed-card good"><div class="ed-tag">Best Call</div><div class="ed-name">' +
+            esc(ed.bestCall.name) + '</div><div class="ed-text">' + esc(ed.bestCall.text) + '</div></div>';
+        }
+        if (hasWorst) {
+          html += '<div class="ed-card bad"><div class="ed-tag">Worst Call</div><div class="ed-name">' +
+            esc(ed.worstCall.name) + '</div><div class="ed-text">' + esc(ed.worstCall.text) + '</div></div>';
+        }
+        html += '</div>';
+      }
+      if (ed.whatIf) {
+        html += '<div class="whatif-card"><b>In another universe:</b> ' + esc(ed.whatIf) + '</div>';
+      }
+      html += '</div></div>';
+    }
+
+    // ---------- CTA + footer line ----------
+    html += '<div class="wrap-cta"><a href="leaderboard.html" class="btn btn-outline">🏆 View the full final leaderboard</a></div>';
+    html += '<div class="wrap-generated">Generated ' + esc(d.generatedAt) + ' · Same again in 2030.</div>';
+
+    document.getElementById('wrapMain').innerHTML = html;
+  }
+
+  function kingCard(tag, king, joke, isCount) {
+    return '<div class="king-card"><div class="king-tag">' + tag + '</div>' +
+      '<div class="king-row"><span class="king-name">' + esc(king.name) + '</span>' +
+      '<span class="king-pts">' + king.value + ' <small>' + (isCount ? 'exact' : 'pts') + '</small></span></div>' +
+      '<div class="king-joke">' + joke + '</div></div>';
+  }
+
+  function moveRows(list, cls, arrow) {
+    if (!list || !list.length) {
+      return '<div class="move-empty">Nobody moved. A weekend of pure cowardice.</div>';
+    }
+    return list.map(function(m) {
+      return '<div class="move-row"><span>' + esc(m.name) + '</span>' +
+        '<span class="move-delta ' + cls + '">' + arrow + Math.abs(m.move) + ' to ' + ordinal(m.rank) + '</span></div>';
+    }).join('');
+  }
+
+  // Demo data so the file can be previewed in a browser before deployment.
+  const DEMO = {
+    ok: true,
+    generatedAt: '19 July 2026, 23:30',
+    entrantCount: 214,
+    champion: { name: 'Derry Cotter', total: 501 },
+    runnerUp: { name: 'Dylan Walsh', total: 499 },
+    margin: 2,
+    headToHead: { group: 0, prog: 0, match: 2 },
+    kings: {
+      group: { name: 'Alan Dawson', value: 139 },
+      prog:  { name: 'Alex Ryan', value: 214 },
+      match: { name: 'Darragh O\u2019Regan', value: 156 },
+      exact: { name: 'Aaron Mulcahy', value: 8 }
+    },
+    shame: {
+      last: { name: 'Sample Name', rank: 214 },
+      eleventh: { name: 'Dermot Brady' },
+      nearMissCount: 38,
+      zeroExactCount: 9
+    },
+    climbers: [
+      { name: 'Hazel O\u2019Dowd', rank: 21, move: 10 },
+      { name: 'George Fox', rank: 28, move: 14 },
+      { name: 'Sam Sheehan', rank: 34, move: 21 }
+    ],
+    fallers: [
+      { name: 'Damien Hanrahan', rank: 25, move: -14 },
+      { name: 'Conor Hurley', rank: 33, move: -18 },
+      { name: 'Greg Mckinley', rank: 19, move: -12 }
+    ],
+    winners: [
+      { position: 1, amount: 1260, name: 'Derry Cotter' },
+      { position: 2, amount: 720, name: 'Dylan Walsh' },
+      { position: 3, amount: 470, name: 'Kevin Cleary' },
+      { position: 4, amount: 360, name: 'Darren Walsh' },
+      { position: 5, amount: 290, name: 'Tim Murphy' },
+      { position: 6, amount: 180, name: 'Matt Heim' },
+      { position: 7, amount: 110, name: 'Liam Coleman' },
+      { position: 8, amount: 70, name: 'Aaron Mulcahy' },
+      { position: 9, amount: 70, name: 'Darragh O\u2019Regan' },
+      { position: 10, amount: 70, name: 'Brendan Snow' },
+      { position: 20, amount: 20, name: 'Greg Dumigan' },
+      { position: 210, amount: 20, name: 'Pat Looney' }
+    ],
+    editorial: {
+      bestCall: { name: 'Sample Name', text: 'Sample text. Had a semi finalist nobody else had past the last 16.' },
+      worstCall: { name: 'Sample Name', text: 'Sample text. Picked a champion that went home in the round of 32.' },
+      whatIf: 'Sample: if exact scores counted double, someone else wins the whole thing by 14 points.'
+    }
+  };
+
+  async function loadWrap() {
+    const main = document.getElementById('wrapMain');
+    try {
+      if (typeof apiFetch !== 'function') { render(DEMO); return; }
+      const data = await apiFetch('getWrapData');
+      if (!data || !data.ok) {
+        main.innerHTML = '<div class="status-msg status-warn">The wrap isn\u2019t ready yet. Check back after the final.</div>';
+        return;
+      }
+      render(data);
+    } catch (err) {
+      main.innerHTML = '<div class="status-msg status-error">Could not load the wrap. Please try again shortly.</div>';
+    }
+  }
+
+  loadWrap();
+</script>
+</body>
+</html>
