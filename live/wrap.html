@@ -40,8 +40,20 @@
     .podium-pos { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--pitch); }
     .podium-name { font-family: var(--font-head); font-size: 15px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 2px 0; }
     .podium-cash { font-size: 13px; font-weight: 700; color: var(--success); }
-    .money-rest { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
-    .money-rest b { color: var(--ink); }
+    .money-rest-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0 20px; margin-bottom: 14px; }
+    .money-rest-row { display: flex; align-items: baseline; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .money-rest-row .pos { color: var(--ink-3); font-weight: 700; width: 34px; flex-shrink: 0; }
+    .money-rest-row .nm { flex: 1; color: var(--ink); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .money-rest-row .amt { color: var(--success); font-weight: 700; white-space: nowrap; }
+    .money-note { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+    .money-note b { color: var(--ink); }
+    .money-spots { margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); overflow: hidden; }
+    .money-spots > summary { list-style: none; cursor: pointer; padding: 11px 14px; font-family: var(--font-head); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: var(--pitch); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .money-spots > summary::-webkit-details-marker { display: none; }
+    .money-spots > summary::after { content: '▾'; font-size: 12px; color: var(--ink-3); transition: transform .15s ease; }
+    .money-spots[open] > summary::after { transform: rotate(180deg); }
+    .money-spots-inner { padding: 2px 14px 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 18px; }
+    .money-spots-inner .money-rest-row .nm { font-weight: 500; }
 
     /* ---------- honours cards ---------- */
     .king-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -223,19 +235,32 @@
     });
     html += '</div>';
     const topRest = d.winners.filter(function(w) { return w.position > 3 && w.position <= 10; });
-    const spot = d.winners.filter(function(w) { return w.position > 10; });
-    html += '<div class="money-rest">';
+    // spot prizes are the €20 zero-position payouts only; the dead-last tenner lives in Hall of Shame.
+    const spot = d.winners.filter(function(w) { return w.position > 10 && w.position % 10 === 0; });
     if (topRest.length) {
+      html += '<div class="money-rest-list">';
       html += topRest.map(function(w) {
-        return ordinal(w.position) + ' <b>' + esc(w.name) + '</b> ' + euro(w.amount);
-      }).join(' &nbsp;·&nbsp; ');
+        return '<div class="money-rest-row"><span class="pos">' + ordinal(w.position) +
+          '</span><span class="nm" title="' + esc(w.name) + '">' + esc(w.name) +
+          '</span><span class="amt">' + euro(w.amount) + '</span></div>';
+      }).join('');
+      html += '</div>';
     }
     if (spot.length) {
-      html += '<br><br><b>' + spot.length + ' spot prizes</b> of ' + euro(spot[0].amount) +
-        ' went to every finishing position ending in zero. Finishing ' + ordinal(spot[spot.length - 1].position) +
-        ' got paid. Finishing 11th got nothing. This remains the fairest competition in world sport.';
+      const lastSpot = spot[spot.length - 1].position;
+      html += '<div class="money-note"><b>' + spot.length + ' spot prizes</b> of ' + euro(spot[0].amount) +
+        ' went to every finishing position ending in zero. Finishing ' + ordinal(lastSpot) +
+        ' got paid. Finishing 11th got nothing. This remains the fairest competition in world sport.</div>';
+      html += '<details class="money-spots"><summary>Show all ' + spot.length + ' spot prize winners</summary>';
+      html += '<div class="money-spots-inner">';
+      html += spot.map(function(w) {
+        return '<div class="money-rest-row"><span class="pos">' + ordinal(w.position) +
+          '</span><span class="nm" title="' + esc(w.name) + '">' + esc(w.name) +
+          '</span></div>';
+      }).join('');
+      html += '</div></details>';
     }
-    html += '</div></div></div>';
+    html += '</div></div>';
 
     // ---------- section honours ----------
     html += '<div class="wrap-section"><div class="wrap-section-head"><div class="wrap-section-title">🎖️ Section Honours</div></div><div class="wrap-section-body">';
