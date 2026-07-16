@@ -20,6 +20,10 @@
 
     /* ---------- full time scoreboard ---------- */
     .ft-board { text-align: center; padding: 22px 16px 20px; }
+    .ft-champ { margin-bottom: 16px; }
+    .ft-crown { font-size: 30px; line-height: 1; }
+    .ft-champ-tag { display: inline-block; margin-top: 4px; font-family: var(--font-head); font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #7a5f14; background: var(--gold); padding: 3px 14px; border-radius: 999px; }
+    .ft-champ-name { font-family: var(--font-head); font-size: clamp(28px, 8vw, 46px); font-weight: 800; color: var(--pitch); line-height: 1.05; margin-top: 9px; }
     .ft-scoreline { display: flex; align-items: baseline; justify-content: center; gap: 14px; font-family: var(--font-head); font-weight: 800; }
     .ft-pts { font-size: clamp(48px, 12vw, 72px); line-height: 1; color: var(--ink); }
     .ft-pts.win { color: var(--pitch); }
@@ -138,7 +142,7 @@
   <div class="page-hero-inner">
     <div class="page-hero-eyebrow">Full time</div>
     <h1>The Damage <span>Report</span></h1>
-    <p class="page-hero-sub" id="heroSub">103 matches. One champion. Several brackets that did not survive the group stage.</p>
+    <p class="page-hero-sub" id="heroSub">103 matches. One champion. Several knock out predictions that did not survive the group stage.</p>
   </div>
   <div class="page-hero-rainbow"></div>
 </div>
@@ -211,15 +215,16 @@
 
   function render(d) {
     document.getElementById('heroSub').textContent =
-      d.entrantCount + ' entrants. 103 matches. One champion. Several brackets that did not survive the group stage.';
+      d.entrantCount + ' entrants. 103 matches. One champion. Several knock out predictions that did not survive the group stage.';
 
     let html = '';
 
     // ---------- full time scoreboard ----------
     html += '<div class="wrap-section"><div class="wrap-section-head"><div class="wrap-section-title">🏆 Full Time</div></div>';
     html += '<div class="ft-board">';
+    html += '<div class="ft-champ"><div class="ft-crown">🏆</div><div class="ft-champ-tag">Champion</div><div class="ft-champ-name">' + esc(d.champion.name) + '</div></div>';
     html += '<div class="ft-scoreline"><span class="ft-pts win">' + d.champion.total + '</span><span class="ft-v">v</span><span class="ft-pts">' + d.runnerUp.total + '</span></div>';
-    html += '<div class="ft-names"><span class="win">' + esc(d.champion.name) + '</span><span class="lose">' + esc(d.runnerUp.name) + '</span></div>';
+    html += '<div class="ft-names"><span class="win">' + esc(first(d.champion.name)) + '</span><span class="lose">' + esc(d.runnerUp.name) + '</span></div>';
     html += '<div><span class="ft-margin">' + esc(first(d.champion.name)) + ' wins by ' + d.margin + (d.margin === 1 ? ' point' : ' points') + '</span></div>';
     html += '<p class="ft-h2h">' + esc(h2hSentence(d)) + '</p>';
     html += '</div></div>';
@@ -246,25 +251,22 @@
       }).join('');
       html += '</div>';
     }
+    const deadLast = d.winners.find(function(w) { return w.amount === 10; });
     if (spot.length) {
       const lastSpot = spot[spot.length - 1].position;
       html += '<div class="money-note"><b>' + spot.length + ' spot prizes</b> of ' + euro(spot[0].amount) +
         ' went to every finishing position ending in zero. Finishing ' + ordinal(lastSpot) +
         ' got paid. Finishing 11th got nothing. This remains the fairest competition in world sport.</div>';
-      html += '<details class="money-spots"><summary>Show all ' + spot.length + ' spot prize winners</summary>';
+      const minorList = deadLast ? spot.concat([deadLast]) : spot;
+      html += '<details class="money-spots"><summary>Show all ' + minorList.length + ' prize winners</summary>';
       html += '<div class="money-spots-inner">';
-      html += spot.map(function(w) {
+      html += minorList.map(function(w) {
+        const amt = w.amount === 20 ? '' : '<span class="amt">' + euro(w.amount) + '</span>';
         return '<div class="money-rest-row"><span class="pos">' + ordinal(w.position) +
           '</span><span class="nm" title="' + esc(w.name) + '">' + esc(w.name) +
-          '</span></div>';
+          '</span>' + amt + '</div>';
       }).join('');
       html += '</div></details>';
-    }
-    const deadLast = d.winners.find(function(w) { return w.amount === 10; });
-    if (deadLast) {
-      html += '<div class="money-note" style="margin-top:10px;">And <b>' + euro(deadLast.amount) +
-        '</b> to <b>' + esc(deadLast.name) + '</b> for finishing ' + ordinal(deadLast.position) +
-        ' and dead last. Somebody has to.</div>';
     }
     html += '</div></div>';
 
@@ -280,7 +282,7 @@
 
     const pTop = kingFirstNames(d.kings.prog), pVal = kingValue(d.kings.prog), pJoint = kingList(d.kings.prog).length > 1;
     html += kingCard('Progression King', d.kings.prog,
-      pTop + (pJoint ? ' each saw' : ' saw') + ' the bracket coming. ' + pVal +
+      pTop + (pJoint ? ' each saw' : ' saw') + ' the knock out stages coming. ' + pVal +
       ' points for knowing who would still be standing while everyone else\u2019s semi finalists were home by the last 16.');
 
     const mTop = kingFirstNames(d.kings.match), mVal = kingValue(d.kings.match), mJoint = kingList(d.kings.match).length > 1;
@@ -309,8 +311,18 @@
         ' entrants</b> finished exactly one place away from a spot prize. We are not naming you. You know.</span></div>';
     }
     if (d.shame.zeroExactCount > 0) {
-      html += '<div class="shame-row"><span class="shame-icon">🎯</span><span><b>' + d.shame.zeroExactCount +
-        ' entrants</b> went the entire tournament without one exact scoreline. 103 matches. Not one.</span></div>';
+      var zeHtml = '<div class="shame-row"><span class="shame-icon">🎯</span><span><b>' + d.shame.zeroExactCount +
+        ' entrants</b> went the entire tournament without one exact scoreline. 103 matches. Not one.';
+      if (d.shame.zeroExactNames && d.shame.zeroExactNames.length) {
+        zeHtml += '<details class="money-spots" style="margin-top:10px;"><summary>Name and shame all ' +
+          d.shame.zeroExactNames.length + '</summary><div class="money-spots-inner">';
+        zeHtml += d.shame.zeroExactNames.map(function(nm) {
+          return '<div class="money-rest-row"><span class="nm" title="' + esc(nm) + '">' + esc(nm) + '</span></div>';
+        }).join('');
+        zeHtml += '</div></details>';
+      }
+      zeHtml += '</span></div>';
+      html += zeHtml;
     }
     html += '</div></div></div>';
 
@@ -402,7 +414,8 @@
       last: { name: 'Sample Name', rank: 214 },
       eleventh: { name: 'Dermot Brady' },
       nearMissCount: 38,
-      zeroExactCount: 9
+      zeroExactCount: 9,
+      zeroExactNames: ['Dermot Brady','Conor Hurley','Greg Mckinley','Pat Looney','Karen Maher','Billy Norris','Shay Fox','Denise Luby','Ray O Leary']
     },
     climbers: [
       { name: 'Hazel O\u2019Dowd', rank: 21, move: 10 },
