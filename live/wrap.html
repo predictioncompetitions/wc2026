@@ -32,6 +32,9 @@
     .ft-names span { flex: 1; max-width: 200px; }
     .ft-names .win { color: var(--pitch); }
     .ft-names .lose { color: var(--ink-3); }
+    .ft-rank { display: inline-block; font-family: var(--font-head); font-size: 9px; font-weight: 800; letter-spacing: .5px; padding: 2px 6px; border-radius: 4px; vertical-align: middle; }
+    .ft-rank.first { background: var(--gold); color: #4a3a08; }
+    .ft-rank.second { background: var(--surface-2); color: var(--ink-3); border: 1px solid var(--border); }
     .ft-margin { display: inline-block; margin-top: 16px; background: var(--gold); color: #4a3a08; font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 999px; }
     .ft-compare { max-width: 440px; margin: 18px auto 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .ft-compare-row { display: grid; grid-template-columns: 1fr 118px 1fr; align-items: center; border-top: 1px solid var(--border); }
@@ -272,7 +275,7 @@
     html += '<div class="ft-board">';
     html += '<div class="ft-champ"><div class="ft-crown">🏆</div><div class="ft-champ-tag">Champion</div><div class="ft-champ-name">' + esc(d.champion.name) + '</div></div>';
     html += '<div class="ft-scoreline"><span class="ft-pts win">' + d.champion.total + '</span><span class="ft-v">v</span><span class="ft-pts">' + d.runnerUp.total + '</span></div>';
-    html += '<div class="ft-names"><span class="win">' + esc(first(d.champion.name)) + '</span><span class="lose">' + esc(d.runnerUp.name) + '</span></div>';
+    html += '<div class="ft-names"><span class="win"><span class="ft-rank first">1st</span> ' + esc(first(d.champion.name)) + '</span><span class="lose">' + esc(d.runnerUp.name) + ' <span class="ft-rank second">2nd</span></span></div>';
     html += '<div><span class="ft-margin">' + esc(first(d.champion.name)) + ' wins by ' + d.margin + (d.margin === 1 ? ' point' : ' points') + '</span></div>';
     html += ftCompare(d);
     html += '<p class="ft-h2h">' + esc(h2hSentence(d)) + '</p>';
