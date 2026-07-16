@@ -40,6 +40,9 @@
     .ft-c-name { font-family: var(--font-head); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #fff; padding: 9px 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ft-c-name.champ { text-align: right; }
     .ft-c-name.ru { text-align: left; }
+    .ft-c-rank { display: inline-block; font-family: var(--font-head); font-size: 9px; font-weight: 800; letter-spacing: .5px; padding: 2px 6px; border-radius: 4px; vertical-align: middle; }
+    .ft-c-rank.first { background: var(--gold); color: #4a3a08; }
+    .ft-c-rank.second { background: rgba(255,255,255,.16); color: rgba(255,255,255,.75); }
     .ft-c-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-3); text-align: center; padding: 8px 6px; white-space: nowrap; }
     .ft-compare-row.head .ft-c-label { color: rgba(255,255,255,.55); }
     .ft-c-val { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--ink-3); padding: 8px 14px; }
@@ -216,9 +219,9 @@
     ];
     let out = '<div class="ft-compare">';
     out += '<div class="ft-compare-row head">' +
-      '<span class="ft-c-name champ">' + esc(first(c.name)) + '</span>' +
+      '<span class="ft-c-name champ"><span class="ft-c-rank first">1st</span> ' + esc(first(c.name)) + '</span>' +
       '<span class="ft-c-label">Section</span>' +
-      '<span class="ft-c-name ru">' + esc(first(r.name)) + '</span></div>';
+      '<span class="ft-c-name ru">' + esc(first(r.name)) + ' <span class="ft-c-rank second">2nd</span></span></div>';
     rows.forEach(function(row) {
       const champHi = row.c > row.r ? ' hi' : '';
       const ruHi = row.r > row.c ? ' hi' : '';
