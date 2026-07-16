@@ -138,7 +138,7 @@
   <div class="page-hero-inner">
     <div class="page-hero-eyebrow">Full time</div>
     <h1>The Damage <span>Report</span></h1>
-    <p class="page-hero-sub" id="heroSub">104 matches. One champion. Several brackets that did not survive the group stage.</p>
+    <p class="page-hero-sub" id="heroSub">103 matches. One champion. Several brackets that did not survive the group stage.</p>
   </div>
   <div class="page-hero-rainbow"></div>
 </div>
@@ -211,7 +211,7 @@
 
   function render(d) {
     document.getElementById('heroSub').textContent =
-      d.entrantCount + ' entrants. 104 matches. One champion. Several brackets that did not survive the group stage.';
+      d.entrantCount + ' entrants. 103 matches. One champion. Several brackets that did not survive the group stage.';
 
     let html = '';
 
@@ -260,6 +260,12 @@
       }).join('');
       html += '</div></details>';
     }
+    const deadLast = d.winners.find(function(w) { return w.amount === 10; });
+    if (deadLast) {
+      html += '<div class="money-note" style="margin-top:10px;">And <b>' + euro(deadLast.amount) +
+        '</b> to <b>' + esc(deadLast.name) + '</b> for finishing ' + ordinal(deadLast.position) +
+        ' and dead last. Somebody has to.</div>';
+    }
     html += '</div></div>';
 
     // ---------- section honours ----------
@@ -304,7 +310,7 @@
     }
     if (d.shame.zeroExactCount > 0) {
       html += '<div class="shame-row"><span class="shame-icon">🎯</span><span><b>' + d.shame.zeroExactCount +
-        ' entrants</b> went the entire tournament without one exact scoreline. 104 matches. Not one.</span></div>';
+        ' entrants</b> went the entire tournament without one exact scoreline. 103 matches. Not one.</span></div>';
     }
     html += '</div></div></div>';
 
