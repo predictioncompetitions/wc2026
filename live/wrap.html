@@ -48,8 +48,9 @@
     @media (max-width: 640px) { .king-grid { grid-template-columns: 1fr; } }
     .king-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
     .king-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--pitch); margin-bottom: 6px; }
+    .king-tag .joint { color: var(--gold); }
     .king-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-    .king-name { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--ink); }
+    .king-name { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--ink); line-height: 1.15; }
     .king-pts { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--pitch); white-space: nowrap; }
     .king-pts small { font-size: 10px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .3px; }
     .king-joke { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
@@ -158,6 +159,21 @@
   }
   function first(name) { return String(name || '').split(' ')[0]; }
 
+  // A king section may be a single {name,value} object or an array of them (joint tops).
+  // These helpers normalise either shape.
+  function kingList(k) { return Array.isArray(k) ? k : (k ? [k] : []); }
+  function kingValue(k) { const l = kingList(k); return l.length ? l[0].value : 0; }
+
+  // Join a list of names with commas and a trailing "and": "A", "A and B", "A, B and C".
+  function joinNames(names) {
+    if (names.length === 0) return '';
+    if (names.length === 1) return names[0];
+    if (names.length === 2) return names[0] + ' and ' + names[1];
+    return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  }
+  function kingFullNames(k) { return joinNames(kingList(k).map(function(x) { return esc(x.name); })); }
+  function kingFirstNames(k) { return joinNames(kingList(k).map(function(x) { return esc(first(x.name)); })); }
+
   function h2hSentence(d) {
     // one line on where the title was actually won between 1st and 2nd
     const parts = [
@@ -226,21 +242,25 @@
     html += '<div class="wrap-sub">Most points in each part of the tournament. These people knew something.</div>';
     html += '<div class="king-grid">';
 
+    const gTop = kingFirstNames(d.kings.group), gVal = kingValue(d.kings.group), gJoint = kingList(d.kings.group).length > 1;
     html += kingCard('Group Stage King', d.kings.group,
-      'While the rest of you picked with your hearts, ' + esc(first(d.kings.group.name)) +
-      ' read all 12 groups like a bus timetable. ' + d.kings.group.value + ' points before a knockout ball was kicked.');
+      'While the rest of you picked with your hearts, ' + gTop +
+      (gJoint ? ' each read' : ' read') + ' all 12 groups like a bus timetable. ' + gVal + ' points before a knockout ball was kicked.');
 
+    const pTop = kingFirstNames(d.kings.prog), pVal = kingValue(d.kings.prog), pJoint = kingList(d.kings.prog).length > 1;
     html += kingCard('Progression King', d.kings.prog,
-      esc(first(d.kings.prog.name)) + ' saw the bracket coming. ' + d.kings.prog.value +
+      pTop + (pJoint ? ' each saw' : ' saw') + ' the bracket coming. ' + pVal +
       ' points for knowing who would still be standing while everyone else\u2019s semi finalists were home by the last 16.');
 
+    const mTop = kingFirstNames(d.kings.match), mVal = kingValue(d.kings.match), mJoint = kingList(d.kings.match).length > 1;
     html += kingCard('Knockout Points King', d.kings.match,
-      'Penalties, extra time, late equalisers. None of it rattled ' + esc(first(d.kings.match.name)) +
-      ', who top scored the knockout matches with ' + d.kings.match.value + '. Some people just know.');
+      'Penalties, extra time, late equalisers. None of it rattled ' + mTop +
+      ', who top scored the knockout matches with ' + mVal + '. Some people just know.');
 
+    const eTop = kingFirstNames(d.kings.exact), eVal = kingValue(d.kings.exact), eJoint = kingList(d.kings.exact).length > 1;
     html += kingCard('Exact Score King', d.kings.exact,
-      esc(first(d.kings.exact.name)) + ' called ' + d.kings.exact.value +
-      ' scorelines bang on. We inspected the entry for a modem connected to the future. Nothing found. Yet.', true);
+      eTop + ' called ' + eVal + ' scorelines bang on. We inspected ' +
+      (eJoint ? 'the entries' : 'the entry') + ' for a modem connected to the future. Nothing found. Yet.', true);
 
     html += '</div></div></div>';
 
@@ -303,9 +323,14 @@
   }
 
   function kingCard(tag, king, joke, isCount) {
-    return '<div class="king-card"><div class="king-tag">' + tag + '</div>' +
-      '<div class="king-row"><span class="king-name">' + esc(king.name) + '</span>' +
-      '<span class="king-pts">' + king.value + ' <small>' + (isCount ? 'exact' : 'pts') + '</small></span></div>' +
+    const list = kingList(king);
+    const joint = list.length > 1;
+    const names = kingFullNames(king);
+    const value = kingValue(king);
+    const tagHtml = tag + (joint ? ' <span class="joint">· joint</span>' : '');
+    return '<div class="king-card"><div class="king-tag">' + tagHtml + '</div>' +
+      '<div class="king-row"><span class="king-name">' + names + '</span>' +
+      '<span class="king-pts">' + value + ' <small>' + (isCount ? 'exact' : 'pts') + '</small></span></div>' +
       '<div class="king-joke">' + joke + '</div></div>';
   }
 
@@ -320,6 +345,7 @@
   }
 
   // Demo data so the file can be previewed in a browser before deployment.
+  // group + exact deliberately show a tie so joint rendering can be checked.
   const DEMO = {
     ok: true,
     generatedAt: '19 July 2026, 23:30',
@@ -329,10 +355,17 @@
     margin: 2,
     headToHead: { group: 0, prog: 0, match: 2 },
     kings: {
-      group: { name: 'Alan Dawson', value: 139 },
-      prog:  { name: 'Alex Ryan', value: 214 },
-      match: { name: 'Darragh O\u2019Regan', value: 156 },
-      exact: { name: 'Aaron Mulcahy', value: 8 }
+      group: [
+        { name: 'Alan Dawson', value: 139 },
+        { name: 'Ruth Kelleher', value: 139 }
+      ],
+      prog:  [ { name: 'Alex Ryan', value: 214 } ],
+      match: [ { name: 'Darragh O\u2019Regan', value: 156 } ],
+      exact: [
+        { name: 'Aaron Mulcahy', value: 8 },
+        { name: 'Niamh Barry', value: 8 },
+        { name: 'Sean Foley', value: 8 }
+      ]
     },
     shame: {
       last: { name: 'Sample Name', rank: 214 },
