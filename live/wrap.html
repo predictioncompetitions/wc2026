@@ -33,6 +33,21 @@
     .ft-names .win { color: var(--pitch); }
     .ft-names .lose { color: var(--ink-3); }
     .ft-margin { display: inline-block; margin-top: 16px; background: var(--gold); color: #4a3a08; font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 999px; }
+    .ft-compare { max-width: 440px; margin: 18px auto 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .ft-compare-row { display: grid; grid-template-columns: 1fr 118px 1fr; align-items: center; border-top: 1px solid var(--border); }
+    .ft-compare-row.head { background: var(--ink); border-top: none; }
+    .ft-compare-row.total { background: var(--surface-2); }
+    .ft-c-name { font-family: var(--font-head); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #fff; padding: 9px 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ft-c-name.champ { text-align: right; }
+    .ft-c-name.ru { text-align: left; }
+    .ft-c-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-3); text-align: center; padding: 8px 6px; white-space: nowrap; }
+    .ft-compare-row.head .ft-c-label { color: rgba(255,255,255,.55); }
+    .ft-c-val { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--ink-3); padding: 8px 14px; }
+    .ft-c-val.champ { text-align: right; }
+    .ft-c-val.ru { text-align: left; }
+    .ft-c-val.hi { color: var(--pitch); }
+    .ft-compare-row.total .ft-c-val { font-size: 19px; font-weight: 900; color: var(--ink); }
+    .ft-compare-row.total .ft-c-val.champ { color: var(--pitch); }
     .ft-h2h { margin-top: 14px; font-size: 13px; color: var(--ink-2); max-width: 520px; margin-left: auto; margin-right: auto; }
 
     /* ---------- money podium ---------- */
@@ -190,6 +205,36 @@
   function kingFullNames(k) { return joinNames(kingList(k).map(function(x) { return esc(x.name); })); }
   function kingFirstNames(k) { return joinNames(kingList(k).map(function(x) { return esc(first(x.name)); })); }
 
+  function ftCompare(d) {
+    const c = d.champion, r = d.runnerUp;
+    // If the backend hasn't been redeployed with per-section totals, skip the table.
+    if (c.group === undefined || r.group === undefined) return '';
+    const rows = [
+      { label: 'Groups', c: c.group, r: r.group },
+      { label: 'Progression', c: c.prog, r: r.prog },
+      { label: 'Knockout', c: c.match, r: r.match }
+    ];
+    let out = '<div class="ft-compare">';
+    out += '<div class="ft-compare-row head">' +
+      '<span class="ft-c-name champ">' + esc(first(c.name)) + '</span>' +
+      '<span class="ft-c-label">Section</span>' +
+      '<span class="ft-c-name ru">' + esc(first(r.name)) + '</span></div>';
+    rows.forEach(function(row) {
+      const champHi = row.c > row.r ? ' hi' : '';
+      const ruHi = row.r > row.c ? ' hi' : '';
+      out += '<div class="ft-compare-row">' +
+        '<span class="ft-c-val champ' + champHi + '">' + row.c + '</span>' +
+        '<span class="ft-c-label">' + row.label + '</span>' +
+        '<span class="ft-c-val ru' + ruHi + '">' + row.r + '</span></div>';
+    });
+    out += '<div class="ft-compare-row total">' +
+      '<span class="ft-c-val champ">' + c.total + '</span>' +
+      '<span class="ft-c-label">Total</span>' +
+      '<span class="ft-c-val ru">' + r.total + '</span></div>';
+    out += '</div>';
+    return out;
+  }
+
   function h2hSentence(d) {
     // one line on where the title was actually won between 1st and 2nd
     const parts = [
@@ -226,6 +271,7 @@
     html += '<div class="ft-scoreline"><span class="ft-pts win">' + d.champion.total + '</span><span class="ft-v">v</span><span class="ft-pts">' + d.runnerUp.total + '</span></div>';
     html += '<div class="ft-names"><span class="win">' + esc(first(d.champion.name)) + '</span><span class="lose">' + esc(d.runnerUp.name) + '</span></div>';
     html += '<div><span class="ft-margin">' + esc(first(d.champion.name)) + ' wins by ' + d.margin + (d.margin === 1 ? ' point' : ' points') + '</span></div>';
+    html += ftCompare(d);
     html += '<p class="ft-h2h">' + esc(h2hSentence(d)) + '</p>';
     html += '</div></div>';
 
@@ -392,8 +438,8 @@
     ok: true,
     generatedAt: '19 July 2026, 23:30',
     entrantCount: 214,
-    champion: { name: 'Derry Cotter', total: 501 },
-    runnerUp: { name: 'Dylan Walsh', total: 499 },
+    champion: { name: 'Derry Cotter', total: 501, group: 130, prog: 200, match: 171 },
+    runnerUp: { name: 'Dylan Walsh', total: 499, group: 130, prog: 200, match: 169 },
     margin: 2,
     headToHead: { group: 0, prog: 0, match: 2 },
     kings: {
